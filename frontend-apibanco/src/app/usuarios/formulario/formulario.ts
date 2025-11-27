@@ -80,7 +80,7 @@ export class FormularioUsuario {
     }
 
     // Cargar catálogos desde backend
-    this.http.get<any[]>('https://bancoimagenesfincomun-production.up.railway.app/api/usuarios').subscribe({
+    this.http.get<any[]>('https://bancoimagenesfincomun.onrender.com/api/usuarios').subscribe({
       next: (usuarios) => {
         this.teams = [...new Set(usuarios.map(u => u.team).filter(t => !!t))];
         this.departments = [...new Set(usuarios.map(u => u.department).filter(d => !!d))];
@@ -166,8 +166,8 @@ export class FormularioUsuario {
 
     const isEdit = !!this.formData.id;
     const url = isEdit
-      ? `https://bancoimagenesfincomun-production.up.railway.app/api/usuarios/${this.formData.id}`
-      : 'https://bancoimagenesfincomun-production.up.railway.app/api/usuarios';
+      ? `https://bancoimagenesfincomun.onrender.com/api/usuarios/${this.formData.id}`
+      : 'https://bancoimagenesfincomun.onrender.com/api/usuarios';
     const method = isEdit ? 'put' : 'post';
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({
