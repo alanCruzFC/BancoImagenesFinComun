@@ -2,7 +2,6 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   // Rutas estáticas que sí se pueden prerender
-  { path: '', renderMode: RenderMode.Prerender },
   { path: 'login', renderMode: RenderMode.Prerender },
   { path: 'dashboard', renderMode: RenderMode.Prerender },
 
