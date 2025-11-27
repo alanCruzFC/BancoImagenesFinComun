@@ -1,0 +1,73 @@
+<div class="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20">
+  <!-- Encabezado -->
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold bg-gradient-to-r from-[#046CAC] to-[#046BB4] bg-clip-text text-transparent">
+      Registros disponibles
+    </h2>
+    <div class="flex items-center gap-3">
+      <!-- 🔎 Barra de búsqueda -->
+      <input type="text"
+             [(ngModel)]="busqueda"
+             placeholder="🔍 Buscar..."
+             class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
+
+      <button (click)="abrirModal()"
+              class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
+        ➕ Nuevo registro
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenedor con scroll interno SOLO para la tabla -->
+  <div class="overflow-x-auto overflow-y-auto max-h-[500px] rounded-xl shadow-md">
+    <table class="table-auto w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-gradient-to-r from-[#046BB4]/10 to-[#4484B4]/10">
+          <th class="px-4 py-3 text-left font-semibold text-[#046CAC]">Solicitud</th>
+          <th class="px-4 py-3 text-left font-semibold text-[#046CAC]">Creador</th>
+          <th class="px-4 py-3 text-left font-semibold text-[#046CAC]">Fecha</th>
+          <th class="px-4 py-3 text-center font-semibold text-[#046CAC]">Acciones</th>
+          <th *ngIf="rol === 'ADMIN'" class="px-4 py-3 text-left font-semibold text-[#046CAC]">
+            Correos autorizados
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <!-- 🔎 Usamos registrosFiltrados -->
+        <tr *ngFor="let registro of registrosFiltrados"
+            class="hover:bg-gradient-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
+          <td class="px-4 py-2 font-medium text-[#046CAC]">{{ registro.numeroSolicitud }}</td>
+          <td class="px-4 py-2">{{ registro.creador }}</td>
+          <td class="px-4 py-2">{{ registro.fechaCreacion | date:'short' }}</td>
+          <td class="px-4 py-2 text-center">
+            <a [routerLink]="['/dashboard/visualizar', registro.numeroSolicitud]"
+               class="text-blue-600 hover:text-blue-800 hover:underline transition">
+              🔍 Ver archivos
+            </a>
+          </td>
+          <td *ngIf="rol === 'ADMIN'" class="px-4 py-2">
+            <span class="text-gray-700">
+              {{ registro.correosAutorizados ? registro.correosAutorizados.join(', ') : 'N/A' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div *ngIf="mostrarModal" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl shadow-2xl w-[600px] max-h-[90vh] overflow-auto relative p-6">
+    
+    <!-- Botón cerrar -->
+    <button (click)="cerrarModal()" 
+            class="absolute top-3 right-3 z-50 
+                   bg-gray-200 text-gray-700 hover:bg-gray-300 
+                   rounded-full p-2 shadow-md transition">✖</button>
+
+    <!-- Aquí va tu formulario de nuevo registro -->
+    <app-formulario-registro (registroCreado)="onRegistroCreado($event)" (guardado)="onRegistroGuardado()"></app-formulario-registro>
+  </div>
+</div>

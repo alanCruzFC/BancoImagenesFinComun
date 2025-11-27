@@ -1,0 +1,46 @@
+<form [formGroup]="form" (ngSubmit)="guardar()" class="p-6 space-y-4">
+  <h3 class="text-xl font-bold text-[#046CAC]">Nuevo Registro</h3>
+
+  <!-- Número de solicitud -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Número de solicitud</label>
+    <input formControlName="numeroSolicitud"
+           class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
+  </div>
+
+  <!-- Correos autorizados con chips -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Correos autorizados</label>
+
+    <!-- Chips -->
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span *ngFor="let correo of correosSeleccionados"
+            class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center">
+        {{ correo }}
+        <button type="button" (click)="eliminarCorreo(correo)" class="ml-2 text-red-500 hover:text-red-700">✖</button>
+      </span>
+    </div>
+
+    <!-- Input -->
+    <input formControlName="correoInput"
+           placeholder="Escribe un correo..."
+           class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
+
+    <!-- Sugerencias -->
+    <ul *ngIf="sugerencias.length > 0" class="border rounded-lg mt-2 bg-white shadow">
+      <li *ngFor="let correo of sugerencias"
+          (click)="agregarCorreo(correo)"
+          class="px-3 py-1 hover:bg-blue-100 cursor-pointer">
+        {{ correo }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- Botón guardar -->
+  <div class="text-right">
+    <button type="submit"
+            class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
+      💾 Guardar
+    </button>
+  </div>
+</form>

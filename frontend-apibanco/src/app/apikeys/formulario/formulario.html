@@ -1,0 +1,55 @@
+<form (ngSubmit)="submit()" class="space-y-4 p-4">
+  <h2 class="text-xl font-semibold mb-4">
+    {{ formData.id ? 'Actualizar API Key' : 'Crear nueva API Key' }}
+  </h2>
+
+  <label>Consumidor:</label>
+  <input [(ngModel)]="formData.consumidor" name="consumidor"
+         placeholder="Nombre del consumidor"
+         class="w-full border px-4 py-2 rounded" required />
+
+  <!-- Clave -->
+  <div *ngIf="formData.id" class="flex items-end space-x-2 mt-4">
+    <div class="flex-1">
+      <label class="font-semibold text-[#046CAC]">Clave:</label>
+      <input [type]="claveVisible ? 'text' : 'password'"
+             [(ngModel)]="formData.clave" name="clave"
+             class="w-full border px-4 py-2 rounded font-mono" readonly />
+    </div>
+    <button type="button" (click)="toggleClave()"
+            class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">
+      {{ claveVisible ? 'Ocultar' : 'Ver' }}
+    </button>
+    <button *ngIf="formData.id" type="button" (click)="refactorizarClave()"
+            class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">
+      🔑 Refactorizar
+    </button>
+  </div>
+
+  <h3 class="text-lg font-semibold mt-4">Permisos:</h3>
+
+  <label class="flex items-center space-x-2">
+    <input type="checkbox" [(ngModel)]="formData.lectura" name="lectura" />
+    <span>Lectura</span>
+  </label>
+
+  <label class="flex items-center space-x-2">
+    <input type="checkbox" [(ngModel)]="formData.escritura" name="escritura" />
+    <span>Escritura</span>
+  </label>
+
+  <label class="flex items-center space-x-2">
+    <input type="checkbox" [(ngModel)]="formData.actualizacion" name="actualizacion" />
+    <span>Actualización</span>
+  </label>
+
+  <label class="flex items-center space-x-2">
+    <input type="checkbox" [(ngModel)]="formData.eliminacion" name="eliminacion" />
+    <span>Eliminación</span>
+  </label>
+
+  <button type="submit"
+          class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded hover:opacity-90 w-full mt-4">
+    {{ formData.id ? '💾 Guardar cambios' : '🔑 Crear API Key' }}
+  </button>
+</form>

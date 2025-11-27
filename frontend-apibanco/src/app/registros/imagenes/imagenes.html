@@ -1,0 +1,76 @@
+<div *ngIf="registro" class="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20">
+  <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#046CAC] to-[#046BB4] bg-clip-text text-transparent">
+    📄 Registro {{ registro.numeroSolicitud }}
+  </h2>
+
+  <div class="mb-4 text-gray-700">
+    <p><strong>Creador:</strong> {{ registro.creador }}</p>
+    <p><strong>Fecha:</strong> {{ registro.fechaCreacion | date:'short' }}</p>
+  </div>
+
+  <div class="mb-6 text-center">
+    <button *ngIf="puedeSubir()" (click)="abrirModal()"
+            class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
+      📤 Subir imágenes
+    </button>
+  </div>
+
+  <div *ngIf="imagenes.length === 0" class="text-center p-6">
+    <p class="text-gray-600">No hay imágenes cargadas</p>
+  </div>
+
+  <!-- Grid de imágenes -->
+  <div *ngIf="imagenes.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <div *ngFor="let img of imagenes" 
+         class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
+         (click)="abrirVisualizacion(img)">
+      <img [src]="img.url"
+           alt="Documento"
+           class="w-full h-40 object-cover rounded-lg border border-gray-200" />
+      <p class="text-xs text-gray-500 mt-2 text-center">{{ img.tipoDocumento }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de visualización -->
+<div *ngIf="imagenSeleccionada" class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-5xl h-[90vh] flex flex-col overflow-hidden relative">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between p-4 border-b bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white">
+      <div>
+        <h2 class="font-semibold text-lg">{{ imagenSeleccionada.tipoDocumento }}</h2>
+        <p class="text-sm text-white/80">{{ getNombreArchivo(imagenSeleccionada.url) }}</p>
+      </div>
+      <button (click)="cerrarVisualizacion()" 
+              class="bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">
+        ✖
+      </button>
+    </div>
+
+    <!-- Imagen -->
+    <div class="flex-1 overflow-auto bg-slate-900 flex items-center justify-center p-4">
+      <img [src]="imagenSeleccionada.url"
+           alt="Imagen seleccionada"
+           class="max-w-full max-h-full object-contain transition-transform duration-200"/>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de subida -->
+<div *ngIf="mostrarModal" class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl shadow-2xl w-[600px] max-h-[90vh] overflow-auto relative">
+    
+    <!-- Botón cerrar -->
+    <button (click)="cerrarModal()" 
+            class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">
+      ✖
+    </button>
+
+    <!-- Formulario -->
+    <app-formulario-imagenes *ngIf="registro" 
+                             [numeroSolicitud]="registro.numeroSolicitud" 
+                             (guardado)="onImagenesGuardadas()">
+    </app-formulario-imagenes>
+  </div>
+</div>

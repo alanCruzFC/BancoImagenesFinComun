@@ -1,0 +1,74 @@
+/* Fondo general con gradiente inspirado en el logo */
+.bg-gradient-bg {
+  background: linear-gradient(to right, #ec4899, #fb923c, #9333ea); /* pink → orange → purple */
+}
+
+/* Card con fondo blanco y sombra suave */
+.bg-card {
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradiente para botones e íconos */
+.bg-gradient-primary {
+  background: linear-gradient(to right, #ec4899, #fb923c, #9333ea);
+  color: white;
+}
+
+/* Texto y colores */
+.text-foreground {
+  color: #1f2937; /* gray-800 */
+}
+.text-muted-foreground {
+  color: #6b7280; /* gray-500 */
+}
+.text-primary {
+  color: #ec4899; /* pink-500 */
+}
+.text-primary-hover:hover {
+  color: #db2777; /* pink-600 */
+}
+.text-primary-foreground {
+  color: white;
+}
+.text-destructive {
+  color: #dc2626; /* red-600 */
+}
+
+/* Bordes */
+.border-input {
+  border-color: #d1d5db; /* gray-300 */
+}
+.border-destructive {
+  border-color: #fca5a5; /* red-300 */
+}
+
+/* Sombra tipo glow */
+.shadow-glow {
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.5); /* pink glow */
+}
+
+/* Animación de entrada */
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
+/* Animación de error tipo shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}

@@ -1,0 +1,16 @@
+<header class="h-20 bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white 
+               px-6 flex justify-between items-center shadow-lg sticky top-0 z-30
+               lg:ml-64">
+  <div class="flex items-center gap-4">
+    <div>
+      <h1 class="text-lg font-semibold">Banco de Imágenes FinComun</h1>
+      <p class="text-sm">Bienvenido, {{ nombre }}</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <button (click)="logout()"
+            class="bg-white/90 text-[#046CAC] px-3 py-1 rounded-lg hover:bg-white transition-colors shadow-sm">
+      Cerrar sesión
+    </button>
+  </div>
+</header>

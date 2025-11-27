@@ -1,0 +1,150 @@
+<form (ngSubmit)="submit(form)" #form="ngForm" class="p-6 bg-white rounded-xl shadow-lg">
+  <!-- Errores -->
+  <div *ngIf="validationErrors.length > 0" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+    <p class="font-bold">Error de validación:</p>
+    <ul class="mt-1 list-disc list-inside">
+      <li *ngFor="let error of validationErrors">{{ error }}</li>
+    </ul>
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Email -->
+    <div class="col-span-2">
+      <label class="font-semibold text-[#046CAC]">Email:</label>
+      <input [(ngModel)]="formData.email" name="email" type="email"
+             placeholder="Escribe un email"
+             class="w-full border px-4 py-2 rounded-lg focus:ring-[#046BB4] focus:border-[#046BB4]"
+             required [readonly]="usuario != null" />
+      <p *ngIf="hasError('Email')" class="text-red-500 text-sm mt-1">
+        El campo Email es obligatorio o el formato es inválido.
+      </p>
+    </div>
+
+    <!-- Nombre -->
+    <div>
+      <label class="font-semibold text-[#046CAC]">Nombre:</label>
+      <input [(ngModel)]="formData.firstName" name="firstName"
+             placeholder="Nombre" class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
+             [class.border-red-500]="hasError('Nombre')"/>
+      <p *ngIf="hasError('Nombre')" class="text-red-500 text-sm mt-1">
+        El campo Nombre es obligatorio.
+      </p>
+    </div>
+
+    <!-- Apellido -->
+    <div>
+      <label class="font-semibold text-[#046CAC]">Apellido:</label>
+      <input [(ngModel)]="formData.lastName" name="lastName"
+             placeholder="Apellido" class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
+             [class.border-red-500]="hasError('Apellido')"/>
+       <p *ngIf="hasError('Apellido')" class="text-red-500 text-sm mt-1">
+        El campo Apellido es obligatorio.
+      </p>
+    </div>
+
+    <!-- Usuario -->
+    <div>
+      <label class="font-semibold text-[#046CAC]">Usuario:</label>
+      <input [(ngModel)]="formData.username" name="username"
+             placeholder="Usuario" class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
+             [class.border-red-500]="hasError('Usuario')"/> 
+       <p *ngIf="hasError('Usuario')" class="text-red-500 text-sm mt-1"> 
+        El campo Usuario es obligatorio.
+      </p>
+    </div>
+
+    <!-- Rol -->
+    <div>
+      <label class="font-semibold text-[#046CAC]">Rol:</label>
+      <select [(ngModel)]="formData.rol" name="rol"
+              class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
+              [class.border-red-500]="hasError('Rol')">
+        <option value="" disabled selected>Selecciona un rol</option>
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+      <p *ngIf="hasError('Rol')" class="text-red-500 text-sm mt-1">
+        El campo Rol es obligatorio.
+      </p>
+    </div>
+
+    <!-- Equipo -->
+    <div>
+      <label class="font-semibold text-[#046CAC]">Equipo:</label>
+      <div *ngIf="!usarInputTeam" class="flex space-x-2">
+        <select [(ngModel)]="formData.team" name="team"
+                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg">
+          <option value="" disabled selected>Selecciona un equipo</option>
+          <option *ngFor="let t of teams" [value]="t">{{ t }}</option>
+        </select>
+        <button type="button" (click)="cambiarAInputTeam()"
+                class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
+      </div>
+      <div *ngIf="usarInputTeam">
+        <input [(ngModel)]="formData.team" name="team" placeholder="Nuevo equipo"
+               class="w-full border border-gray-300 px-4 py-2 rounded-lg" />
+      </div>
+    </div>
+
+    <!-- Departamento -->
+    <div>
+      <label class="font-semibold text-[#046CAC]">Departamento:</label>
+      <div *ngIf="!usarInputDepartment" class="flex space-x-2">
+        <select [(ngModel)]="formData.department" name="department"
+                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg">
+          <option value="" disabled selected>Selecciona un departamento</option>
+          <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
+        </select>
+        <button type="button" (click)="cambiarAInputDepartment()"
+                class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
+      </div>
+      <div *ngIf="usarInputDepartment">
+        <input [(ngModel)]="formData.department" name="department" placeholder="Nuevo departamento"
+               class="w-full border border-gray-300 px-4 py-2 rounded-lg" />
+      </div>
+    </div>
+
+    <!-- Supervisor -->
+    <div>
+      <label class="font-semibold text-[#046CAC]">Supervisor:</label>
+      <select [(ngModel)]="formData.supervisorId" name="supervisorId"
+              class="w-full border border-gray-300 px-4 py-2 rounded-lg">
+        <option [value]="null">-- Ninguno --</option>
+        <option *ngFor="let s of supervisores" [value]="s.id">
+          {{ s.firstName }} {{ s.lastName }} ({{ s.email }})
+        </option>
+      </select>
+    </div>
+
+    <!-- Activo -->
+    <div class="flex items-center space-x-2">
+      <input type="checkbox" [(ngModel)]="formData.activo" name="activo" />
+      <span class="font-semibold text-[#046CAC]">Activo</span>
+    </div>
+
+    <!-- Contraseña: visible solo si no existe (crear) o si el usuario no tiene -->
+    <div class="col-span-2 flex space-x-2 items-end"
+         *ngIf="usuario == null || !usuario.passwordDesencriptada">
+      <div class="flex-1">
+        <label class="font-semibold text-[#046CAC]">Contraseña generada:</label>
+        <input [(ngModel)]="formData.password" name="password"
+               placeholder="Contraseña generada" class="w-full border border-gray-300 px-4 py-2 rounded-lg" readonly required
+               [class.border-red-500]="hasError('contraseña')"/> 
+        <p *ngIf="hasError('contraseña')" class="text-red-500 text-sm mt-1"> 
+            Debes generar una contraseña.
+        </p>
+      </div>
+      <button type="button" (click)="generarPassword()"
+              class="shrink-0 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+        🔑 Generar
+      </button>
+    </div>
+  </div>
+
+  <!-- Botón submit -->
+  <div class="pt-6">
+    <button type="submit"
+            class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] hover:from-[#046CAC] hover:to-[#046BB4] text-white px-6 py-3 rounded-xl shadow-lg w-full transition-all duration-300 transform hover:scale-[1.02]">
+      {{ usuario ? '💾 Guardar cambios' : '💾 Crear usuario' }}
+    </button>
+  </div>
+</form>
