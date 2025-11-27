@@ -1,12 +1,15 @@
-import { ServerRoute, RenderMode } from '@angular/ssr';
+import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
+  // Rutas estáticas que sí se pueden prerender
   { path: '', renderMode: RenderMode.Prerender },
   { path: 'login', renderMode: RenderMode.Prerender },
   { path: 'dashboard', renderMode: RenderMode.Prerender },
 
-  // dinámicas → Server
+  // Rutas dinámicas → Server (no prerender)
   { path: 'visualizar/:numeroSolicitud', renderMode: RenderMode.Server },
-  { path: 'dashboard/visualizar/:numeroSolicitud', renderMode: RenderMode.Server }
-];
+  { path: 'dashboard/visualizar/:numeroSolicitud', renderMode: RenderMode.Server },
 
+  // Catch‑all → Server (para cualquier otra ruta no listada)
+  { path: '**', renderMode: RenderMode.Server }
+];
