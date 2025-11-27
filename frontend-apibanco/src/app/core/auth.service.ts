@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://localhost:8080/api/auth/login';
+  private api = 'https://bancoimagenesfincomun-production.up.railway.app/api/auth/login';
 
   constructor(private http: HttpClient) {}
 

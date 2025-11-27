@@ -39,7 +39,7 @@ export class ImagenesRegistro {
         this.registro = data;
         this.imagenes = (data.imagenes || []).map(img => ({
           ...img,
-          url: `http://localhost:8080${img.url}`
+          url: `https://bancoimagenesfincomun-production.up.railway.app${img.url}`
         }));
       },
       error: (err) => {
