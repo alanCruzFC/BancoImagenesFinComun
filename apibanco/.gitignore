@@ -74,4 +74,4 @@ application-*.properties
 
 # Carpeta de archivos subidos
 /Archivos/
-
+.metadata/*
