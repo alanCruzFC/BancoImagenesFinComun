@@ -78,7 +78,7 @@ export class FormularioImagenes {
         formData.append('archivo', doc.archivo);
 
         peticiones.push(
-          this.http.post(`https://bancoimagenesfincomun-production.up.railway.app/api/subir/${this.numeroSolicitud}`, formData)
+          this.http.post(`http://localhost:8080/api/subir/${this.numeroSolicitud}`, formData)
         );
       }
     });
@@ -90,7 +90,7 @@ export class FormularioImagenes {
         formData.append('archivo', doc.archivo);
 
         peticiones.push(
-          this.http.post(`https://bancoimagenesfincomun-production.up.railway.app/api/subir/${this.numeroSolicitud}`, formData)
+          this.http.post(`http://localhost:8080/api/subir/${this.numeroSolicitud}`, formData)
         );
       }
     });

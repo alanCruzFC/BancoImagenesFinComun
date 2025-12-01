@@ -36,7 +36,7 @@ export class ListadoComponent {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<Usuario[]>('https://bancoimagenesfincomun.onrender.com/api/usuarios').subscribe({
+    this.http.get<Usuario[]>('http://localhost:8080/api/usuarios').subscribe({
       next: (data) => this.usuarios = data,
       error: () => console.error('❌ Error al obtener usuarios')
     });

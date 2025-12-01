@@ -18,7 +18,7 @@ export class ImagenesRegistro {
   usuarioRol: string = '';
   registro?: RegistroDTO;
   mostrarModal: boolean = false;
-  imagenSeleccionada: ArchivoDTO | null = null;  // 👈 ahora guardamos el objeto completo
+  imagenSeleccionada: ArchivoDTO | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,7 +39,7 @@ export class ImagenesRegistro {
         this.registro = data;
         this.imagenes = (data.imagenes || []).map(img => ({
           ...img,
-          url: `https://bancoimagenesfincomun-production.up.railway.app${img.url}`
+          url: `http://localhost:8080${img.url}`
         }));
       },
       error: (err) => {
@@ -67,8 +67,28 @@ export class ImagenesRegistro {
   }
 
   abrirVisualizacion(img: ArchivoDTO): void {
-    this.imagenSeleccionada = img;
+    const nombre = this.getNombreArchivo(img.url).toLowerCase();
+
+    // 👉 Si es imagen → abrir en modal
+    if (nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') ||
+        nombre.endsWith('.png') || nombre.endsWith('.gif')) {
+      this.imagenSeleccionada = img;
+      return;
+    }
+
+    // 👉 Si es PDF → abrir inline en nueva pestaña
+    if (nombre.endsWith('.pdf')) {
+      window.open(img.url + '?inline=true', '_blank');
+      return;
+    }
+
+    // 👉 Si es Word, Excel u otro → forzar descarga
+    const link = document.createElement('a');
+    link.href = img.url;
+    link.download = img.nombreArchivo;
+    link.click();
   }
+
 
   cerrarVisualizacion(): void {
     this.imagenSeleccionada = null;
@@ -77,6 +97,25 @@ export class ImagenesRegistro {
   getNombreArchivo(url: string): string {
     if (!url) return '';
     return url.split('/').pop() || url;
+  }
+
+  getThumbnail(img: ArchivoDTO): string {
+    const nombre = this.getNombreArchivo(img.url).toLowerCase();
+
+    if (nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') ||
+        nombre.endsWith('.png') || nombre.endsWith('.gif')) {
+      return img.url;
+    }
+    if (nombre.endsWith('.pdf')) return 'assets/icons/pdf.png';
+    if (nombre.endsWith('.doc') || nombre.endsWith('.docx')) return 'assets/icons/word.png';
+    if (nombre.endsWith('.xls') || nombre.endsWith('.xlsx')) return 'assets/icons/excel.png';
+    return 'assets/icons/file.png';
+  }
+
+  esImagen(img: ArchivoDTO): boolean {
+    const nombre = this.getNombreArchivo(img.url).toLowerCase();
+    return nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') ||
+           nombre.endsWith('.png') || nombre.endsWith('.gif');
   }
 
 }

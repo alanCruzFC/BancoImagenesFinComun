@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -135,13 +136,25 @@ public class ArchivoController {
 
 	    Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
-	    Metadata metadata = new Metadata();
-	    metadata.setNombreArchivo(nombreFinal);
-	    metadata.setTipoDocumento(tipo);
-	    metadata.setFechaSubida(LocalDateTime.now());
-	    metadata.setRegistro(registro);
-	    metadata.setSubidoPor(usuario);
-	    metadataRepository.save(metadata);
+	 // Buscar si ya existe metadata para este tipo en el registro
+	    Metadata existente = metadataRepository.findByRegistroAndTipoDocumento(registro, tipo);
+
+	    if (existente != null) {
+	        // 👉 reemplazar archivo y actualizar metadata
+	        existente.setNombreArchivo(nombreFinal);
+	        existente.setFechaSubida(LocalDateTime.now());
+	        existente.setSubidoPor(usuario);
+	        metadataRepository.save(existente);
+	    } else {
+	        // 👉 crear nuevo metadata si no existe
+	        Metadata metadata = new Metadata();
+	        metadata.setNombreArchivo(nombreFinal);
+	        metadata.setTipoDocumento(tipo);
+	        metadata.setFechaSubida(LocalDateTime.now());
+	        metadata.setRegistro(registro);
+	        metadata.setSubidoPor(usuario);
+	        metadataRepository.save(metadata);
+	    }
 
 	    ArchivoDTO dto = new ArchivoDTO(nombreFinal, "/api/descargar/" + numeroSolicitud + "/" + nombreFinal);
 	    return ResponseEntity.ok(Map.of("mensaje", "Imagen subida correctamente", "archivo", dto));
@@ -302,7 +315,8 @@ public class ArchivoController {
 	@GetMapping("/descargar/{numeroSolicitud}/{nombreArchivo}")
 	public ResponseEntity<Resource> descargarArchivo(
 	        @PathVariable String numeroSolicitud,
-	        @PathVariable String nombreArchivo) throws IOException {
+	        @PathVariable String nombreArchivo,
+	        @RequestParam(defaultValue = "false") boolean inline) throws IOException {
 
 	    Path ruta = Paths.get("Archivos", numeroSolicitud).resolve(nombreArchivo).normalize();
 	    Resource recurso = new UrlResource(ruta.toUri());
@@ -311,11 +325,24 @@ public class ArchivoController {
 	        return ResponseEntity.notFound().build();
 	    }
 
+	    // Detectar tipo MIME
 	    String contentType = Files.probeContentType(ruta);
+	    if (contentType == null) {
+	        contentType = "application/octet-stream"; // fallback genérico
+	    }
+
+	    // 👉 Cabecera según modo
+	    String disposition = inline
+	            ? "inline; filename=\"" + nombreArchivo + "\""
+	            : "attachment; filename=\"" + nombreArchivo + "\"";
+
 	    return ResponseEntity.ok()
-	        .contentType(MediaType.parseMediaType(contentType))
-	        .body(recurso);
+	            .contentType(MediaType.parseMediaType(contentType))
+	            .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
+	            .body(recurso);
 	}
+
+
 
 
 	

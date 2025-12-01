@@ -11,28 +11,28 @@
   <div class="mb-6 text-center">
     <button *ngIf="puedeSubir()" (click)="abrirModal()"
             class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
-      📤 Subir imágenes
+      📤 Subir archivos
     </button>
   </div>
 
   <div *ngIf="imagenes.length === 0" class="text-center p-6">
-    <p class="text-gray-600">No hay imágenes cargadas</p>
+    <p class="text-gray-600">No hay archivos cargados</p>
   </div>
 
-  <!-- Grid de imágenes -->
+  <!-- Grid de miniaturas -->
   <div *ngIf="imagenes.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
     <div *ngFor="let img of imagenes" 
-         class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
-         (click)="abrirVisualizacion(img)">
-      <img [src]="img.url"
-           alt="Documento"
-           class="w-full h-40 object-cover rounded-lg border border-gray-200" />
-      <p class="text-xs text-gray-500 mt-2 text-center">{{ img.tipoDocumento }}</p>
+        class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
+        (click)="abrirVisualizacion(img)">
+      <img [src]="getThumbnail(img)"
+          alt="Miniatura"
+          class="w-full h-40 object-cover rounded-lg border border-gray-200" />
+      <p class="text-xs text-gray-500 mt-2 text-center">{{ getNombreArchivo(img.url) }}</p>
     </div>
   </div>
 </div>
 
-<!-- Modal de visualización -->
+<!-- Modal de visualización SOLO para imágenes -->
 <div *ngIf="imagenSeleccionada" class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
   <div class="bg-white rounded-2xl shadow-2xl max-w-5xl h-[90vh] flex flex-col overflow-hidden relative">
 
@@ -48,11 +48,19 @@
       </button>
     </div>
 
-    <!-- Imagen -->
+    <!-- Contenido -->
     <div class="flex-1 overflow-auto bg-slate-900 flex items-center justify-center p-4">
       <img [src]="imagenSeleccionada.url"
            alt="Imagen seleccionada"
            class="max-w-full max-h-full object-contain transition-transform duration-200"/>
+    </div>
+
+    <!-- Footer con botón de descarga opcional -->
+    <div class="p-4 border-t bg-gray-100 flex justify-end">
+      <a [href]="imagenSeleccionada.url" download="{{ imagenSeleccionada.nombreArchivo }}"
+         class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
+        ⬇ Descargar imagen
+      </a>
     </div>
   </div>
 </div>

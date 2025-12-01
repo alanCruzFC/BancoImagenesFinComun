@@ -36,7 +36,7 @@ export class ListadoApiComponent {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<ApiKey[]>('https://bancoimagenesfincomun-production.up.railway.app/api/apikeys').subscribe({
+    this.http.get<ApiKey[]>('http://localhost:8080/api/apikeys').subscribe({
       next: (data) => {
         this.apikeys.forEach(key => this.claveVisible[key.id] = false);
         this.apikeys = data;

@@ -48,7 +48,7 @@ export class FormularioApiKey {
     }
 
     this.http.put<{mensaje: string, nuevaClave: string}>(
-      `https://bancoimagenesfincomun-production.up.railway.app/api/apikeys/${this.formData.id}/refactorizar`, 
+      `http://localhost:8080/api/apikeys/${this.formData.id}/refactorizar`, 
       {}, 
       { responseType: 'json' }
     ).subscribe({
@@ -69,8 +69,8 @@ export class FormularioApiKey {
 
     const isEdit = !!this.formData.id; // si hay id, es edición
     const url = isEdit
-      ? `https://bancoimagenesfincomun-production.up.railway.app/api/apikeys/${this.formData.id}`
-      : 'https://bancoimagenesfincomun-production.up.railway.app/api/apikeys';
+      ? `http://localhost:8080/api/apikeys/${this.formData.id}`
+      : 'http://localhost:8080/api/apikeys';
     const method = isEdit ? 'put' : 'post';
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({

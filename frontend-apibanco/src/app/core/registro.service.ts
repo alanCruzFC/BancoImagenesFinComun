@@ -21,8 +21,8 @@ export interface RegistroDTO {
 
 @Injectable({ providedIn: 'root' })
 export class RegistroService {
-  private baseUrl = 'https://bancoimagenesfincomun-production.up.railway.app/api/registros';
-  private base2Url = 'https://bancoimagenesfincomun-production.up.railway.app/api/registro';
+  private baseUrl = 'http://localhost:8080/api/registros';
+  private base2Url = 'http://localhost:8080/api/registro';
 
   constructor(private http: HttpClient) {}
 
