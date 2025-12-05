@@ -13,7 +13,7 @@ export interface ApiKey {
   escritura: boolean;
   actualizacion: boolean;
   eliminacion: boolean;
-  fechaCreacion: Date;
+  fechaCreacion: Date | null;
 }
 
 @Component({
@@ -29,7 +29,6 @@ export class ListadoApiComponent {
   modalVisibleApikey: boolean = false;
   searchTerm: string = '';
 
-  // 👉 Nuevo: control de visibilidad y selección
   claveVisible: { [id: number]: boolean } = {};
   apikeySeleccionada: ApiKey | null = null;
 
@@ -38,9 +37,16 @@ export class ListadoApiComponent {
   ngOnInit(): void {
     this.http.get<ApiKey[]>('http://localhost:8080/api/apikeys').subscribe({
       next: (data) => {
+        // Mapear y convertir fechaCreacion a Date
+        this.apikeys = data.map(item => ({
+          ...item,
+          fechaCreacion: item.fechaCreacion ? new Date(item.fechaCreacion) : null
+        }));
+
+        // Inicializar visibilidad de claves
         this.apikeys.forEach(key => this.claveVisible[key.id] = false);
-        this.apikeys = data;
-        this.apikeysFiltradas = data;
+
+        this.apikeysFiltradas = [...this.apikeys];
       },
       error: () => console.error('Error al obtener API Keys')
     });
@@ -65,7 +71,6 @@ export class ListadoApiComponent {
     );
   }
 
-  // 👉 Nuevo: alternar visibilidad de clave
   toggleClave(id: number): void {
     this.claveVisible[id] = !this.claveVisible[id];
   }

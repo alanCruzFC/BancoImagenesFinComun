@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 
 interface NavItem {
@@ -22,8 +22,9 @@ export class SidebarComponent {
     { label: 'Usuarios', route: 'usuarios', roles: ['ADMIN'] },
     { label: 'API Keys', route: 'apikeys', roles: ['ADMIN'] }
   ];
+  logoAnimating = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   get visibleItems(): NavItem[] {
     const rol = this.authService.getRol();
@@ -36,5 +37,15 @@ export class SidebarComponent {
 
   get rol(): string {
     return this.authService.getRol();
+  }
+  goToDashboard(event: Event) {
+    event.preventDefault();
+    // Animación visual breve antes de navegar
+    this.logoAnimating = true;
+    // Duración de la animación: 300ms (ajusta si quieres más/menos)
+    setTimeout(() => {
+      this.logoAnimating = false;
+      this.router.navigate(['/dashboard']);
+    }, 300);
   }
 }

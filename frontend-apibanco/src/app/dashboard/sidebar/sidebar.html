@@ -1,24 +1,37 @@
-<aside class="fixed top-0 left-0 z-40 h-full w-64 bg-gradient-to-b from-slate-900 to-slate-800 text-white shadow-lg flex flex-col">
+<aside class="fixed top-0 left-0 z-40 h-full w-64 bg-linear-to-b from-slate-900 to-slate-800 text-white shadow-lg flex flex-col">
   <!-- Logo -->
-  <div class="h-20 flex items-center justify-center border-b border-white/10">
-    <span class="text-xl font-semibold tracking-tight">Banco de Imágenes</span>
+  <div class="h-20 flex items-center gap-4 px-4 border-b border-white/10">
+    <a role="link"
+      aria-label="Ir al dashboard"
+      (click)="goToDashboard($event)"
+      class="flex items-center gap-4 cursor-pointer select-none rounded px-2 py-1 transition-transform duration-200 hover:scale-105 active:scale-95"
+      [class.animate-pulse]="logoAnimating">
+      <img src="assets/Logo_Fincomun.png" alt="Banco de Imágenes" class="h-12 w-auto object-contain" loading="lazy" />
+    </a>
   </div>
+
+
 
   <!-- Navigation -->
   <nav class="flex-1 p-4 space-y-2">
     <a *ngFor="let item of visibleItems"
       [routerLink]="['/dashboard', item.route]"
       routerLinkActive="active"
-      class="block px-4 py-2 rounded-lg font-medium transition-all duration-200
-              text-slate-300 hover:bg-white/5 hover:text-white">
+      class="block px-4 py-2 rounded-lg font-medium text-slate-300
+              transition-transform duration-200 ease-out transform-gpu
+              hover:scale-105 focus:scale-105 hover:text-white focus:text-white
+              hover:bg-white/5 focus:bg-white/5">
       {{ item.label }}
     </a>
   </nav>
 
 
+
   <!-- User Section -->
   <div class="p-4 border-t border-white/10">
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5">
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5
+                transition duration-200 ease-out transform-gpu
+                hover:scale-105 hover:shadow-[0_10px_40px_rgba(4,107,180,0.22)]">
       <div class="h-10 w-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-semibold border-2 border-blue-500/50">
         {{ nombre.charAt(0) }}
       </div>
@@ -28,5 +41,6 @@
       </div>
     </div>
   </div>
+
 </aside>
 

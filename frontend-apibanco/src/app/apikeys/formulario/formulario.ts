@@ -67,7 +67,7 @@ export class FormularioApiKey {
   submit(): void {
     const payload = { ...this.formData };
 
-    const isEdit = !!this.formData.id; // si hay id, es edición
+    const isEdit = !!this.formData.id;
     const url = isEdit
       ? `http://localhost:8080/api/apikeys/${this.formData.id}`
       : 'http://localhost:8080/api/apikeys';
@@ -75,13 +75,13 @@ export class FormularioApiKey {
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({
       next: (res: string) => {
-        alert(res || (isEdit ? '✅ API Key actualizada correctamente' : '✅ API Key creada correctamente'));
+        alert((isEdit ? 'API Key actualizada correctamente' : 'API Key creada correctamente'));
         this.creado.emit();
       },
       error: (err: HttpErrorResponse) => {
-        let errorMessage = isEdit ? '❌ Error al actualizar API Key.' : '❌ Error al crear API Key.';
+        let errorMessage = isEdit ? 'Error al actualizar API Key.' : 'Error al crear API Key.';
         if (err.status === 403) {
-          errorMessage = '❌ Acceso denegado. No tienes permisos para esta acción.';
+          errorMessage = 'Acceso denegado. No tienes permisos para esta acción.';
         }
         alert(errorMessage);
         console.error(err);

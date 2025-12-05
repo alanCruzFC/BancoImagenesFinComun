@@ -1,93 +1,111 @@
-<div class="p-6 min-h-screen bg-gray-50 flex flex-col">
+<div class="p-6 h-screen bg-gray-50 flex flex-col shadow-lg border border-gray-200 rounded-2xl overflow-hidden box-border">
   <!-- Encabezado -->
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex justify-between items-center mb-4 flex-none">
     <h2 class="text-2xl font-bold text-[#046CAC]">Usuarios registrados</h2>
     <div class="flex items-center gap-3">
       <input [(ngModel)]="busqueda" type="text" placeholder="🔍 Buscar..."
-             class="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-[#046BB4] focus:border-[#046BB4]" />
+             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
       <button (click)="abrirModal2()"
-              class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
+              class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+                 shadow-md transform transition-all duration-300
+                 hover:scale-[1.05] active:scale-[0.95]
+                 focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
+                 disabled:opacity-50 disabled:cursor-not-allowed">
         ➕ Nuevo usuario
       </button>
     </div>
   </div>
 
-  <!-- Scroll SOLO dentro de la tabla -->
-  <div class="overflow-x-auto overflow-y-auto max-h-[500px] rounded-xl shadow-md">
-    <table class="table-auto w-full text-sm border-collapse">
-      <thead class="sticky top-0 bg-gradient-to-r from-[#046BB4]/5 to-[#4484B4]/5 border-b border-gray-200">
-        <tr>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Usuario</th>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Nombre</th>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Apellido</th>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Email</th>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Rol</th>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Equipo</th>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Depto</th>
-          <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Supervisor</th>
-          <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Activo</th>
-          <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Contraseña</th>
-          <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <tr *ngFor="let usuario of usuariosFiltrados"
-            class="hover:bg-gradient-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
-          <td class="px-2 py-1 font-medium text-[#046CAC]">{{ usuario.username }}</td>
-          <td class="px-2 py-1">{{ usuario.firstName }}</td>
-          <td class="px-2 py-1">{{ usuario.lastName }}</td>
-          <td class="px-2 py-1 truncate max-w-[150px]">{{ usuario.email }}</td>
-          <td class="px-2 py-1">
-            <span [ngClass]="getRolColor(usuario.rol)" class="px-2 py-0.5 rounded-full text-xs font-semibold">
-              {{ usuario.rol }}
-            </span>
-          </td>
-          <td class="px-2 py-1">{{ usuario.team || '—' }}</td>
-          <td class="px-2 py-1">{{ usuario.department || '—' }}</td>
-          <td class="px-2 py-1">{{ usuario.supervisorName || '—' }}</td>
-          <td class="px-2 py-1 text-center">
-            <span [class.text-green-600]="usuario.activo" [class.text-red-600]="!usuario.activo">
-              {{ usuario.activo ? '✔️' : '❌' }}
-            </span>
-          </td>
-          <td class="px-2 py-1 text-center">
-            <button (click)="mostrarPassword(usuario)" class="text-blue-600 hover:underline text-xs">🔐 Ver</button>
-          </td>
-          <td class="px-2 py-1 text-center space-x-1">
-            <button (click)="editarUsuario(usuario)" class="text-yellow-600 hover:underline text-xs">✏️</button>
-            <button class="text-red-600 hover:underline text-xs">🗑️</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Modal contraseña -->
-  <div *ngIf="modalVisible"
-      class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-2xl w-96 relative overflow-hidden">
-      <div class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
-        <button (click)="cerrarModal()" class="absolute top-4 right-4 text-white/80 hover:text-white">✖</button>
-        <h3 class="text-lg font-bold">Contraseña</h3>
-        <p class="text-white/80 text-sm">{{ usuarioSeleccionado?.email }}</p>
-      </div>
-      <div class="p-6">
-        <p class="text-gray-800 text-xl font-mono text-center mb-4">
-          {{ usuarioSeleccionado?.passwordDesencriptada }}
-        </p>
-        <button (click)="copiarPassword()"
-                class="bg-gradient-to-r from-[#F2A408] to-[#E45D96] text-white px-4 py-2 rounded w-full">
-          📋 Copiar contraseña
-        </button>
-      </div>
+  <!-- Scroll SOLO dentro de la tabla: flex-1 + overflow-auto + min-h-0 -->
+  <div class="flex-1 overflow-auto min-h-0 rounded-xl shadow-md">
+    <div class="overflow-x-auto">
+      <table class="table-auto w-full text-sm border-collapse">
+        <thead class="sticky top-0 bg-linear-to-r from-[#046BB4]/5 to-[#4484B4]/5 border-b border-gray-200">
+          <tr>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Usuario</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Nombre</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Apellido</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Email</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Rol</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Equipo</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Depto</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Supervisor</th>
+            <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Activo</th>
+            <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Contraseña</th>
+            <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let usuario of usuariosFiltrados"
+              class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
+            <td class="px-2 py-1 font-medium text-[#046CAC]">{{ usuario.username }}</td>
+            <td class="px-2 py-1">{{ usuario.firstName }}</td>
+            <td class="px-2 py-1">{{ usuario.lastName }}</td>
+            <td class="px-2 py-1 truncate max-w-[150px]">{{ usuario.email }}</td>
+            <td class="px-2 py-1">
+              <span [ngClass]="getRolColor(usuario.rol)" class="px-2 py-0.5 rounded-full text-xs font-semibold">
+                {{ usuario.rol }}
+              </span>
+            </td>
+            <td class="px-2 py-1">{{ usuario.team || '—' }}</td>
+            <td class="px-2 py-1">{{ usuario.department || '—' }}</td>
+            <td class="px-2 py-1">{{ usuario.supervisorName || '—' }}</td>
+            <td class="px-2 py-1 text-center">
+              <span [class.text-green-600]="usuario.activo" [class.text-red-600]="!usuario.activo">
+                {{ usuario.activo ? '✔️' : '❌' }}
+              </span>
+            </td>
+            <td class="px-2 py-1 text-center">
+              <button (click)="mostrarPassword(usuario)" class="text-blue-600 hover:underline text-xs">🔐 Ver</button>
+            </td>
+            <td class="px-2 py-1 text-center space-x-1">
+              <button (click)="editarUsuario(usuario)" class="text-yellow-600 hover:underline text-xs">✏️</button>
+              <button class="text-red-600 hover:underline text-xs">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+
+
+  <!-- Modal contraseña -->
+    <div *ngIf="modalVisible"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-2xl w-[420px] relative overflow-hidden animate-scale-in">
+        
+        <!-- Header -->
+        <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white relative">
+          <button (click)="cerrarModal()" 
+                  class="absolute top-4 right-4 text-white/80 hover:text-white transition">
+            ✖
+          </button>
+          <h3 class="text-xl font-bold tracking-wide">🔑 Contraseña</h3>
+          <p class="text-white/80 text-sm mt-1">{{ usuarioSeleccionado?.email }}</p>
+        </div>
+        
+        <!-- Body -->
+        <div class="p-6 flex flex-col items-center">
+          <div class="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full text-center shadow-inner">
+            <p class="text-gray-900 text-2xl font-mono tracking-wider select-all">
+              {{ usuarioSeleccionado?.passwordDesencriptada }}
+            </p>
+          </div>
+          
+          <button (click)="copiarPassword()"
+                  class="bg-linear-to-r from-[#F2A408] to-[#E45D96] text-white font-semibold px-4 py-2 rounded-lg w-full shadow hover:opacity-90 transition">
+            📋 Copiar contraseña
+          </button>
+        </div>
+      </div>
+    </div>
+
 
   <!-- Modal crear/editar usuario -->
   <div *ngIf="modalVisible2"
       class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-[1000px] max-h-[80vh] relative overflow-auto">
-      <div class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
+      <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
         <button (click)="cerrarModal2()" class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
         <h3 class="text-lg font-bold">
           {{ usuarioSeleccionado ? 'Editar usuario' : 'Crear nuevo usuario' }}

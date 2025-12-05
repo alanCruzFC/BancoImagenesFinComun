@@ -1,7 +1,7 @@
-<div class="p-6">
+<div class="p-6 min-h-screen bg-gray-50 flex flex-col shadow-lg border border-gray-200 rounded-2xl">
   <!-- Encabezado con búsqueda -->
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold bg-gradient-to-r from-[#046CAC] to-[#046BB4] bg-clip-text text-transparent">
+    <h2 class="text-2xl font-bold bg-linear-to-r from-[#046CAC] to-[#046BB4] bg-clip-text text-transparent">
       API Keys registradas
     </h2>
 
@@ -11,9 +11,13 @@
              (input)="filtrarApiKeys()"
              type="text"
              placeholder="🔍 Buscar..."
-             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#046BB4] focus:border-[#046BB4] transition-shadow" />
+             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
       <button (click)="abrirModalApiKey()"
-              class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
+              class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+                 shadow-md hover:shadow-glow transform transition-all duration-300
+                 hover:scale-[1.05] active:scale-[0.95]
+                 focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
+                 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
         ➕ Nueva ApiKey
       </button>
     </div>
@@ -23,7 +27,7 @@
   <div class="flex-1 overflow-x-auto rounded-xl shadow-lg bg-white/80 backdrop-blur-sm border border-white/20">
     <table class="table-auto w-full text-sm">
       <thead>
-        <tr class="bg-gradient-to-r from-[#046BB4]/10 to-[#4484B4]/10">
+        <tr class="bg-linear-to-r from-[#046BB4]/10 to-[#4484B4]/10">
           <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Id</th>
           <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Consumidor</th>
           <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Clave</th>
@@ -38,7 +42,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr *ngFor="let key of apikeysFiltradas"
-            class="hover:bg-gradient-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
+            class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
           <td class="px-2 py-2 font-medium text-[#046CAC]">{{ key.id }}</td>
           <td class="px-2 py-2">{{ key.consumidor }}</td>
           <td class="px-2 py-2">
@@ -75,7 +79,10 @@
               {{ key.eliminacion ? 'SI' : 'NO' }}
             </span>
           </td>
-          <td class="px-2 py-2 text-center">{{ key.fechaCreacion }}</td>
+          <td class="px-2 py-2 text-center">
+            {{ key.fechaCreacion ? (key.fechaCreacion | date:'dd/MM/yyyy HH:mm') : '—' }}
+          </td>
+
           <td class="px-2 py-2 text-center space-x-2">
             <button (click)="abrirModalApiKey(key)" class="text-yellow-600 hover:underline text-xs">✏️</button>
             <button class="text-red-600 hover:underline text-xs">🗑️</button>
@@ -90,7 +97,7 @@
   <div *ngIf="modalVisibleApikey"
       class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl w-[500px] relative overflow-hidden">
-      <div class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
+      <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
         <button (click)="cerrarModalApiKey()" class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
         <h3 class="text-lg font-bold">
           {{ apikeySeleccionada ? 'Actualizar API Key' : 'Crear nueva API Key' }}
@@ -107,6 +114,4 @@
       </div>
     </div>
   </div>
-
-
 </div>

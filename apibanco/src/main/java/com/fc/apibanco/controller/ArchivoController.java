@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -43,6 +43,8 @@ import com.fc.apibanco.repository.MetadataRepository;
 import com.fc.apibanco.repository.RegistroRepository;
 import com.fc.apibanco.repository.UsuarioRepository;
 import com.fc.apibanco.util.AESUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
@@ -109,44 +111,59 @@ public class ArchivoController {
 	public ResponseEntity<?> subirImagen(@PathVariable String numeroSolicitud,
 	                                     @RequestParam("tipo") String tipo,
 	                                     @RequestParam("archivo") MultipartFile archivo,
-	                                     @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+	                                     @AuthenticationPrincipal UserDetails userDetails,
+	                                     HttpServletRequest request) throws IOException {
 
 	    Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
 	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro no encontrado"));
 
-	    Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no válido"));
+	    Usuario usuario;
+	    if (userDetails != null) {
+	        usuario = usuarioRepository.findByUsername(userDetails.getUsername())
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no válido"));
 
-	    String rol = usuario.getRol();
-	    String correoUsuario = usuario.getEmail();
+	        String rol = usuario.getRol();
+	        boolean accesoPermitido = rol.equals("ADMIN") ||
+	                registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername());
 
-	    boolean accesoPermitido = rol.equals("ADMIN") ||
-	    		registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername());
+	        if (!accesoPermitido) {
+	            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso denegado");
+	        }
+	    } else {
+	        String consumidor = (String) request.getAttribute("consumidor");
+	        if (consumidor == null) {
+	            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "API key inválida");
+	        }
 
-	    if (!accesoPermitido) {
-	        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso denegado");
+	        usuario = usuarioRepository.findByUsername(consumidor)
+	            .orElseGet(() -> {
+	                Usuario nuevo = new Usuario();
+	                nuevo.setUsername(consumidor);
+	                nuevo.setEmail(consumidor);
+	                nuevo.setRol("USER");
+	                nuevo.setActivo(true);
+	                return usuarioRepository.save(nuevo);
+	            });
 	    }
 
+	    numeroSolicitud = numeroSolicitud.trim();
 	    Path carpeta = Paths.get("Archivos", numeroSolicitud);
 	    Files.createDirectories(carpeta);
 
 	    String extension = FilenameUtils.getExtension(archivo.getOriginalFilename());
-	    String nombreFinal = tipo +"_"+ numeroSolicitud + "." + extension;
+	    String nombreFinal = tipo + "_" + numeroSolicitud + "." + extension;
 	    Path destino = carpeta.resolve(nombreFinal);
 
-	    Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-
-	 // Buscar si ya existe metadata para este tipo en el registro
 	    Metadata existente = metadataRepository.findByRegistroAndTipoDocumento(registro, tipo);
 
 	    if (existente != null) {
-	        // 👉 reemplazar archivo y actualizar metadata
+	    	Path archivoAnterior = carpeta.resolve(existente.getNombreArchivo());
+	        Files.deleteIfExists(archivoAnterior);
 	        existente.setNombreArchivo(nombreFinal);
 	        existente.setFechaSubida(LocalDateTime.now());
 	        existente.setSubidoPor(usuario);
 	        metadataRepository.save(existente);
 	    } else {
-	        // 👉 crear nuevo metadata si no existe
 	        Metadata metadata = new Metadata();
 	        metadata.setNombreArchivo(nombreFinal);
 	        metadata.setTipoDocumento(tipo);
@@ -156,8 +173,92 @@ public class ArchivoController {
 	        metadataRepository.save(metadata);
 	    }
 
+
+
+	    Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
 	    ArchivoDTO dto = new ArchivoDTO(nombreFinal, "/api/descargar/" + numeroSolicitud + "/" + nombreFinal);
-	    return ResponseEntity.ok(Map.of("mensaje", "Imagen subida correctamente", "archivo", dto));
+	    return ResponseEntity.ok(Map.of("mensaje", "Archivo subido correctamente", "archivo", dto));
+	}
+	
+	//-----------------------CARGAR MULTIPLES IMAGENES AL MISMO TIEMPO------------------------------------
+	
+	@PostMapping("/subir-multiple/{numeroSolicitud}")
+	public ResponseEntity<?> subirDocumentos(@PathVariable String numeroSolicitud,
+	                                         @RequestParam("archivos") List<MultipartFile> archivos,
+	                                         @RequestParam("tipos") List<String> tipos,
+	                                         @AuthenticationPrincipal UserDetails userDetails,
+	                                         HttpServletRequest request) throws IOException {
+
+	    Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
+	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro no encontrado"));
+
+	    Usuario usuario;
+
+	    if (userDetails != null) {
+	        usuario = usuarioRepository.findByUsername(userDetails.getUsername())
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no válido"));
+
+	        String rol = usuario.getRol();
+	        boolean accesoPermitido = rol.equals("ADMIN") ||
+	                registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername());
+
+	        if (!accesoPermitido) {
+	            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso denegado");
+	        }
+	    } else {
+	        String consumidor = (String) request.getAttribute("consumidor");
+	        if (consumidor == null) {
+	            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "API key inválida");
+	        }
+
+	        usuario = registro.getCreador();
+	        if (usuario == null) {
+	            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "El registro no tiene creador definido");
+	        }
+	    }
+
+	    numeroSolicitud = numeroSolicitud.trim();
+	    Path carpeta = Paths.get("Archivos", numeroSolicitud);
+	    Files.createDirectories(carpeta);
+
+	    List<ArchivoDTO> archivosSubidos = new ArrayList<>();
+
+	    for (int i = 0; i < archivos.size(); i++) {
+	        MultipartFile archivo = archivos.get(i);
+	        String tipo = tipos.get(i);
+
+	        String extension = FilenameUtils.getExtension(archivo.getOriginalFilename());
+	        String nombreFinal = tipo + "_" + numeroSolicitud + "." + extension;
+	        Path destino = carpeta.resolve(nombreFinal);
+
+	        Metadata existente = metadataRepository.findByRegistroAndTipoDocumento(registro, tipo);
+
+	        if (existente != null) {
+	        	Path archivoAnterior = carpeta.resolve(existente.getNombreArchivo());
+	            Files.deleteIfExists(archivoAnterior);
+	            existente.setNombreArchivo(nombreFinal);
+	            existente.setFechaSubida(LocalDateTime.now());
+	            existente.setSubidoPor(usuario);
+	            metadataRepository.save(existente);
+	        } else {
+	            Metadata metadata = new Metadata();
+	            metadata.setNombreArchivo(nombreFinal);
+	            metadata.setTipoDocumento(tipo);
+	            metadata.setFechaSubida(LocalDateTime.now());
+	            metadata.setRegistro(registro);
+	            metadata.setSubidoPor(usuario);
+	            metadataRepository.save(metadata);
+	        }
+
+
+
+	        Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+	        archivosSubidos.add(new ArchivoDTO(nombreFinal, "/api/descargar/" + numeroSolicitud + "/" + nombreFinal));
+	    }
+
+	    return ResponseEntity.ok(Map.of("mensaje", "Archivos subidos correctamente", "archivos", archivosSubidos));
 	}
 	
 	//-----------------------LISTAR REGISTROS-------------------------------------------------------------
@@ -183,6 +284,13 @@ public class ArchivoController {
 	                    .map(CorreoAutorizado::getCorreo)
 	                    .anyMatch(correo -> correo.equalsIgnoreCase(correoUsuario)))
 	            .toList();
+	    } else if (rol.equals("SUPERVISOR")) {
+	        registros = registroRepository.findByFechaEliminacionIsNull().stream()
+	                .filter(registro ->
+	                    (registro.getCreador() != null && registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername())) ||
+	                    (registro.getCreador() != null && registro.getCreador().getSupervisor() != null &&
+	                     registro.getCreador().getSupervisor().getId().equals(usuario.getId())))
+	                .toList();
 	    } else {
 	        registros = registroRepository.findByFechaEliminacionIsNull().stream()
 	            .filter(registro ->
@@ -325,13 +433,11 @@ public class ArchivoController {
 	        return ResponseEntity.notFound().build();
 	    }
 
-	    // Detectar tipo MIME
 	    String contentType = Files.probeContentType(ruta);
 	    if (contentType == null) {
-	        contentType = "application/octet-stream"; // fallback genérico
+	        contentType = "application/octet-stream";
 	    }
 
-	    // 👉 Cabecera según modo
 	    String disposition = inline
 	            ? "inline; filename=\"" + nombreArchivo + "\""
 	            : "attachment; filename=\"" + nombreArchivo + "\"";
@@ -341,9 +447,4 @@ public class ArchivoController {
 	            .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
 	            .body(recurso);
 	}
-
-
-
-
-	
 }

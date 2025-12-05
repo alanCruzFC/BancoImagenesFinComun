@@ -2,7 +2,7 @@
       class="space-y-8 p-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200">
 
   <!-- Título -->
-  <h2 class="text-3xl font-extrabold mb-6 bg-gradient-to-r from-[#046CAC] to-[#046BB4] bg-clip-text text-transparent tracking-tight">
+  <h2 class="text-3xl font-extrabold mb-6 bg-linear-to-r from-[#046CAC] to-[#046BB4] bg-clip-text text-transparent tracking-tight">
     Subir imágenes
   </h2>
 
@@ -13,7 +13,7 @@
       <input type="file" #fileInput hidden (change)="onFileSelected($event, doc)" />
       <button type="button"
               (click)="fileInput.click()"
-              class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] text-white px-3 py-2 rounded-lg shadow-md hover:scale-105 transition-transform flex items-center gap-2">
+              class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white px-3 py-2 rounded-lg shadow-md hover:scale-105 transition-transform flex items-center gap-2">
         📂 <span>Seleccionar archivo</span>
       </button>
       <span class="text-sm text-gray-500 italic">{{ getNombreArchivo(doc) }}</span>
@@ -23,7 +23,7 @@
   </div>
 
   <!-- Documentos extra -->
-  <h3 class="text-xl font-bold mt-10 mb-4 bg-gradient-to-r from-[#E45D96] to-[#F2A408] bg-clip-text text-transparent">
+  <h3 class="text-xl font-bold mt-10 mb-4 bg-linear-to-r from-[#E45D96] to-[#F2A408] bg-clip-text text-transparent">
     📎 Documentos extra
   </h3>
 
@@ -61,13 +61,13 @@
   <!-- Botón agregar documento extra -->
   <button type="button" (click)="agregarDocumentoExtra()"
           [disabled]="documentosExtra.length > 0 && !documentosExtra[documentosExtra.length-1].archivo"
-          class="bg-gradient-to-r from-[#F2A408] to-[#E45D96] text-white px-5 py-2 rounded-lg shadow-md hover:scale-105 transition-transform flex items-center gap-2 disabled:opacity-50">
+          class="bg-linear-to-r from-[#F2A408] to-[#E45D96] text-white px-5 py-2 rounded-lg shadow-md hover:scale-105 transition-transform flex items-center gap-2 disabled:opacity-50">
     ➕ <span>Agregar documento extra</span>
   </button>
 
   <!-- Botón guardar -->
   <button type="submit" 
-          class="w-full mt-8 bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform font-semibold text-lg">
+          class="w-full mt-8 bg-linear-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform font-semibold text-lg">
     💾 Guardar imágenes
   </button>
 </form>

@@ -1,4 +1,23 @@
 @import "tailwindcss";
-.active {
-  @apply bg-white/10 text-white font-semibold;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "flowbite/src/themes/default";
+
+/* Todas las reglas @layer y otros estilos deben ir después de los @import */
+@layer base {
+  html, body {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .active {
+    @apply bg-white/10 text-white font-semibold;
+  }
+
+  .toast-custom {
+    @apply flex items-center w-full max-w-xs p-4 rounded-lg shadow bg-white text-gray-700;
+  }
+}
+
+@layer utilities {
 }

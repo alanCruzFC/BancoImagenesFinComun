@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.fc.apibanco.security.ApiKeyFilter;
 import com.fc.apibanco.security.CustomUserDetailsService;
 import com.fc.apibanco.security.JwtAuthenticationFilter;
 
@@ -30,6 +31,7 @@ public class SecurityConfig {
 
     @Autowired private CustomUserDetailsService userDetailsService;
     @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired private ApiKeyFilter apiKeyFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,12 +43,15 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/descargar/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/registro").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/subir/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/subir-multiple/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/apikeys/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
+            .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }

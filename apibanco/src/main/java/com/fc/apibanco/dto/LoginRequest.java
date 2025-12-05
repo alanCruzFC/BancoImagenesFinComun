@@ -1,6 +1,5 @@
 package com.fc.apibanco.dto;
 
-import lombok.Data;
 
 public class LoginRequest {
 	

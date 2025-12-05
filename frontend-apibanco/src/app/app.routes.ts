@@ -3,8 +3,11 @@ import { AuthGuard } from './core/auth.guard';
 import { ImagenesRegistro } from './registros/imagenes/imagenes';
 
 export const routes: Routes = [
-  { path: '', loadComponent: () => import('./auth/login/login').then(m => m.LoginComponent) },
+  // 👉 redirigir raíz a login
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
   { path: 'visualizar/:numeroSolicitud', component: ImagenesRegistro },
+
   {
     path: 'login',
     loadComponent: () => import('./auth/login/login').then(m => m.LoginComponent)
@@ -16,4 +19,5 @@ export const routes: Routes = [
   },
   { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }
 ];
+
 

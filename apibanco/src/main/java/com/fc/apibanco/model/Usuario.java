@@ -2,12 +2,8 @@ package com.fc.apibanco.model;
 
 import java.time.LocalDateTime;
 
-import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,7 +12,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import lombok.Data;
 
 @Entity
 public class Usuario{
@@ -58,10 +53,6 @@ public class Usuario{
         this.updatedAt = LocalDateTime.now();
     }
     //---------------------------------------------------------------------------------------------------------------------------------
-    
-
-
-
     
     //----------------GETTERS AND SETTERS----------------------------------------------------------------------------------------------
 

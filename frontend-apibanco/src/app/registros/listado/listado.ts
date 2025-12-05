@@ -49,9 +49,10 @@ export class ListadoRegComponent {
     this.cargarRegistros();
     this.cerrarModal(); 
   }
+  
   get registrosFiltrados(): RegistroDTO[] {
     if (!this.busqueda) return this.registros;
-    const filtro = this.busqueda.trim().toLowerCase(); // 🔎 normalizamos a minúsculas
+    const filtro = this.busqueda.trim().toLowerCase();
     return this.registros.filter(r =>
       r.numeroSolicitud.toString().toLowerCase().includes(filtro)
     );
