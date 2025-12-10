@@ -23,7 +23,7 @@ export class ListadoRegComponent {
     this.rol = this.authService.getRol();
   }
 
-  ngOnInit(): void {
+  OnInit(): void {
     this.cargarRegistros();
   }
 

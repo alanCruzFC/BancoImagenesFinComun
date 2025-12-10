@@ -29,7 +29,7 @@ export class LoginComponent {
       }
     });
   }
-  ngOnInit() {
+  OnInit() {
   if (this.authService.isAuthenticated() && !this.authService.isTokenExpired()) {
     this.router.navigate(['/dashboard']);
   }
