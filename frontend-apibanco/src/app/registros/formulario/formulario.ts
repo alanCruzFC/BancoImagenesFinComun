@@ -69,7 +69,7 @@ export class FormularioRegistro {
     this.registroService.crearRegistro(dto).subscribe({
       next: () => {
         alert('✅ Registro creado correctamente');
-        this.guardado.emit(); // notifica al padre para refrescar lista y cerrar modal
+        this.guardado.emit();
       },
       error: (err) => {
         console.error('❌ Error al crear registro', err);

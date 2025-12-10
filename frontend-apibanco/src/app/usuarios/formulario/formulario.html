@@ -72,7 +72,8 @@
       <label class="font-semibold text-[#046CAC]">Equipo:</label>
       <div *ngIf="!usarInputTeam" class="flex space-x-2">
         <select [(ngModel)]="formData.team" name="team"
-                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg">
+                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
+                [class.border-red-500]="hasError('Equipo')">
           <option value="" disabled selected>Selecciona un equipo</option>
           <option *ngFor="let t of teams" [value]="t">{{ t }}</option>
         </select>
@@ -81,8 +82,12 @@
       </div>
       <div *ngIf="usarInputTeam">
         <input [(ngModel)]="formData.team" name="team" placeholder="Nuevo equipo"
-               class="w-full border border-gray-300 px-4 py-2 rounded-lg" />
+              class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+              [class.border-red-500]="hasError('Equipo')" />
       </div>
+      <p *ngIf="hasError('Equipo')" class="text-red-500 text-sm mt-1">
+        El campo Equipo es obligatorio.
+      </p>
     </div>
 
     <!-- Departamento -->
@@ -90,7 +95,8 @@
       <label class="font-semibold text-[#046CAC]">Departamento:</label>
       <div *ngIf="!usarInputDepartment" class="flex space-x-2">
         <select [(ngModel)]="formData.department" name="department"
-                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg">
+                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
+                [class.border-red-500]="hasError('Departamento')">
           <option value="" disabled selected>Selecciona un departamento</option>
           <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
         </select>
@@ -99,20 +105,35 @@
       </div>
       <div *ngIf="usarInputDepartment">
         <input [(ngModel)]="formData.department" name="department" placeholder="Nuevo departamento"
-               class="w-full border border-gray-300 px-4 py-2 rounded-lg" />
+              class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+              [class.border-red-500]="hasError('Departamento')" />
       </div>
+      <p *ngIf="hasError('Departamento')" class="text-red-500 text-sm mt-1">
+        El campo Departamento es obligatorio.
+      </p>
     </div>
+
 
     <!-- Supervisor -->
     <div>
       <label class="font-semibold text-[#046CAC]">Supervisor:</label>
       <select [(ngModel)]="formData.supervisorId" name="supervisorId"
-              class="w-full border border-gray-300 px-4 py-2 rounded-lg">
-        <option [value]="null">-- Ninguno --</option>
-        <option *ngFor="let s of supervisores" [value]="s.id">
+              class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+              [class.border-red-500]="hasError('Supervisor') || hasError('Supervisor inválido (no puede ser el mismo usuario)')">
+        <option [value]="null">-- Selecciona supervisor --</option>
+        <option *ngFor="let s of supervisores" [value]="s.id"
+                [disabled]="formData.id && s.id === formData.id">
           {{ s.firstName }} {{ s.lastName }} ({{ s.email }})
         </option>
       </select>
+
+      <!-- Mensajes de validación -->
+      <p *ngIf="hasError('Supervisor')" class="text-red-500 text-sm mt-1">
+        Supervisor es obligatorio para usuarios con rol USER.
+      </p>
+      <p *ngIf="hasError('Supervisor inválido (no puede ser el mismo usuario)')" class="text-red-500 text-sm mt-1">
+        El supervisor no puede ser el mismo usuario.
+      </p>
     </div>
 
     <!-- Activo -->
@@ -143,7 +164,7 @@
   <!-- Botón submit -->
   <div class="pt-6">
     <button type="submit"
-            class="bg-gradient-to-r from-[#046BB4] to-[#4484B4] hover:from-[#046CAC] hover:to-[#046BB4] text-white px-6 py-3 rounded-xl shadow-lg w-full transition-all duration-300 transform hover:scale-[1.02]">
+            class="bg-linear-to-r from-[#046BB4] to-[#4484B4] hover:from-[#046CAC] hover:to-[#046BB4] text-white px-6 py-3 rounded-xl shadow-lg w-full transition-all duration-300 transform hover:scale-[1.02]">
       {{ usuario ? '💾 Guardar cambios' : '💾 Crear usuario' }}
     </button>
   </div>

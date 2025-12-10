@@ -73,11 +73,26 @@ public class UsuarioController {
 	    usuario.setTeam(request.getTeam());
 	    usuario.setDepartment(request.getDepartment());
 
+	    if("USER".equalsIgnoreCase(request.getRol())) {
+	    	if (request.getSupervisorId() == null) {
+	    		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un usuario debe tener un supervisor asignado");
+	    	}
+	    }
+	    
 	    if (request.getSupervisorId() != null) {
 	        Usuario supervisor = usuarioRepository.findById(request.getSupervisorId())
 	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Supervisor no encontrado"));
+	        
+	        if (supervisor.getId() !=null && supervisor.getId().equals(usuario.getId())) {
+	        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un supervisor no puede ser su propio supervisor");
+	        }
+	        if (supervisor.getEmail().equalsIgnoreCase(request.getEmail())){
+	        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un supervisor no puede ser su propio supervisor");
+	        }
 	        usuario.setSupervisor(supervisor);
 	    }
+	    
+	    
 
 	    usuario.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
@@ -112,7 +127,6 @@ public class UsuarioController {
 	                usuario.setSupervisor(supervisor);
 	            }
 
-	            // Contraseña: solo si viene una nueva
 	            if (usuarioActualizado.getPassword() != null &&
 	                !usuarioActualizado.getPassword().isBlank()) {
 	                String passwordOriginal = usuarioActualizado.getPassword();

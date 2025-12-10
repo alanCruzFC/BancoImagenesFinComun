@@ -30,8 +30,8 @@ public class Usuario{
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private PasswordEncriptada passwordEncriptada;
-
-    private String team;
+    
+    private String team;   
     private String department;
 
     @ManyToOne

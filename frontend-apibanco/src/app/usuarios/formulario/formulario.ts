@@ -61,7 +61,6 @@ export class FormularioUsuario {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Precarga si estás en edición
     if (this.usuario) {
       this.formData = {
         id: this.usuario.id,
@@ -74,12 +73,10 @@ export class FormularioUsuario {
         team: this.usuario.team || '',
         department: this.usuario.department || '',
         supervisorId: this.usuario.supervisorId ?? null,
-        // En edición, la contraseña sólo se exige si no existe
         password: ''
       };
     }
 
-    // Cargar catálogos desde backend
     this.http.get<any[]>('http://localhost:8080/api/usuarios').subscribe({
       next: (usuarios) => {
         this.teams = [...new Set(usuarios.map(u => u.team).filter(t => !!t))];
@@ -97,7 +94,6 @@ export class FormularioUsuario {
   // - Sin espacios
   generarPassword(): void {
     const length = 16;
-
     const lowers = 'abcdefghijkmnopqrstuvwxyz'; 
     const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';  
     const digits = '23456789';                 
@@ -115,20 +111,16 @@ export class FormularioUsuario {
       pick(digits),
       pick(specials)
     ];
-
-
     const longitudExtras = length - (pwd.length + obligatorios.length);
     for (let i = 0; i < longitudExtras; i++) {
       pwd.push(pick(all));
     }
 
     pwd = pwd.concat(obligatorios);
-
     for (let i = pwd.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pwd[i], pwd[j]] = [pwd[j], pwd[i]];
     }
-
     this.formData.password = pwd.join('');
   }
 
@@ -155,15 +147,28 @@ export class FormularioUsuario {
     if (!this.formData.username) this.validationErrors.push('Usuario');
     if (!this.formData.rol) this.validationErrors.push('Rol');
 
+    if (this.formData.rol === 'USER' && !this.formData.supervisorId) {
+      this.validationErrors.push('Supervisor');
+    }
+    if (this.formData.supervisorId && this.formData.id && this.formData.supervisorId === this.formData.id) {
+      this.validationErrors.push('Supervisor invalido (no puede ser él mismo)');
+    }
+
+    if (!this.formData.team || this.formData.team.trim() === '') {
+      this.validationErrors.push('Equipo');
+    }
+    if (!this.formData.department || this.formData.department.trim() === '') {
+      this.validationErrors.push('Departamento');
+    }
+
     const requierePassword = !this.usuario || !this.usuario.passwordDesencriptada;
     if (requierePassword && !this.formData.password) {
       this.validationErrors.push('contraseña');
     }
 
     if (this.validationErrors.length > 0) return;
-
+    alert('❌ Errores: ' + this.validationErrors.join(', '));
     const payload = { ...this.formData };
-
     const isEdit = !!this.formData.id;
     const url = isEdit
       ? `http://localhost:8080/api/usuarios/${this.formData.id}`

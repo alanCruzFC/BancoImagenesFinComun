@@ -16,7 +16,7 @@ export class FormularioImagenes {
   @Output() guardado = new EventEmitter<void>();
   registroId!: number;
 
-  tiposFijos: string[] = ['INE', 'COMPROBANTE_DOMICILIO', 'ESTADO_CUENTA', 'FOTO_NEGOCIO1', 'FOTO_NEGOCIO2', 'SELFIE'];
+  tiposFijos: string[] = ['INE', 'COMPROBANTE DE DOMICILIO', 'ESTADO DE CUENTA', 'FOTO DEL NEGOCIO 1', 'FOTO DEL NEGOCIO 2', 'SELFIE'];
   documentosFijos: { tipo: string, archivo: File | null }[] = [];
 
   documentosExtra: { tipo: string, archivo: File | null }[] = [];
@@ -101,7 +101,7 @@ export class FormularioImagenes {
     }
 
     forkJoin(peticiones).subscribe({
-      next: () => {
+      next: () => { 
         alert(' Imágenes guardadas correctamente');
         this.guardado.emit();
       },

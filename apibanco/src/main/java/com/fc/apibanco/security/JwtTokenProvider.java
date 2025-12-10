@@ -29,8 +29,6 @@ public class JwtTokenProvider {
             .findFirst()
             .orElse("USER");
         
-        String username = userDetails.getUsername();
-        
         return Jwts.builder()
             .setSubject(userDetails.getUsername())
             .claim("rol", rol)

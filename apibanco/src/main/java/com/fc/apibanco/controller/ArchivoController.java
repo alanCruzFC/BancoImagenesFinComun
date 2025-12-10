@@ -85,13 +85,6 @@ public class ArchivoController {
 	    System.out.println("Correos autorizados: " + registro.getCorreosAutorizados());
 
 
-	    boolean accesoPermitido = rol.equals("ADMIN") ||
-	    	    (rol.equals("SUPERVISOR") && registro.getCreador().getUsername().equalsIgnoreCase(correoUsuario)) ||
-	    	    registro.getCorreosAutorizados().stream()
-	    	        .map(CorreoAutorizado::getCorreo)
-	    	        .anyMatch(correo -> correo.equalsIgnoreCase(correoUsuario));
-
-
 	    Path carpeta = Paths.get("Archivos", numeroSolicitud);
 	    if (!Files.exists(carpeta)) {
 	    	return ResponseEntity.ok(Collections.emptyList());

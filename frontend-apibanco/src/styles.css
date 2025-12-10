@@ -1,8 +1,18 @@
-@import "tailwindcss";
+/* Charset opcional */
+@charset "UTF-8";
+
+/* Importa fuentes externas primero */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Tailwind directives (no se usan como @import) */
+@import "tailwindcss/preflight";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Flowbite theme */
 @import "flowbite/src/themes/default";
 
-/* Todas las reglas @layer y otros estilos deben ir después de los @import */
+/* Tus estilos personalizados */
 @layer base {
   html, body {
     font-family: 'Inter', sans-serif;
@@ -20,4 +30,5 @@
 }
 
 @layer utilities {
+  /* utilidades personalizadas si las necesitas */
 }

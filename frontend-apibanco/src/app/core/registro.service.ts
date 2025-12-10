@@ -22,7 +22,7 @@ export interface RegistroDTO {
 @Injectable({ providedIn: 'root' })
 export class RegistroService {
   private baseUrl = 'http://localhost:8080/api/registros';
-  private base2Url = 'http://localhost:8080/api/registro';
+  private base2Url = 'http://localhost:8080/api/registros';
 
   constructor(private http: HttpClient) {}
 
