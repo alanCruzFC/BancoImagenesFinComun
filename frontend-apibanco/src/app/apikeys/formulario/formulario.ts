@@ -31,7 +31,7 @@ export class FormularioApiKey {
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit(): void {
+  OnInit(): void {
     if (this.apiKey) {
       this.formData = { ...this.apiKey };
     }
