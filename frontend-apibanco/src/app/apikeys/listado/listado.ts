@@ -31,7 +31,7 @@ export class ListadoApiComponent {
   claveVisible: { [id: number]: boolean } = {};
   apikeySeleccionada: ApiKey | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   OnInit(): void {
     this.http.get<ApiKey[]>('http://localhost:8080/api/apikeys').subscribe({

@@ -9,7 +9,6 @@ import { ApiKey } from '../listado/listado';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './formulario.html',
-  styleUrls: ['./formulario.css']
 })
 export class FormularioApiKey {
   @Output() creado = new EventEmitter<void>();
