@@ -3,17 +3,17 @@
     {{ formData.id ? 'Actualizar API Key' : 'Crear nueva API Key' }}
   </h2>
 
-  <label>Consumidor:</label>
-  <input [(ngModel)]="formData.consumidor" name="consumidor"
+  <label for="consumidor">Consumidor:</label>
+  <input id="consumidor" [(ngModel)]="formData.consumidor" name="consumidor"
          placeholder="Nombre del consumidor"
          class="w-full border px-4 py-2 rounded" required />
 
   <!-- Clave -->
   <div *ngIf="formData.id" class="flex items-end space-x-2 mt-4">
     <div class="flex-1">
-      <label class="font-semibold text-[#046CAC]">Clave:</label>
+      <label for="clave" class="font-semibold text-[#046CAC]">Clave:</label>
       <input [type]="claveVisible ? 'text' : 'password'"
-             [(ngModel)]="formData.clave" name="clave"
+             id="clave" [(ngModel)]="formData.clave" name="clave"
              class="w-full border px-4 py-2 rounded font-mono" readonly />
     </div>
     <button type="button" (click)="toggleClave()"
