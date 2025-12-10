@@ -146,8 +146,8 @@
     <div class="col-span-2 flex space-x-2 items-end"
          *ngIf="usuario == null || !usuario.passwordDesencriptada">
       <div class="flex-1">
-        <label class="font-semibold text-[#046CAC]">Contraseña generada:</label>
-        <input [(ngModel)]="formData.password" name="password"
+        <label for="password" class="font-semibold text-[#046CAC]">Contraseña generada:</label>
+        <input id="password" [(ngModel)]="formData.password" name="password"
                placeholder="Contraseña generada" class="w-full border border-gray-300 px-4 py-2 rounded-lg" readonly required
                [class.border-red-500]="hasError('contraseña')"/> 
         <p *ngIf="hasError('contraseña')" class="text-red-500 text-sm mt-1"> 
