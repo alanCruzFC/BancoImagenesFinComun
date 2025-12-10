@@ -27,7 +27,7 @@
            class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
 
     <!-- Sugerencias -->
-    <ul *ngIf="sugerencias.length > 0" class="border rounded-lg mt-2 bg-white shadow" role="listbox">
+    <ul *ngIf="sugerencias.length > 0" class="border rounded-lg mt-2 bg-white shadow">
       <li *ngFor="let correo of sugerencias" class="px-3 py-1">
         <button type="button"
                 (click)="agregarCorreo(correo)"
