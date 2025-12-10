@@ -29,7 +29,7 @@ export class FormularioApiKey {
 
   claveVisible: boolean = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   OnInit(): void {
     if (this.apiKey) {

@@ -21,7 +21,6 @@ export interface ApiKey {
   standalone: true,
   imports: [CommonModule, FormularioApiKey, FormsModule],
   templateUrl: './listado.html',
-  styleUrls: ['./listado.css']
 })
 export class ListadoApiComponent {
   apikeys: ApiKey[] = [];
