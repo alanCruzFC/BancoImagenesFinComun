@@ -141,38 +141,33 @@ export class FormularioUsuario {
   submit(form: NgForm): void {
     this.validationErrors = [];
 
-    if (!this.formData.email) this.validationErrors.push('Email');
-    if (!this.formData.firstName) this.validationErrors.push('Nombre');
-    if (!this.formData.lastName) this.validationErrors.push('Apellido');
-    if (!this.formData.username) this.validationErrors.push('Usuario');
-    if (!this.formData.rol) this.validationErrors.push('Rol');
+    const validations = [
+      { condition: !this.formData.email, message: 'Email' },
+      { condition: !this.formData.firstName, message: 'Nombre' },
+      { condition: !this.formData.lastName, message: 'Apellido' },
+      { condition: !this.formData.username, message: 'Usuario' },
+      { condition: !this.formData.rol, message: 'Rol' },
+      { condition: this.formData.rol === 'USER' && !this.formData.supervisorId, message: 'Supervisor' },
+      { condition: this.formData.supervisorId && this.formData.id && this.formData.supervisorId === this.formData.id,
+        message: 'Supervisor invalido (no puede ser él mismo)' },
+      { condition: !this.formData.team || this.formData.team.trim() === '', message: 'Equipo' },
+      { condition: !this.formData.department || this.formData.department.trim() === '', message: 'Departamento' },
+      { condition: (!this.usuario || !this.usuario.passwordDesencriptada) && !this.formData.password, message: 'Contraseña' }
+    ];
 
-    if (this.formData.rol === 'USER' && !this.formData.supervisorId) {
-      this.validationErrors.push('Supervisor');
-    }
-    if (this.formData.supervisorId && this.formData.id && this.formData.supervisorId === this.formData.id) {
-      this.validationErrors.push('Supervisor invalido (no puede ser él mismo)');
-    }
-
-    if (!this.formData.team || this.formData.team.trim() === '') {
-      this.validationErrors.push('Equipo');
-    }
-    if (!this.formData.department || this.formData.department.trim() === '') {
-      this.validationErrors.push('Departamento');
-    }
-
-    const requierePassword = !this.usuario || !this.usuario.passwordDesencriptada;
-    if (requierePassword && !this.formData.password) {
-      this.validationErrors.push('contraseña');
-    }
+    validations.forEach(v => {
+      if (v.condition) this.validationErrors.push(v.message);
+    });
 
     if (this.validationErrors.length > 0) return;
+
     const payload = { ...this.formData };
     const isEdit = !!this.formData.id;
     const url = isEdit
       ? `http://localhost:8080/api/usuarios/${this.formData.id}`
       : 'http://localhost:8080/api/usuarios';
     const method = isEdit ? 'put' : 'post';
+
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({
       next: (response: string) => {
