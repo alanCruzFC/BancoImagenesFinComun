@@ -8,9 +8,9 @@
 
   <!-- Documentos fijos -->
   <div *ngFor="let doc of documentosFijos" class="mb-6">
-    <label class="block font-semibold text-gray-700 mb-2">{{ doc.tipo }}:</label>
+    <label for="file-fijo-{{doc.tipo}}" class="block font-semibold text-gray-700 mb-2">{{ doc.tipo }}:</label>
     <div class="flex items-center gap-4">
-      <input type="file" #fileInput hidden (change)="onFileSelected($event, doc)" />
+      <input id="file-fijo-{{doc.tipo}}" type="file" #fileInput hidden (change)="onFileSelected($event, doc)" />
       <button type="button"
               (click)="fileInput.click()"
               class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white px-3 py-2 rounded-lg shadow-md hover:scale-105 transition-transform flex items-center gap-2">
@@ -29,14 +29,15 @@
 
   <div *ngFor="let doc of documentosExtra; let i = index" 
        class="border border-gray-200 rounded-xl p-6 shadow-sm mb-6 bg-white/90 backdrop-blur-sm hover:shadow-md transition">
-    <label class="block font-semibold text-gray-700 mb-2">Tipo de documento:</label>
-    <input [(ngModel)]="doc.tipo" name="tipo{{i}}" required
+    <label for="file-extra-{{i}}" class="block font-semibold text-gray-700 mb-2">Tipo de documento:</label>
+    <input id="file-extra-{{i}}" [(ngModel)]="doc.tipo" name="tipo{{i}}" required
            class="w-48 border border-gray-300 px-3 py-2 rounded-lg focus:ring-[#046BB4] focus:border-[#046BB4] text-sm" />
 
-    <label class="block font-semibold text-gray-700 mt-4 mb-2">Archivo:</label>
+    <label for="file-extra-archivo{{i}}" class="block font-semibold text-gray-700 mt-4 mb-2">Archivo:</label>
     <div class="flex items-center gap-3">
       <!-- Input oculto -->
       <input type="file"
+            id="file-extra-archivo-{{i}}"
             #fileInput
             hidden
             (change)="onFileSelectedExtra($event, doc)" />

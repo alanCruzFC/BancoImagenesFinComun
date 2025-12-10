@@ -16,7 +16,7 @@ export class FormularioImagenes {
   @Output() guardado = new EventEmitter<void>();
   registroId!: number;
 
-  tiposFijos: string[] = ['INE', 'COMPROBANTE DE DOMICILIO', 'ESTADO DE CUENTA', 'FOTO DEL NEGOCIO 1', 'FOTO DEL NEGOCIO 2', 'SELFIE'];
+  tiposFijos: string[] = ['INE', 'COMPROBANTE_DOMICILIO', 'ESTADO_CUENTA', 'FOTONEGOCIO1', 'FOTONEGOCIO2', 'SELFIE'];
   documentosFijos: { tipo: string, archivo: File | null }[] = [];
 
   documentosExtra: { tipo: string, archivo: File | null }[] = [];
