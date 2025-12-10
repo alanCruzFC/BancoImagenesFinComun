@@ -167,7 +167,6 @@ export class FormularioUsuario {
     }
 
     if (this.validationErrors.length > 0) return;
-    alert('❌ Errores: ' + this.validationErrors.join(', '));
     const payload = { ...this.formData };
     const isEdit = !!this.formData.id;
     const url = isEdit
