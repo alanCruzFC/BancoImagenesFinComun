@@ -101,7 +101,11 @@ export class FormularioUsuario {
 
     const all = lowers + uppers + digits + specials;
 
-    const pick = (set: string) => set.charAt(Math.floor(Math.random() * set.length));
+    const pick = (set: string) => {
+      const array = new Uint32Array(1);
+      crypto.getRandomValues(array);
+      return set.charAt(array[0] % set.length);
+    }
 
     const obligatorios = "FinComun".split("");
 
@@ -118,9 +122,11 @@ export class FormularioUsuario {
 
     pwd = pwd.concat(obligatorios);
     for (let i = pwd.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pwd[i], pwd[j]] = [pwd[j], pwd[i]];
-    }
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    const j = array[0] % (i + 1);
+    [pwd[i], pwd[j]] = [pwd[j], pwd[i]];
+  }
     this.formData.password = pwd.join('');
   }
 
