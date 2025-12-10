@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   // Endpoint que devuelve { totalUsers: number, totalRecords: number, usersByRole: {role:string,count:number}[] }
   getDashboardStats(): Observable<any> {
