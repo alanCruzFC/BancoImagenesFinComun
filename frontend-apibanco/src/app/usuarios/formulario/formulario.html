@@ -10,8 +10,8 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Email -->
     <div class="col-span-2">
-      <label class="font-semibold text-[#046CAC]">Email:</label>
-      <input [(ngModel)]="formData.email" name="email" type="email"
+      <label for="email" class="font-semibold text-[#046CAC]">Email:</label>
+      <input id="email" [(ngModel)]="formData.email" name="email" type="email"
              placeholder="Escribe un email"
              class="w-full border px-4 py-2 rounded-lg focus:ring-[#046BB4] focus:border-[#046BB4]"
              required [readonly]="usuario != null" />
@@ -22,8 +22,8 @@
 
     <!-- Nombre -->
     <div>
-      <label class="font-semibold text-[#046CAC]">Nombre:</label>
-      <input [(ngModel)]="formData.firstName" name="firstName"
+      <label for="nombre" class="font-semibold text-[#046CAC]">Nombre:</label>
+      <input id="nombre" [(ngModel)]="formData.firstName" name="firstName"
              placeholder="Nombre" class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
              [class.border-red-500]="hasError('Nombre')"/>
       <p *ngIf="hasError('Nombre')" class="text-red-500 text-sm mt-1">
@@ -33,8 +33,8 @@
 
     <!-- Apellido -->
     <div>
-      <label class="font-semibold text-[#046CAC]">Apellido:</label>
-      <input [(ngModel)]="formData.lastName" name="lastName"
+      <label for="apellido" class="font-semibold text-[#046CAC]">Apellido:</label>
+      <input id="apellido" [(ngModel)]="formData.lastName" name="lastName"
              placeholder="Apellido" class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
              [class.border-red-500]="hasError('Apellido')"/>
        <p *ngIf="hasError('Apellido')" class="text-red-500 text-sm mt-1">
@@ -44,8 +44,8 @@
 
     <!-- Usuario -->
     <div>
-      <label class="font-semibold text-[#046CAC]">Usuario:</label>
-      <input [(ngModel)]="formData.username" name="username"
+      <label for="username" class="font-semibold text-[#046CAC]">Usuario:</label>
+      <input id="username" [(ngModel)]="formData.username" name="username"
              placeholder="Usuario" class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
              [class.border-red-500]="hasError('Usuario')"/> 
        <p *ngIf="hasError('Usuario')" class="text-red-500 text-sm mt-1"> 
@@ -55,8 +55,8 @@
 
     <!-- Rol -->
     <div>
-      <label class="font-semibold text-[#046CAC]">Rol:</label>
-      <select [(ngModel)]="formData.rol" name="rol"
+      <label for="rol" class="font-semibold text-[#046CAC]">Rol:</label>
+      <select id="rol" [(ngModel)]="formData.rol" name="rol"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
               [class.border-red-500]="hasError('Rol')">
         <option value="" disabled selected>Selecciona un rol</option>
@@ -69,9 +69,9 @@
 
     <!-- Equipo -->
     <div>
-      <label class="font-semibold text-[#046CAC]">Equipo:</label>
+      <label for="team" class="font-semibold text-[#046CAC]">Equipo:</label>
       <div *ngIf="!usarInputTeam" class="flex space-x-2">
-        <select [(ngModel)]="formData.team" name="team"
+        <select id="team" [(ngModel)]="formData.team" name="team"
                 class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
                 [class.border-red-500]="hasError('Equipo')">
           <option value="" disabled selected>Selecciona un equipo</option>
@@ -92,9 +92,9 @@
 
     <!-- Departamento -->
     <div>
-      <label class="font-semibold text-[#046CAC]">Departamento:</label>
+      <label for="department" class="font-semibold text-[#046CAC]">Departamento:</label>
       <div *ngIf="!usarInputDepartment" class="flex space-x-2">
-        <select [(ngModel)]="formData.department" name="department"
+        <select id="department" [(ngModel)]="formData.department" name="department"
                 class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
                 [class.border-red-500]="hasError('Departamento')">
           <option value="" disabled selected>Selecciona un departamento</option>
@@ -116,8 +116,8 @@
 
     <!-- Supervisor -->
     <div>
-      <label class="font-semibold text-[#046CAC]">Supervisor:</label>
-      <select [(ngModel)]="formData.supervisorId" name="supervisorId"
+      <label for="supervisorId" class="font-semibold text-[#046CAC]">Supervisor:</label>
+      <select id="supervisorId" [(ngModel)]="formData.supervisorId" name="supervisorId"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg"
               [class.border-red-500]="hasError('Supervisor') || hasError('Supervisor inválido (no puede ser el mismo usuario)')">
         <option [value]="null">-- Selecciona supervisor --</option>
