@@ -21,10 +21,10 @@ export interface RegistroDTO {
 
 @Injectable({ providedIn: 'root' })
 export class RegistroService {
-  private baseUrl = 'http://localhost:8080/api/registros';
-  private base2Url = 'http://localhost:8080/api/registro';
+  private readonly baseUrl = 'http://localhost:8080/api/registros';
+  private readonly base2Url = 'http://localhost:8080/api/registro';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   obtenerRegistros(): Observable<RegistroDTO[]> {
     return this.http.get<RegistroDTO[]>(this.baseUrl, {

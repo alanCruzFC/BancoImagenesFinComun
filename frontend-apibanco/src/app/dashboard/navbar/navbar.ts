@@ -9,10 +9,9 @@ import { AuthService } from '../../core/auth.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './navbar.html',
-  styleUrls: ['./navbar.css']
 })
 export class NavbarComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private readonly authService: AuthService, private readonly router: Router) {}
 
   get nombre(): string {
     return this.authService.getNombre();

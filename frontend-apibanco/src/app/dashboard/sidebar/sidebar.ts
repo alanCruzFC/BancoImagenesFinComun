@@ -14,7 +14,6 @@ interface NavItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
-  styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent {
   navItems: NavItem[] = [
@@ -24,7 +23,7 @@ export class SidebarComponent {
   ];
   logoAnimating = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private readonly authService: AuthService, private readonly router: Router) {}
 
   get visibleItems(): NavItem[] {
     const rol = this.authService.getRol();
