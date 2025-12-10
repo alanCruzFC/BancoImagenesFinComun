@@ -27,7 +27,11 @@
   <div *ngIf="imagenes.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
     <div *ngFor="let img of imagenes" 
         class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
-        (click)="abrirVisualizacion(img)">
+        (click)="abrirVisualizacion(img)"
+        (keydown.enter)="abrirVisualizacion(img)"
+        (keydown.space)="abrirVisualizacion(img)"
+        tabindex="0"
+        role="button">
       <img [src]="getThumbnail(img)"
           alt="Miniatura"
           class="w-full h-40 object-cover rounded-lg border border-gray-200" />
@@ -56,6 +60,9 @@
     <div class="flex-1 overflow-auto bg-slate-900 flex items-center justify-center p-4">
       <img [src]="imagenSeleccionada.url"
            alt="Imagen seleccionada"
+           width="800"
+           height="600"
+           loading="lazy"
            class="max-w-full max-h-full object-contain transition-transform duration-200 "/>
     </div>
 
