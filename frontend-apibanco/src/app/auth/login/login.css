@@ -12,7 +12,7 @@
 /* Gradiente para botones e íconos */
 .bg-gradient-primary {
   background: linear-gradient(to right, #ec4899, #fb923c, #9333ea);
-  color: white;
+  color: #1f2937;
 }
 
 /* Texto y colores */
