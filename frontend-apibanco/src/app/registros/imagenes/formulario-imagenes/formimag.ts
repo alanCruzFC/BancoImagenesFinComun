@@ -36,7 +36,7 @@ export class FormularioImagenes {
   }
 
   agregarDocumentoExtra(): void {
-    if (this.documentosExtra.length === 0 || this.documentosExtra[this.documentosExtra.length - 1].archivo) {
+    if (this.documentosExtra.length === 0 || this.documentosExtra.at(-1)?.archivo) {
       this.documentosExtra.push({ tipo: '', archivo: null });
     }
   }
