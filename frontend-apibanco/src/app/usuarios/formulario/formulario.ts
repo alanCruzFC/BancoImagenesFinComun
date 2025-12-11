@@ -58,7 +58,7 @@ export class FormularioUsuario {
   usarInputTeam = false;
   usarInputDepartment = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   OnInit(): void {
     if (this.usuario) {
@@ -158,7 +158,7 @@ export class FormularioUsuario {
         message: 'Supervisor invalido (no puede ser él mismo)' },
       { condition: !this.formData.team || this.formData.team.trim() === '', message: 'Equipo' },
       { condition: !this.formData.department || this.formData.department.trim() === '', message: 'Departamento' },
-      { condition: (!this.usuario || !this.usuario.passwordDesencriptada) && !this.formData.password, message: 'Contraseña' }
+      { condition: !this.usuario?.passwordDesencriptada && !this.formData.password, message: 'Contraseña' }
     ];
 
     validations.forEach(v => {

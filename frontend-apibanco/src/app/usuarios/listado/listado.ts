@@ -24,7 +24,6 @@ interface Usuario {
   standalone: true,
   imports: [CommonModule, FormularioUsuario, FormsModule],
   templateUrl: './listado.html',
-  styleUrls: ['./listado.css']
 })
 export class ListadoComponent {
   usuarios: Usuario[] = [];
@@ -33,7 +32,7 @@ export class ListadoComponent {
   usuarioSeleccionado: Usuario | null = null;
   busqueda: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   OnInit(): void {
     this.http.get<Usuario[]>('http://localhost:8080/api/usuarios').subscribe({

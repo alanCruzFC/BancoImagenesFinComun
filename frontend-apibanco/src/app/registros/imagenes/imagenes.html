@@ -24,20 +24,15 @@
   </div>
 
   <!-- Grid de miniaturas -->
-  <div *ngIf="imagenes.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-    <div *ngFor="let img of imagenes" 
-        class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
-        (click)="abrirVisualizacion(img)"
-        (keydown.enter)="abrirVisualizacion(img)"
-        (keydown.space)="abrirVisualizacion(img)"
-        tabindex="0"
-        role="button">
-      <img [src]="getThumbnail(img)"
-          alt="Miniatura"
-          class="w-full h-40 object-cover rounded-lg border border-gray-200" />
-      <p class="text-xs text-gray-500 mt-2 text-center">{{ getNombreArchivo(img.url) }}</p>
-    </div>
-  </div>
+  <button *ngFor="let img of imagenes"
+          type="button"
+          class="rounded-lg shadow hover:scale-105 transition cursor-pointer focus:outline-none"
+          (click)="abrirVisualizacion(img)">
+    <!-- contenido de la tarjeta -->
+    <img [src]="img.url" alt="{{ img.tipoDocumento }}" 
+        class="w-full h-40 object-cover rounded-lg border border-gray-200" />
+    <p class="text-xs text-gray-500 mt-2 text-center">{{ img.tipoDocumento }}</p>
+  </button>
 </div>
 
 <!-- Modal de visualización SOLO para imágenes -->

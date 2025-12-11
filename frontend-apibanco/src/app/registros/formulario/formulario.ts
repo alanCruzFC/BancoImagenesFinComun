@@ -25,9 +25,9 @@ export class FormularioRegistro {
   sugerencias: string[] = [];
 
   constructor(
-    private fb: FormBuilder,
-    private registroService: RegistroService,
-    private usuarioService: UsuarioService   
+    private readonly fb: FormBuilder,
+    private readonly registroService: RegistroService,
+    private readonly usuarioService: UsuarioService   
   ) {
     this.form = this.fb.group({
       numeroSolicitud: ['', Validators.required],

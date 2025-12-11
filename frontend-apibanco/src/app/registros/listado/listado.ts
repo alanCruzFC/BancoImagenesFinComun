@@ -11,7 +11,6 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, RouterLink, FormularioRegistro,FormsModule],
   templateUrl: './listado.html',
-  styleUrls: ['./listado.css']
 })
 export class ListadoRegComponent {
   registros: RegistroDTO[] = [];
@@ -19,7 +18,7 @@ export class ListadoRegComponent {
   rol: string;
   busqueda: string = '';
 
-  constructor(private registroService: RegistroService, private authService: AuthService) {
+  constructor(private readonly registroService: RegistroService, private readonly authService: AuthService) {
     this.rol = this.authService.getRol();
   }
 

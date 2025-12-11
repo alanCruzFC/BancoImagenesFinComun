@@ -21,7 +21,7 @@ export class FormularioImagenes {
 
   documentosExtra: { tipo: string, archivo: File | null }[] = [];
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+  constructor(private readonly http: HttpClient, private readonly route: ActivatedRoute) {}
 
   OnInit(): void {
     this.registroId = Number(this.route.snapshot.paramMap.get('id'));
@@ -42,11 +42,19 @@ export class FormularioImagenes {
   }
 
   onFileSelectedExtra(event: any, doc: { tipo: string, archivo: File | null }): void {
-    const file = event.target.files[0];
-    if (file) {
-      doc.archivo = file;
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.item(0);
+
+    if (!file) {
+      console.warn('No se seleccionó archivo extra');
+      return;
+    }
+    doc.archivo = file;
+    if (!doc.tipo) {
+      doc.tipo = file.type;
     }
   }
+
 
   getNombreArchivo(doc: { tipo: string, archivo: File | null }): string {
     return doc.archivo?.name || 'Ningún archivo seleccionado';

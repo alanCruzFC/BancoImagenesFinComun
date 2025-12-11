@@ -21,9 +21,9 @@ export class ImagenesRegistro {
   imagenSeleccionada: ArchivoDTO | null = null;
 
   constructor(
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private registroService: RegistroService
+    private readonly route: ActivatedRoute,
+    private readonly authService: AuthService,
+    private readonly registroService: RegistroService
   ) {}
 
   OnInit(): void {
