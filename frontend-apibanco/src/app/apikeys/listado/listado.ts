@@ -20,7 +20,7 @@ export interface ApiKey {
   selector: 'app-apikeys-listado',
   standalone: true,
   imports: [CommonModule, FormularioApiKey, FormsModule],
-  templateUrl: './listado.html',
+  templateUrl: './listado.html'
 })
 export class ListadoApiComponent {
   apikeys: ApiKey[] = [];

@@ -23,7 +23,7 @@ interface Usuario {
   selector: 'app-usuarios-listado',
   standalone: true,
   imports: [CommonModule, FormularioUsuario, FormsModule],
-  templateUrl: './listado.html',
+  templateUrl: './listado.html'
 })
 export class ListadoComponent {
   usuarios: Usuario[] = [];
