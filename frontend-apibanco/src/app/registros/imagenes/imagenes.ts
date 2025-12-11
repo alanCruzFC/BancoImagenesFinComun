@@ -26,7 +26,7 @@ export class ImagenesRegistro {
     private readonly registroService: RegistroService
   ) {}
 
-  OnInit(): void {
+  ngOnInit(): void {
     this.numeroSolicitud = this.route.snapshot.paramMap.get('numeroSolicitud') ?? '';
     this.usuarioActual = this.authService.getNombre();
     this.usuarioRol = this.authService.getRol();

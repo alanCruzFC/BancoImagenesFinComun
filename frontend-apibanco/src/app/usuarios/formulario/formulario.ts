@@ -60,7 +60,7 @@ export class FormularioUsuario {
 
   constructor(private readonly http: HttpClient) {}
 
-  OnInit(): void {
+  ngOnInit(): void {
     if (this.usuario) {
       this.formData = {
         id: this.usuario.id,

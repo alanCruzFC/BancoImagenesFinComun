@@ -33,7 +33,7 @@ export class ListadoApiComponent {
 
   constructor(private readonly http: HttpClient) {}
 
-  OnInit(): void {
+  ngOnInit(): void {
     this.http.get<ApiKey[]>('http://localhost:8080/api/apikeys').subscribe({
       next: (data) => {
         // Mapear y convertir fechaCreacion a Date

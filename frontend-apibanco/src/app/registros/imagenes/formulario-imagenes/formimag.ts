@@ -23,7 +23,7 @@ export class FormularioImagenes {
 
   constructor(private readonly http: HttpClient, private readonly route: ActivatedRoute) {}
 
-  OnInit(): void {
+  ngOnInit(): void {
     this.registroId = Number(this.route.snapshot.paramMap.get('id'));
     this.documentosFijos = this.tiposFijos.map(t => ({ tipo: t, archivo: null }));
   }
