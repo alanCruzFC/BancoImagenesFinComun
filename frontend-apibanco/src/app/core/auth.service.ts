@@ -1,46 +1,53 @@
+import { Inject, Injectable } from '@angular/core';
+import { PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = 'http://localhost:8080/api/auth/login';
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  private getToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('token');
+    }
+    return null;
+  }
 
   login(username: string, password: string): Observable<any> {
     return this.http.post(this.api, { username, password });
   }
 
   getRol(): string {
-    const token = localStorage.getItem('token');
+    const token = this.getToken();
     if (!token) return '';
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.rol || '';
-      
     } catch {
       return '';
     }
   }
 
-
   isAuthenticated(): boolean {
-    if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
-      return !!localStorage.getItem('token');
-    }
-    return false;
+    return !!this.getToken();
   }
 
-
   logout(): void {
-    localStorage.clear();
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+    }
   }
 
   isTokenExpired(): boolean {
-    const token = localStorage.getItem('token');
+    const token = this.getToken();
     if (!token) return true;
-
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const exp = payload.exp;
@@ -52,7 +59,7 @@ export class AuthService {
   }
 
   getNombre(): string {
-    const token = localStorage.getItem('token');
+    const token = this.getToken();
     if (!token) return '';
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -61,5 +68,4 @@ export class AuthService {
       return '';
     }
   }
-
 }

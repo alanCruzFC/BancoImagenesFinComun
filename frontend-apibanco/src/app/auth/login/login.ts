@@ -29,11 +29,10 @@ export class LoginComponent {
     });
   }
   ngOnInit() {
-  if (this.authService.isAuthenticated() && !this.authService.isTokenExpired()) {
-    this.router.navigate(['/dashboard']);
+    if (this.authService.isAuthenticated() && !this.authService.isTokenExpired()) {
+      this.router.navigate(['/dashboard']);
+    }
   }
-}
-
 
 }
 

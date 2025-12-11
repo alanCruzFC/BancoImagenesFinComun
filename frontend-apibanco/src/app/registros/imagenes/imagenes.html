@@ -23,16 +23,16 @@
     <p class="text-gray-600">No hay archivos cargados</p>
   </div>
 
-  <!-- Grid de miniaturas -->
-  <button *ngFor="let img of imagenes"
-          type="button"
-          class="rounded-lg shadow hover:scale-105 transition cursor-pointer focus:outline-none"
-          (click)="abrirVisualizacion(img)">
-    <!-- contenido de la tarjeta -->
-    <img [src]="img.url" alt="{{ img.tipoDocumento }}" 
-        class="w-full h-40 object-cover rounded-lg border border-gray-200" />
-    <p class="text-xs text-gray-500 mt-2 text-center">{{ img.tipoDocumento }}</p>
-  </button>
+  <div class="grid grid-cols-3 gap-4">
+    <div *ngFor="let img of imagenes"
+        class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
+        (click)="abrirVisualizacion(img)">
+      <img [src]="getThumbnail(img)" alt="{{ img.tipoDocumento }}" 
+          class="w-full h-40 object-cover rounded-lg border border-gray-200" />
+      <p class="text-xs text-gray-500 mt-2 text-center">{{ img.tipoDocumento }}</p>
+    </div>
+  </div>
+
 </div>
 
 <!-- Modal de visualización SOLO para imágenes -->
