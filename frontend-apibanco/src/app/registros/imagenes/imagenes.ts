@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
@@ -11,7 +11,7 @@ import { FormularioImagenes } from "./formulario-imagenes/formimag";
   imports: [CommonModule, RouterModule, FormularioImagenes],
   templateUrl: './imagenes.html'
 })
-export class ImagenesRegistro {
+export class ImagenesRegistro implements OnInit {
   numeroSolicitud: string = '';
   imagenes: ArchivoDTO[] = [];
   usuarioActual: string = '';

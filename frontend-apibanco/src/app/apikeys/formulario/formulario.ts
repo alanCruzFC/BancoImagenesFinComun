@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,7 @@ import { ApiKey } from '../listado/listado';
   imports: [CommonModule, FormsModule],
   templateUrl: './formulario.html',
 })
-export class FormularioApiKey {
+export class FormularioApiKey implements OnInit {
   @Output() creado = new EventEmitter<void>();
   @Input() apiKey: ApiKey | null = null; 
 

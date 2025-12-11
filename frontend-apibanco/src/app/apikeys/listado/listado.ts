@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormularioApiKey } from "../formulario/formulario";
@@ -22,7 +22,7 @@ export interface ApiKey {
   imports: [CommonModule, FormularioApiKey, FormsModule],
   templateUrl: './listado.html'
 })
-export class ListadoApiComponent {
+export class ListadoApiComponent implements OnInit {
   apikeys: ApiKey[] = [];
   apikeysFiltradas: ApiKey[] = [];
   modalVisibleApikey: boolean = false;

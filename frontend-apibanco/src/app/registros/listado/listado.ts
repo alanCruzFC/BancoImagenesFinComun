@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RegistroService, RegistroDTO } from '../../core/registro.service';
 import { RouterLink } from "@angular/router";
@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, RouterLink, FormularioRegistro,FormsModule],
   templateUrl: './listado.html',
 })
-export class ListadoRegComponent {
+export class ListadoRegComponent implements OnInit {
   registros: RegistroDTO[] = [];
   mostrarModal: boolean = false;
   rol: string;

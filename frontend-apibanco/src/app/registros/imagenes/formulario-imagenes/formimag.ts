@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -11,7 +11,7 @@ import { forkJoin, Observable } from 'rxjs';
   imports: [CommonModule, FormsModule],
   templateUrl: './formimag.html'
 })
-export class FormularioImagenes {
+export class FormularioImagenes implements OnInit{
   @Input() numeroSolicitud!: string;
   @Output() guardado = new EventEmitter<void>();
   registroId!: number;

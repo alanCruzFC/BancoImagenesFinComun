@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormularioUsuario } from "../formulario/formulario";
@@ -25,7 +25,7 @@ interface Usuario {
   imports: [CommonModule, FormularioUsuario, FormsModule],
   templateUrl: './listado.html'
 })
-export class ListadoComponent {
+export class ListadoComponent implements OnInit {
   usuarios: Usuario[] = [];
   modalVisible: boolean = false;   // modal para ver contraseña
   modalVisible2: boolean = false;  // modal para crear/editar usuario
