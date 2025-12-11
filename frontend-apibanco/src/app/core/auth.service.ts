@@ -27,7 +27,7 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     if (typeof globalThis.window !== 'undefined' && globalThis.window.localStorage) {
-      return !!globalThis.window.localStorage.getItem('token');
+      return !!localStorage.getItem('token');
     }
     return false;
   }
