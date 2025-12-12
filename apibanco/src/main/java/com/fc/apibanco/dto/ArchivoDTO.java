@@ -20,9 +20,6 @@ public class ArchivoDTO {
 	public String getUrl() {
 		return url;
 	}
-	
-	
-    
     
 }
 

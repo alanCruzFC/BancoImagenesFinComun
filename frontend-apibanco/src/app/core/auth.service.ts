@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
-import { PLATFORM_ID } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -10,7 +9,7 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
 
   private getToken(): string | null {
