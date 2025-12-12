@@ -24,13 +24,13 @@
   </div>
 
   <div class="grid grid-cols-3 gap-4">
-    <div *ngFor="let img of imagenes"
+    <button *ngFor="let img of imagenes"
         class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
         (click)="abrirVisualizacion(img)">
       <img [src]="getThumbnail(img)" alt="{{ img.tipoDocumento }}" 
           class="w-full h-40 object-cover rounded-lg border border-gray-200" />
       <p class="text-xs text-gray-500 mt-2 text-center">{{ getNombreArchivo(img.url) }}</p>
-    </div>
+  </button>
   </div>
 
 </div>
