@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -31,7 +31,7 @@ interface UsuarioForm {
   imports: [CommonModule, FormsModule],
   templateUrl: './formulario.html'
 })
-export class FormularioUsuario {
+export class FormularioUsuario implements OnInit{
   @Input() usuario: UsuarioForm | null = null;
   @Output() creado = new EventEmitter<void>();
 
