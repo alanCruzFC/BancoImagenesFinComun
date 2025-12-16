@@ -71,18 +71,6 @@ public class ArchivoController {
 	public ResponseEntity<?> visualizar(@PathVariable String numeroSolicitud,
 	                                    @AuthenticationPrincipal UserDetails userDetails) throws IOException {
 
-	    Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitud no encontrada"));
-
-	    String rol = userDetails.getAuthorities().iterator().next().getAuthority();
-	    String correoUsuario = userDetails.getUsername();
-	    
-	    System.out.println("Usuario: " + correoUsuario);
-	    System.out.println("Rol: " + rol);
-	    System.out.println("Creador: " + registro.getCreador().getUsername());
-	    System.out.println("Correos autorizados: " + registro.getCorreosAutorizados());
-
-
 	    Path carpeta = Paths.get("Archivos", numeroSolicitud);
 	    if (!Files.exists(carpeta)) {
 	    	return ResponseEntity.ok(Collections.emptyList());
