@@ -32,25 +32,22 @@ public class RegistroController {
         String creadorUsername;
 
         if (principal != null) {
-            // flujo normal con usuario logueado
             creadorUsername = principal.getName();
         } else {
             String consumidor = (String) httpRequest.getAttribute("consumidor");
             if (consumidor == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                     .body("Falta autenticación o API key válida");
+                                     .body(Map.of("mensaje", "Falta autenticación o API key válida"));
             }
 
-            // 👉 si viene por API key, usar primer correo autorizado como creador
             if (request.getCorreosAutorizados() != null && !request.getCorreosAutorizados().isEmpty()) {
                 creadorUsername = request.getCorreosAutorizados().get(0);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                     .body("Se requieren correos autorizados para crear registro vía API key");
+                                     .body(Map.of("mensaje", "Se requieren correos autorizados para crear registro vía API key"));
             }
         }
 
-        // ⚡ Aquí ya nunca se pasa el consumidor
         Registro registro = registroService.crearRegistro(request, creadorUsername);
 
         String url = "/visualizar/" + registro.getNumeroSolicitud();

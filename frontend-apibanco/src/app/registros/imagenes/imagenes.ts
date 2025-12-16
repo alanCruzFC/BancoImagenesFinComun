@@ -36,7 +36,7 @@ export class ImagenesRegistro implements OnInit {
   cargarRegistro(): void {
     this.registroService.obtenerRegistro(this.numeroSolicitud).subscribe({
       next: (data) => {
-        console.log('Imagenes recibidas:', data.imagenes);
+        //console.log('Imagenes recibidas:', data.imagenes);
         this.registro = data;
         this.imagenes = (data.imagenes || []).map(img => ({
           ...img,
@@ -71,20 +71,17 @@ export class ImagenesRegistro implements OnInit {
   abrirVisualizacion(img: ArchivoDTO): void {
     const nombre = this.getNombreArchivo(img.url).toLowerCase();
 
-    // 👉 Si es imagen → abrir en modal
     if (nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') ||
         nombre.endsWith('.png') || nombre.endsWith('.gif')) {
       this.imagenSeleccionada = img;
       return;
     }
 
-    // 👉 Si es PDF → abrir inline en nueva pestaña
     if (nombre.endsWith('.pdf')) {
       window.open(img.url + '?inline=true', '_blank');
       return;
     }
 
-    // 👉 Si es Word, Excel u otro → forzar descarga
     const link = document.createElement('a');
     link.href = img.url;
     link.download = img.nombreArchivo;

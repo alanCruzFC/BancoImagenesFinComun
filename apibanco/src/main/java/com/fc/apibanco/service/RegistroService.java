@@ -1,6 +1,9 @@
 package com.fc.apibanco.service;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +26,16 @@ public class RegistroService {
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private RegistroRepository registroRepository;
 
+    private static final Path BASE_PATH = Paths.get("Archivos").normalize();
+
     public Registro crearRegistro(RegistroRequest request, String creadorUsername) {
+        String numeroSolicitud = request.getNumeroSolicitud().trim();
+
         Optional<Registro> existente = registroRepository
-            .findByNumeroSolicitudAndFechaEliminacionIsNull(request.getNumeroSolicitud());
+            .findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud);
         if (existente.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
-                "Ya existe un registro con el número de solicitud " + request.getNumeroSolicitud());
+                "Ya existe un registro con el número de solicitud " + numeroSolicitud);
         }
 
         Usuario creador = usuarioRepository.findByEmail(creadorUsername)
@@ -45,17 +52,23 @@ public class RegistroService {
             creador = usuarioRepository.save(creador);
         }
 
-        String carpetaRuta = "Archivos/" + request.getNumeroSolicitud();
-        File carpeta = new File(carpetaRuta);
-        if (!carpeta.exists() && !carpeta.mkdirs()) {
-            throw new RuntimeException("No se pudo crear la carpeta para la solicitud " + request.getNumeroSolicitud());
+        Path carpeta = BASE_PATH.resolve(numeroSolicitud).normalize();
+        if (!carpeta.startsWith(BASE_PATH)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Ruta fuera del directorio permitido");
+        }
+
+        try {
+            Files.createDirectories(carpeta);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear la carpeta para la solicitud " + numeroSolicitud, e);
         }
 
         Registro registro = new Registro();
-        registro.setNumeroSolicitud(request.getNumeroSolicitud());
+        registro.setNumeroSolicitud(numeroSolicitud);
         registro.setFechaCreacion(LocalDateTime.now());
         registro.setCreador(creador);
-        registro.setCarpetaRuta(carpetaRuta);
+        registro.setCarpetaRuta(carpeta.toString());
 
         List<CorreoAutorizado> autorizados = request.getCorreosAutorizados().stream()
             .map(correo -> {
