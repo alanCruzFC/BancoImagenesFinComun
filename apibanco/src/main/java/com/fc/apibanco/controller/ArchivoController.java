@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -143,22 +146,33 @@ public class ArchivoController {
 	    Path carpeta = Paths.get("Archivos", numeroSolicitud);
 	    Files.createDirectories(carpeta);
 
-	    String extension = FilenameUtils.getExtension(archivo.getOriginalFilename());
-	    String nombreFinal = tipo + "_" + numeroSolicitud + "." + extension;
-	    Path destino = carpeta.resolve(nombreFinal);
+	    Set<String> extensionesPermitidas = Set.of("jpg","jpeg","png","pdf","docx","xlsx");
+
+	    String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
+	    if (!extensionesPermitidas.contains(extension)) {
+	    	return ResponseEntity .status(HttpStatus.BAD_REQUEST) .body(Map.of("mensaje", "Extensión no permitida: " + extension));
+	    }
+
+	    String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
+
+	    Path destino = carpeta.resolve(nombreSeguro).normalize();
+	    if (!destino.startsWith(carpeta)) {
+	        throw new IOException("Ruta fuera del directorio permitido");
+	    }
 
 	    Metadata existente = metadataRepository.findByRegistroAndTipoDocumento(registro, tipo);
-
 	    if (existente != null) {
-	    	Path archivoAnterior = carpeta.resolve(existente.getNombreArchivo());
-	        Files.deleteIfExists(archivoAnterior);
-	        existente.setNombreArchivo(nombreFinal);
+	        Path archivoAnterior = carpeta.resolve(existente.getNombreArchivo()).normalize();
+	        if (archivoAnterior.startsWith(carpeta)) {
+	            Files.deleteIfExists(archivoAnterior);
+	        }
+	        existente.setNombreArchivo(nombreSeguro);
 	        existente.setFechaSubida(LocalDateTime.now());
 	        existente.setSubidoPor(usuario);
 	        metadataRepository.save(existente);
 	    } else {
 	        Metadata metadata = new Metadata();
-	        metadata.setNombreArchivo(nombreFinal);
+	        metadata.setNombreArchivo(nombreSeguro);
 	        metadata.setTipoDocumento(tipo);
 	        metadata.setFechaSubida(LocalDateTime.now());
 	        metadata.setRegistro(registro);
@@ -166,11 +180,11 @@ public class ArchivoController {
 	        metadataRepository.save(metadata);
 	    }
 
-
-
 	    Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
-	    ArchivoDTO dto = new ArchivoDTO(nombreFinal, "/api/descargar/" + numeroSolicitud + "/" + nombreFinal);
+	    String nombreLogico = tipo + "_" + numeroSolicitud + "." + extension;
+	    ArchivoDTO dto = new ArchivoDTO(nombreLogico, "/api/descargar/" + numeroSolicitud + "/" + nombreSeguro);
+
 	    return ResponseEntity.ok(Map.of("mensaje", "Archivo subido correctamente", "archivo", dto));
 	}
 	

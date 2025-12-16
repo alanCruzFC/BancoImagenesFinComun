@@ -16,11 +16,14 @@ export const authInterceptor: HttpInterceptorFn = (
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 || error.status === 403) {
+      if (error.status === 401) {
         localStorage.removeItem('token');
         router.navigate(['/login']);
+      } else if (error.status === 403) {
+        console.error('Acceso denegado:', error.error?.mensaje || 'No tienes permisos para esta acción');
       }
       return throwError(() => error);
     })
   );
 };
+
