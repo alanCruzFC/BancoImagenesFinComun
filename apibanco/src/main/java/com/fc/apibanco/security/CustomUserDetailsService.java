@@ -2,7 +2,6 @@ package com.fc.apibanco.security;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,8 +14,11 @@ import com.fc.apibanco.repository.UsuarioRepository;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
+    	this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

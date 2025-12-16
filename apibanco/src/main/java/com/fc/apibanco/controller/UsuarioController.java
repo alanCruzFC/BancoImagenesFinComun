@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,11 +32,13 @@ import com.fc.apibanco.util.AESUtil;
 @RequestMapping("/api")
 public class UsuarioController {
 	
-	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private final UsuarioRepository usuarioRepository;	
+	private final PasswordEncoder passwordEncoder;
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	public UsuarioController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+		this.usuarioRepository = usuarioRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 	
 //---------------------------CREAR USUARIOS------------------------------------------------------------------------------------
 	

@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,8 +21,11 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiKeyFilter.class);
 
-    @Autowired
-    private ApiKeyService apiKeyService;
+    private final ApiKeyService apiKeyService;
+    
+    public ApiKeyFilter(ApiKeyService apiKeyService) {
+    	this.apiKeyService = apiKeyService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

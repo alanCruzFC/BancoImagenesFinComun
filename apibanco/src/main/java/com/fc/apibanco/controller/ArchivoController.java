@@ -18,7 +18,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -54,20 +53,16 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class ArchivoController {
 
-	@Autowired
-    private MetadataRepository metadataRepository;
-	
-	@Autowired
-	private RegistroRepository registroRepository;
-	
-	@Autowired
-	private UsuarioRepository usuarioRepository;
-	
-	@Autowired
-	private CorreoAutorizadoRepository correoAutorizadoRepository;
+	private final MetadataRepository metadataRepository;
+	private final RegistroRepository registroRepository;
+	private final UsuarioRepository usuarioRepository;
+	private final CorreoAutorizadoRepository correoAutorizadoRepository;
 
-    ArchivoController(MetadataRepository metadataRepository) {
+    public ArchivoController(MetadataRepository metadataRepository, RegistroRepository registroRepository, UsuarioRepository usuarioRepository, CorreoAutorizadoRepository correoAutorizadoRepository) {
         this.metadataRepository = metadataRepository;
+        this.registroRepository = registroRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.correoAutorizadoRepository = correoAutorizadoRepository;
     }
     
 //------------------------VIZUALIZAR LAS IMAGENES -----------------------------------------------

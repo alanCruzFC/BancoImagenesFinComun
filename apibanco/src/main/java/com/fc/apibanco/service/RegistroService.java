@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,8 +22,13 @@ import com.fc.apibanco.repository.UsuarioRepository;
 @Service
 public class RegistroService {
 
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private RegistroRepository registroRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final RegistroRepository registroRepository;
+    
+    public RegistroService(UsuarioRepository usuarioRepository, RegistroRepository registroRepository) {
+    	this.registroRepository = registroRepository;
+    	this.usuarioRepository = usuarioRepository;
+    }
 
     private static final Path BASE_PATH = Paths.get("Archivos").normalize();
 

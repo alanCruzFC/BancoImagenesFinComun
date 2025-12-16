@@ -28,9 +28,15 @@ import com.fc.apibanco.security.JwtAuthenticationFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-	private final CustomUserDetailsService userDetailsService = new CustomUserDetailsService();
-    private final JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
-    private final ApiKeyFilter apiKeyFilter = new ApiKeyFilter();
+	private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ApiKeyFilter apiKeyFilter;
+    
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter, ApiKeyFilter apiKeyFilter) {
+    	this.userDetailsService = userDetailsService;
+    	this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    	this.apiKeyFilter = apiKeyFilter;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

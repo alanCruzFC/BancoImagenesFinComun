@@ -3,7 +3,6 @@ package com.fc.apibanco.controller;
 import java.security.Principal;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,7 +22,11 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class RegistroController {
 
-    @Autowired private RegistroService registroService;
+    private final RegistroService registroService;
+    
+    public RegistroController(RegistroService registroService) {
+    	this.registroService = registroService;
+    }
 
     @PostMapping("/registro")
     public ResponseEntity<?> crearRegistro(@RequestBody RegistroRequest request,

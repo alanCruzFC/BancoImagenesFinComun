@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,8 +27,11 @@ import com.fc.apibanco.repository.ApiKeyRepository;
 @RequestMapping("/api")
 public class ApiKeyController {
 	
-	@Autowired
-	private ApiKeyRepository apiKeyRepository;
+	private final ApiKeyRepository apiKeyRepository;
+	
+	public ApiKeyController(ApiKeyRepository apiKeyRepository) { 
+		this.apiKeyRepository = apiKeyRepository; 
+		}
 	
 //---------------------LISTAR APIKEYS------------------------------------------------------------------------------
 	
