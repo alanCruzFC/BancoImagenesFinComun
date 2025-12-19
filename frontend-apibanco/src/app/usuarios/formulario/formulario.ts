@@ -31,7 +31,7 @@ interface UsuarioForm {
   imports: [CommonModule, FormsModule],
   templateUrl: './formulario.html'
 })
-export class FormularioUsuario implements OnInit{
+export class FormularioUsuario implements OnInit {
   @Input() usuario: UsuarioForm | null = null;
   @Output() creado = new EventEmitter<void>();
 
@@ -50,7 +50,8 @@ export class FormularioUsuario implements OnInit{
 
   validationErrors: string[] = [];
 
-  roles: string[] = ['ADMIN', 'SUPERVISOR', 'USER'];
+  // ✅ Incluimos SUPERADMIN
+  roles: string[] = ['SUPERADMIN', 'ADMIN', 'SUPERVISOR', 'USER'];
   teams: string[] = [];
   departments: string[] = [];
   supervisores: SupervisorDTO[] = [];
@@ -88,24 +89,19 @@ export class FormularioUsuario implements OnInit{
   }
 
   // Generador de contraseña con reglas concretas:
-  // - Longitud 16
-  // - Debe incluir al menos: 1 mayúscula, 1 minúscula, 1 dígito, 1 especial
-  // - Evita caracteres ambiguos: O, 0, I, l, 1, |
-  // - Sin espacios
   generarPassword(): void {
     const length = 16;
     const lowers = 'abcdefghijkmnopqrstuvwxyz'; 
     const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';  
     const digits = '23456789';                 
     const specials = '!@#$%^&*()-_=+[]{}?';
-
     const all = lowers + uppers + digits + specials;
 
     const pick = (set: string) => {
       const array = new Uint32Array(1);
       crypto.getRandomValues(array);
       return set.charAt(array[0] % set.length);
-    }
+    };
 
     const obligatorios = "FinComun".split("");
 
@@ -122,11 +118,11 @@ export class FormularioUsuario implements OnInit{
 
     pwd = pwd.concat(obligatorios);
     for (let i = pwd.length - 1; i > 0; i--) {
-    const array = new Uint32Array(1);
-    crypto.getRandomValues(array);
-    const j = array[0] % (i + 1);
-    [pwd[i], pwd[j]] = [pwd[j], pwd[i]];
-  }
+      const array = new Uint32Array(1);
+      crypto.getRandomValues(array);
+      const j = array[0] % (i + 1);
+      [pwd[i], pwd[j]] = [pwd[j], pwd[i]];
+    }
     this.formData.password = pwd.join('');
   }
 
@@ -173,7 +169,6 @@ export class FormularioUsuario implements OnInit{
       ? `http://localhost:8080/api/usuarios/${this.formData.id}`
       : 'http://localhost:8080/api/usuarios';
     const method = isEdit ? 'put' : 'post';
-
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({
       next: (response: string) => {

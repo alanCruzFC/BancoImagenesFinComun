@@ -18,6 +18,8 @@ public class Metadata {
     private String nombreArchivo;
     private String tipoDocumento;
     private LocalDateTime fechaSubida;
+    private LocalDateTime fechaDesactivacion;
+    private boolean activo;
 
     @ManyToOne
     private Registro registro;
@@ -71,6 +73,22 @@ public class Metadata {
 
 	public void setSubidoPor(Usuario subidoPor) {
 		this.subidoPor = subidoPor;
+	}
+
+	public LocalDateTime getFechaDesactivacion() {
+		return fechaDesactivacion;
+	}
+
+	public void setFechaDesactivacion(LocalDateTime fechaDesactivacion) {
+		this.fechaDesactivacion = fechaDesactivacion;
+	}
+
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
 	}
     
     

@@ -1,12 +1,16 @@
 <header class="h-20 bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white 
                px-6 flex justify-between items-center shadow-lg sticky top-0 z-30
                lg:ml-64">
+  <!-- Información del usuario -->
   <div class="flex items-center gap-4">
     <div>
       <h1 class="text-lg font-semibold">Banco de Imágenes FinComún</h1>
       <p class="text-sm">Bienvenido, {{ nombre }}</p>
+      <!-- <p class="text-xs text-slate-200">Rol: {{ rol }}</p> -->
     </div>
   </div>
+
+  <!-- Botón de logout -->
   <div class="flex items-center gap-4">
     <button (click)="logout()"
             class="bg-linear-to-r from-[#ffffff] to-[#ffffff] text-blue-700 py-3 px-4 rounded-lg font-semibold
@@ -18,3 +22,4 @@
     </button>
   </div>
 </header>
+

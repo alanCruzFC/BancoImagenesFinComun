@@ -24,8 +24,8 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     
     public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
-    	this.authenticationManager = authenticationManager;
-    	this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/login")
@@ -34,7 +34,12 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        String token = jwtTokenProvider.generarToken((UserDetails) auth.getPrincipal());
-        return ResponseEntity.ok(new LoginResponse(token));
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        String token = jwtTokenProvider.generarToken(userDetails);
+
+        // Extraer rol del usuario
+        String rol = userDetails.getAuthorities().iterator().next().getAuthority();
+
+        return ResponseEntity.ok(new LoginResponse(token, rol));
     }
 }

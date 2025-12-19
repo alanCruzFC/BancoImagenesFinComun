@@ -21,21 +21,24 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.fc.apibanco.security.ApiKeyFilter;
-import com.fc.apibanco.security.CustomUserDetailsService;
 import com.fc.apibanco.security.JwtAuthenticationFilter;
+import com.fc.apibanco.service.CustomUserDetailsService;
+import com.fc.apibanco.util.Constantes;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-	private final CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ApiKeyFilter apiKeyFilter;
-    
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter, ApiKeyFilter apiKeyFilter) {
-    	this.userDetailsService = userDetailsService;
-    	this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    	this.apiKeyFilter = apiKeyFilter;
+
+    public SecurityConfig(CustomUserDetailsService userDetailsService,
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          ApiKeyFilter apiKeyFilter) {
+        this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.apiKeyFilter = apiKeyFilter;
     }
 
     @Bean
@@ -44,6 +47,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
+                // Endpoints públicos
                 .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/descargar/**").permitAll()
@@ -51,7 +55,28 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/subir/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/subir-multiple/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/apikeys/**").hasRole("ADMIN")
+
+                // API Keys: ADMIN solo lectura, SUPERADMIN todo
+                .requestMatchers(HttpMethod.GET, "/api/apikeys/**")
+                    .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
+                .requestMatchers(HttpMethod.POST, "/api/apikeys/**")
+                    .hasRole(Constantes.SUPERADMIN)
+                .requestMatchers(HttpMethod.PUT, "/api/apikeys/**")
+                    .hasRole(Constantes.SUPERADMIN)
+                .requestMatchers(HttpMethod.DELETE, "/api/apikeys/**")
+                    .hasRole(Constantes.SUPERADMIN)
+
+                // Usuarios: ADMIN solo lectura, SUPERADMIN todo
+                .requestMatchers(HttpMethod.GET, "/api/usuarios/**")
+                    .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
+                .requestMatchers(HttpMethod.POST, "/api/usuarios/**")
+                    .hasRole(Constantes.SUPERADMIN)
+                .requestMatchers(HttpMethod.PUT, "/api/usuarios/**")
+                    .hasRole(Constantes.SUPERADMIN)
+                .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**")
+                    .hasRole(Constantes.SUPERADMIN)
+
+                // Cualquier otro endpoint requiere autenticación
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -74,7 +99,6 @@ public class SecurityConfig {
         return source;
     }
 
-
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -93,5 +117,4 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
-
 

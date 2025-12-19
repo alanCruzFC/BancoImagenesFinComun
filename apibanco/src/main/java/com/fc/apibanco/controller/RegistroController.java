@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,10 +26,11 @@ public class RegistroController {
     private final RegistroService registroService;
     
     public RegistroController(RegistroService registroService) {
-    	this.registroService = registroService;
+        this.registroService = registroService;
     }
 
     @PostMapping("/registro")
+    @PreAuthorize("hasAnyRole('USER','SUPERVISOR','SUPERADMIN')")
     public ResponseEntity<?> crearRegistro(@RequestBody RegistroRequest request,
                                            Principal principal,
                                            HttpServletRequest httpRequest) {
@@ -60,4 +62,3 @@ public class RegistroController {
         ));
     }
 }
-

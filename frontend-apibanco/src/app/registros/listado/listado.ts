@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-listado',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormularioRegistro,FormsModule],
+  imports: [CommonModule, RouterLink, FormularioRegistro, FormsModule],
   templateUrl: './listado.html',
 })
 export class ListadoRegComponent implements OnInit {
@@ -18,7 +18,10 @@ export class ListadoRegComponent implements OnInit {
   rol: string;
   busqueda: string = '';
 
-  constructor(private readonly registroService: RegistroService, private readonly authService: AuthService) {
+  constructor(
+    private readonly registroService: RegistroService,
+    private readonly authService: AuthService
+  ) {
     this.rol = this.authService.getRol();
   }
 
@@ -44,6 +47,7 @@ export class ListadoRegComponent implements OnInit {
   onRegistroCreado(nuevo: RegistroDTO): void {
     this.registros.push(nuevo);
   }
+
   onRegistroGuardado(): void {
     this.cargarRegistros();
     this.cerrarModal(); 
@@ -56,7 +60,4 @@ export class ListadoRegComponent implements OnInit {
       r.numeroSolicitud.toString().toLowerCase().includes(filtro)
     );
   }
-
-
 }
-

@@ -4,8 +4,10 @@
     <h2 class="text-2xl font-bold text-[#046CAC]">Usuarios registrados</h2>
     <div class="flex items-center gap-3">
       <input [(ngModel)]="busqueda" type="text" placeholder="🔍 Buscar..."
+             autocomplete="off"
              class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
-      <button (click)="abrirModal2()"
+      <button (click)="abrirModal2()" *ngIf="puedeSubir()"
+              aria-label="Crear nuevo usuario"
               class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                  shadow-md transform transition-all duration-300
                  hover:scale-[1.05] active:scale-[0.95]
@@ -16,7 +18,7 @@
     </div>
   </div>
 
-  <!-- Scroll SOLO dentro de la tabla: flex-1 + overflow-auto + min-h-0 -->
+  <!-- Scroll SOLO dentro de la tabla -->
   <div class="flex-1 overflow-auto min-h-0 rounded-xl shadow-md">
     <div class="overflow-x-auto">
       <table class="table-auto w-full text-sm border-collapse">
@@ -32,7 +34,7 @@
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Supervisor</th>
             <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Activo</th>
             <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Contraseña</th>
-            <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Acciones</th>
+            <th *ngIf="puedeSubir()" class="px-2 py-1 text-center font-semibold text-[#046CAC]">Acciones</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -56,57 +58,65 @@
               </span>
             </td>
             <td class="px-2 py-1 text-center">
-              <button (click)="mostrarPassword(usuario)" class="text-blue-600 hover:underline text-xs">🔐 Ver</button>
+
+              <button *ngIf="rolActual === 'ADMIN' || rolActual === 'SUPERADMIN'"
+                      (click)="mostrarPassword(usuario)" 
+                      aria-label="Ver contraseña de {{ usuario.username }}"
+                      class="text-blue-600 hover:underline text-xs">🔐 Ver</button>
             </td>
-            <td class="px-2 py-1 text-center space-x-1">
-              <button (click)="editarUsuario(usuario)" class="text-yellow-600 hover:underline text-xs">✏️</button>
-              <button class="text-red-600 hover:underline text-xs">🗑️</button>
+            <td *ngIf="puedeSubir()" class="px-2 py-1 text-center space-x-1">
+              <button (click)="editarUsuario(usuario)" 
+                      aria-label="Editar usuario {{ usuario.username }}"
+                      class="text-yellow-600 hover:underline text-xs">✏️</button>
+              <button (click)="borrarUsuario(usuario.id)" 
+                      aria-label="Eliminar usuario {{ usuario.username }}" 
+                      class="text-red-600 hover:underline text-xs">🗑️</button>
             </td>
+
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-
   <!-- Modal contraseña -->
-    <div *ngIf="modalVisible"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div class="bg-white rounded-2xl shadow-2xl w-[420px] relative overflow-hidden animate-scale-in">
-        
-        <!-- Header -->
-        <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white relative">
-          <button (click)="cerrarModal()" 
-                  class="absolute top-4 right-4 text-white/80 hover:text-white transition">
-            ✖
-          </button>
-          <h3 class="text-xl font-bold tracking-wide">🔑 Contraseña</h3>
-          <p class="text-white/80 text-sm mt-1">{{ usuarioSeleccionado?.email }}</p>
+  <div *ngIf="modalVisible"
+       class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-[420px] relative overflow-hidden animate-scale-in">
+      <!-- Header -->
+      <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white relative">
+        <button (click)="cerrarModal()" 
+                aria-label="Cerrar modal contraseña"
+                class="absolute top-4 right-4 text-white/80 hover:text-white transition">
+          ✖
+        </button>
+        <h3 class="text-xl font-bold tracking-wide">🔑 Contraseña</h3>
+        <p class="text-white/80 text-sm mt-1">{{ usuarioSeleccionado?.email }}</p>
+      </div>
+      <!-- Body -->
+      <div class="p-6 flex flex-col items-center">
+        <div class="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full text-center shadow-inner">
+          <p class="text-gray-900 text-2xl font-mono tracking-wider select-all">
+            {{ usuarioSeleccionado?.passwordDesencriptada }}
+          </p>
         </div>
-        
-        <!-- Body -->
-        <div class="p-6 flex flex-col items-center">
-          <div class="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full text-center shadow-inner">
-            <p class="text-gray-900 text-2xl font-mono tracking-wider select-all">
-              {{ usuarioSeleccionado?.passwordDesencriptada }}
-            </p>
-          </div>
-          
-          <button (click)="copiarPassword()"
-                  class="bg-linear-to-r from-[#F2A408] to-[#E45D96] text-white font-semibold px-4 py-2 rounded-lg w-full shadow hover:opacity-90 transition">
-            📋 Copiar contraseña
-          </button>
-        </div>
+        <button (click)="copiarPassword()"
+                aria-label="Copiar contraseña"
+                class="bg-linear-to-r from-[#F2A408] to-[#E45D96] text-white font-semibold px-4 py-2 rounded-lg w-full shadow hover:opacity-90 transition">
+          📋 Copiar contraseña
+        </button>
       </div>
     </div>
-
+  </div>
 
   <!-- Modal crear/editar usuario -->
   <div *ngIf="modalVisible2"
-      class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+       class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-[1000px] max-h-[80vh] relative overflow-auto">
       <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
-        <button (click)="cerrarModal2()" class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
+        <button (click)="cerrarModal2()" 
+                aria-label="Cerrar modal usuario"
+                class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
         <h3 class="text-lg font-bold">
           {{ usuarioSeleccionado ? 'Editar usuario' : 'Crear nuevo usuario' }}
         </h3>

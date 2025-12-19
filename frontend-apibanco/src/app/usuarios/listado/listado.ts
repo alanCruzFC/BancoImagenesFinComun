@@ -1,23 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { FormularioUsuario } from "../formulario/formulario";
 import { FormsModule } from '@angular/forms';
-
-interface Usuario {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  rol: string;
-  activo: boolean;
-  team: string;
-  department: string;
-  supervisorId?: number;
-  supervisorName?: string;
-  passwordDesencriptada?: string; 
-}
+import { AuthService } from '../../core/auth.service';
+import { UsuarioService, Usuario } from '../../core/usuario.service';
+import { FormularioUsuario } from "../formulario/formulario";
 
 @Component({
   selector: 'app-usuarios-listado',
@@ -27,24 +13,38 @@ interface Usuario {
 })
 export class ListadoComponent implements OnInit {
   usuarios: Usuario[] = [];
-  modalVisible: boolean = false;   // modal para ver contraseña
-  modalVisible2: boolean = false;  // modal para crear/editar usuario
+  modalVisible: boolean = false;
+  modalVisible2: boolean = false;
   usuarioSeleccionado: Usuario | null = null;
   busqueda: string = '';
+  rolActual: string = '';
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usuarioService: UsuarioService
+  ) {
+    this.rolActual = this.authService.getRol();
+  }
 
   ngOnInit(): void {
-    this.http.get<Usuario[]>('http://localhost:8080/api/usuarios').subscribe({
-      next: (data) => this.usuarios = data,
+    this.cargarUsuarios();
+  }
+
+  cargarUsuarios(): void {
+    this.usuarioService.getUsuarios().subscribe({
+      next: (data) => this.usuarios = data.filter(u => u.activo), // solo activos
       error: () => console.error('❌ Error al obtener usuarios')
     });
   }
-  
+
   mostrarPassword(usuario: Usuario): void {
-    this.usuarioSeleccionado = usuario;
-    this.modalVisible = true;
-    setTimeout(() => this.cerrarModal(), 10000);
+    if (this.rolActual === 'ADMIN' || this.rolActual === 'SUPERADMIN') {
+      this.usuarioSeleccionado = usuario;
+      this.modalVisible = true;
+      setTimeout(() => this.cerrarModal(), 10000);
+    } else {
+      alert('⚠️ No tienes permisos para ver contraseñas');
+    }
   }
 
   editarUsuario(usuario: Usuario): void {
@@ -74,6 +74,16 @@ export class ListadoComponent implements OnInit {
     }
   }
 
+  borrarUsuario(id: number): void {
+    this.usuarioService.borrarUsuario(id).subscribe({
+      next: () => {
+        alert('🗑️ Usuario desactivado correctamente');
+        this.cargarUsuarios();
+      },
+      error: () => alert('❌ Error al desactivar usuario')
+    });
+  }
+
   get usuariosFiltrados(): Usuario[] {
     const term = this.busqueda.toLowerCase();
     return this.usuarios.filter(usuario =>
@@ -88,10 +98,15 @@ export class ListadoComponent implements OnInit {
   getRolColor(rol: string): string {
     const colors: any = {
       ADMIN: 'bg-pink-500 text-white',
+      SUPERADMIN: 'bg-red-600 text-white',
       SUPERVISOR: 'bg-yellow-500 text-white',
       MANAGER: 'bg-blue-700 text-white',
       USER: 'bg-blue-400 text-white'
     };
     return colors[rol] || 'bg-gray-500 text-white';
+  }
+
+  puedeSubir(): boolean {
+    return this.rolActual === 'SUPERADMIN';
   }
 }

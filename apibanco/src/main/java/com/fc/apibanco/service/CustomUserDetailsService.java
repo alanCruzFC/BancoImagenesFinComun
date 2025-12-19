@@ -1,7 +1,8 @@
-package com.fc.apibanco.security;
+package com.fc.apibanco.service;
 
 import java.util.List;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,10 +15,10 @@ import com.fc.apibanco.repository.UsuarioRepository;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
     
     public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
-    	this.usuarioRepository = usuarioRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -25,13 +26,17 @@ public class CustomUserDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        return new org.springframework.security.core.userdetails.User(
-        	    usuario.getUsername(),
-        	    usuario.getPasswordHash(),
-        	    usuario.isActivo(),
-        	    true, true, true,
-        	    List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()))
-        	);
+        // Construir authorities: por ahora un solo rol, pero preparado para múltiples
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()));
 
+        return new org.springframework.security.core.userdetails.User(
+            usuario.getUsername(),
+            usuario.getPasswordHash(),
+            usuario.isActivo(),   // habilitado según flag activo
+            true,                 // accountNonExpired
+            true,                 // credentialsNonExpired
+            true,                 // accountNonLocked
+            authorities
+        );
     }
 }

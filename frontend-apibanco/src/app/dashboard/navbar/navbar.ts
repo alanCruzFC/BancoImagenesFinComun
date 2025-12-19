@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 
-
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -11,7 +10,10 @@ import { AuthService } from '../../core/auth.service';
   templateUrl: './navbar.html',
 })
 export class NavbarComponent {
-  constructor(private readonly authService: AuthService, private readonly router: Router) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
 
   get nombre(): string {
     return this.authService.getNombre();
@@ -21,9 +23,10 @@ export class NavbarComponent {
     return this.authService.getRol();
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
 }
+
 

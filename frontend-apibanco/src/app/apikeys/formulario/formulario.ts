@@ -26,12 +26,13 @@ export class FormularioApiKey implements OnInit {
     fechaCreacion: new Date()
   };
 
-  claveVisible: boolean = false;
+  claveVisible = false;
 
   constructor(private readonly http: HttpClient) {}
 
   ngOnInit(): void {
     if (this.apiKey) {
+      // ✅ Clonamos el objeto para evitar mutaciones directas
       this.formData = { ...this.apiKey };
     }
   }
@@ -46,19 +47,19 @@ export class FormularioApiKey implements OnInit {
       return;
     }
 
-    this.http.put<{mensaje: string, nuevaClave: string}>(
-      `http://localhost:8080/api/apikeys/${this.formData.id}/refactorizar`, 
-      {}, 
+    this.http.put<{ mensaje: string; nuevaClave: string }>(
+      `http://localhost:8080/api/apikeys/${this.formData.id}/refactorizar`,
+      {},
       { responseType: 'json' }
     ).subscribe({
       next: (res) => {
-        alert(res.mensaje);
+        alert(res.mensaje || '✅ Clave refactorizada correctamente');
         this.formData.clave = res.nuevaClave;
         this.claveVisible = true;
       },
       error: (err: HttpErrorResponse) => {
         alert('❌ Error al refactorizar la API Key');
-        console.error(err);
+        console.error('Error refactorizando API Key:', err);
       }
     });
   }
@@ -73,19 +74,20 @@ export class FormularioApiKey implements OnInit {
     const method = isEdit ? 'put' : 'post';
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({
-      next: (res: string) => {
-        alert((isEdit ? 'API Key actualizada correctamente' : 'API Key creada correctamente'));
+      next: () => {
+        alert(isEdit ? '✅ API Key actualizada correctamente' : '✅ API Key creada correctamente');
         this.creado.emit();
       },
       error: (err: HttpErrorResponse) => {
-        let errorMessage = isEdit ? 'Error al actualizar API Key.' : 'Error al crear API Key.';
+        let errorMessage = isEdit ? '❌ Error al actualizar API Key.' : '❌ Error al crear API Key.';
         if (err.status === 403) {
-          errorMessage = 'Acceso denegado. No tienes permisos para esta acción.';
+          errorMessage = '❌ Acceso denegado. No tienes permisos para esta acción.';
+        } else if (err.statusText) {
+          errorMessage = `❌ Error (${err.status}): ${err.statusText}`;
         }
         alert(errorMessage);
-        console.error(err);
+        console.error('Error en submit API Key:', err);
       }
     });
   }
-
 }

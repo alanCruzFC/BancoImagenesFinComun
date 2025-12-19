@@ -54,7 +54,6 @@ export class FormularioRegistro {
     this.correosSeleccionados = this.correosSeleccionados.filter(c => c !== correo);
   }
 
-
   guardar(): void {
     if (this.form.invalid) {
       alert('⚠️ El formulario es inválido, revisa los campos');
@@ -67,8 +66,11 @@ export class FormularioRegistro {
     };
 
     this.registroService.crearRegistro(dto).subscribe({
-      next: () => {
+      next: (nuevo: RegistroDTO) => {
         alert('✅ Registro creado correctamente');
+        // Emitimos el registro creado para que el listado lo agregue directamente
+        this.registroCreado.emit(nuevo);
+        // Emitimos guardado para que el listado recargue si lo necesita
         this.guardado.emit();
       },
       error: (err) => {
@@ -77,10 +79,4 @@ export class FormularioRegistro {
       }
     });
   }
-
-
-
-
 }
-
-

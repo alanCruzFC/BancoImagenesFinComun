@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
 
 @Component({
@@ -11,24 +10,29 @@ import { forkJoin, Observable } from 'rxjs';
   imports: [CommonModule, FormsModule],
   templateUrl: './formimag.html'
 })
-export class FormularioImagenes implements OnInit{
+export class FormularioImagenes implements OnInit {
   @Input() numeroSolicitud!: string;
   @Output() guardado = new EventEmitter<void>();
-  registroId!: number;
 
-  tiposFijos: string[] = ['INE', 'COMPROBANTE_DOMICILIO', 'ESTADO_CUENTA', 'FOTONEGOCIO1', 'FOTONEGOCIO2', 'SELFIE'];
-  documentosFijos: { tipo: string, archivo: File | null }[] = [];
+  tiposFijos: string[] = [
+    'INE',
+    'COMPROBANTE_DOMICILIO',
+    'ESTADO_CUENTA',
+    'FOTONEGOCIO1',
+    'FOTONEGOCIO2',
+    'SELFIE'
+  ];
+  documentosFijos: { tipo: string; archivo: File | null }[] = [];
+  documentosExtra: { tipo: string; archivo: File | null }[] = [];
 
-  documentosExtra: { tipo: string, archivo: File | null }[] = [];
-
-  constructor(private readonly http: HttpClient, private readonly route: ActivatedRoute) {}
+  constructor(private readonly http: HttpClient) {}
 
   ngOnInit(): void {
-    this.registroId = Number(this.route.snapshot.paramMap.get('id'));
+    // Inicializamos los documentos fijos
     this.documentosFijos = this.tiposFijos.map(t => ({ tipo: t, archivo: null }));
   }
 
-  onFileSelected(event: any, doc: { tipo: string, archivo: File | null }): void {
+  onFileSelected(event: any, doc: { tipo: string; archivo: File | null }): void {
     const file = event.target.files[0];
     if (file) {
       doc.archivo = file;
@@ -41,7 +45,7 @@ export class FormularioImagenes implements OnInit{
     }
   }
 
-  onFileSelectedExtra(event: any, doc: { tipo: string, archivo: File | null }): void {
+  onFileSelectedExtra(event: any, doc: { tipo: string; archivo: File | null }): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.item(0);
 
@@ -55,11 +59,11 @@ export class FormularioImagenes implements OnInit{
     }
   }
 
-
-  getNombreArchivo(doc: { tipo: string, archivo: File | null }): string {
+  getNombreArchivo(doc: { tipo: string; archivo: File | null }): string {
     return doc.archivo?.name || 'Ningún archivo seleccionado';
   }
-  eliminarArchivo(doc: { tipo: string, archivo: File | null }): void {
+
+  eliminarArchivo(doc: { tipo: string; archivo: File | null }): void {
     doc.archivo = null;
   }
 
@@ -67,12 +71,9 @@ export class FormularioImagenes implements OnInit{
     this.documentosExtra.splice(index, 1);
   }
 
-
-
-
   guardarImagenes(): void {
     if (!this.numeroSolicitud) {
-      alert(' No se encontró el número de solicitud');
+      alert('⚠️ No se encontró el número de solicitud');
       return;
     }
 
@@ -91,6 +92,7 @@ export class FormularioImagenes implements OnInit{
       }
     });
 
+    // Documentos extra
     this.documentosExtra.forEach(doc => {
       if (doc.archivo) {
         const formData = new FormData();
@@ -104,20 +106,19 @@ export class FormularioImagenes implements OnInit{
     });
 
     if (peticiones.length === 0) {
-      alert(' No hay documentos para subir');
+      alert('⚠️ No hay documentos para subir');
       return;
     }
 
     forkJoin(peticiones).subscribe({
-      next: () => { 
-        alert(' Imágenes guardadas correctamente');
+      next: () => {
+        alert('✅ Imágenes guardadas correctamente');
         this.guardado.emit();
       },
       error: (err) => {
-        console.error(' Error al guardar imágenes', err);
-        alert(' Error al guardar imágenes');
+        console.error('❌ Error al guardar imágenes', err);
+        alert('❌ Error al guardar imágenes');
       }
     });
   }
-
 }

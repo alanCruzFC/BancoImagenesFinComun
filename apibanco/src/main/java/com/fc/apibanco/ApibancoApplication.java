@@ -94,6 +94,45 @@ public class ApibancoApplication {
             }
         };
     }
+    
+    @Bean
+    public CommandLineRunner crearUsuarioSuperAdmin(UsuarioRepository usuarioRepository,
+                                                    PasswordEncriptadaRepository passwordEncriptadaRepository,
+                                                    PasswordEncoder passwordEncoder) {
+        return args -> {
+            if (usuarioRepository.findByUsername("superadmin").isEmpty()) {
+                Usuario superAdmin = new Usuario();
+                superAdmin.setUsername("superadmin");
+                superAdmin.setFirstName("System");
+                superAdmin.setLastName("Super Administrator");
+                superAdmin.setEmail("superadmin@dominio.com");
+
+                String passwordOriginal = "superadmin123";
+                superAdmin.setPasswordHash(passwordEncoder.encode(passwordOriginal));
+                superAdmin.setRol("SUPERADMIN"); // rol diferenciado
+                superAdmin.setActivo(true);
+
+                // Valores por defecto en campos adicionales
+                superAdmin.setTeam("Global Team");
+                superAdmin.setDepartment("Executive Department");
+                superAdmin.setSupervisor(null); // el superadmin no tiene supervisor
+
+                usuarioRepository.save(superAdmin);
+
+                PasswordEncriptada pass = new PasswordEncriptada();
+                pass.setUsuario(superAdmin);
+                pass.setHash(AESUtil.encrypt(passwordOriginal));
+                superAdmin.setPasswordEncriptada(pass);
+
+                passwordEncriptadaRepository.save(pass);
+
+                System.out.println("✅ Usuario superadmin creado con valores por defecto y contraseña encriptada");
+            } else {
+                System.out.println("ℹ️ Usuario superadmin ya existe");
+            }
+        };
+    }
+
 
 
 

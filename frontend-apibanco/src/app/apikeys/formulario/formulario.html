@@ -3,29 +3,44 @@
     {{ formData.id ? 'Actualizar API Key' : 'Crear nueva API Key' }}
   </h2>
 
-  <label for="consumidor">Consumidor:</label>
-  <input id="consumidor" [(ngModel)]="formData.consumidor" name="consumidor"
+  <!-- Consumidor -->
+  <label for="consumidor" class="font-semibold text-[#046CAC]">Consumidor:</label>
+  <input id="consumidor"
+         [(ngModel)]="formData.consumidor"
+         name="consumidor"
          placeholder="Nombre del consumidor"
-         class="w-full border px-4 py-2 rounded" required />
+         autocomplete="off"
+         aria-label="Nombre del consumidor"
+         class="w-full border px-4 py-2 rounded"
+         required />
 
-  <!-- Clave -->
+  <!-- Clave (solo visible en edición) -->
   <div *ngIf="formData.id" class="flex items-end space-x-2 mt-4">
     <div class="flex-1">
       <label for="clave" class="font-semibold text-[#046CAC]">Clave:</label>
       <input [type]="claveVisible ? 'text' : 'password'"
-             id="clave" [(ngModel)]="formData.clave" name="clave"
-             class="w-full border px-4 py-2 rounded font-mono" readonly />
+             id="clave"
+             [(ngModel)]="formData.clave"
+             name="clave"
+             class="w-full border px-4 py-2 rounded font-mono"
+             readonly />
     </div>
-    <button type="button" (click)="toggleClave()"
+    <button type="button"
+            (click)="toggleClave()"
+            aria-label="Mostrar u ocultar clave"
             class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">
       {{ claveVisible ? 'Ocultar' : 'Ver' }}
     </button>
-    <button *ngIf="formData.id" type="button" (click)="refactorizarClave()"
+    <button *ngIf="formData.id"
+            type="button"
+            (click)="refactorizarClave()"
+            aria-label="Refactorizar clave"
             class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">
       🔑 Refactorizar
     </button>
   </div>
 
+  <!-- Permisos -->
   <h3 class="text-lg font-semibold mt-4">Permisos:</h3>
 
   <label class="flex items-center space-x-2">
@@ -48,7 +63,9 @@
     <span>Eliminación</span>
   </label>
 
+  <!-- Botón submit -->
   <button type="submit"
+          aria-label="Guardar API Key"
           class="w-full bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                  shadow-md hover:shadow-glow transform transition-all duration-300
                  hover:scale-[1.05] active:scale-[0.95]

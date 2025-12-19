@@ -8,6 +8,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.fc.apibanco.util.Constantes;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,7 +30,7 @@ public class JwtTokenProvider {
             .filter(auth -> auth.startsWith("ROLE_"))
             .map(auth -> auth.replace("ROLE_", ""))
             .findFirst()
-            .orElse("USER");
+            .orElse(Constantes.USER);
         
         return Jwts.builder()
             .setSubject(userDetails.getUsername())
@@ -55,6 +58,16 @@ public class JwtTokenProvider {
         return Jwts.parserBuilder().setSigningKey(secret).build()
             .parseClaimsJws(token).getBody().getSubject();
     }
+    
+    public String obtenerRol(String token) {
+        Claims claims = Jwts.parserBuilder()
+            .setSigningKey(secret)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+        return claims.get("rol", String.class);
+    }
+
 }
 
 

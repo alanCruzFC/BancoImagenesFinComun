@@ -1,12 +1,18 @@
 package com.fc.apibanco.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.fc.apibanco.service.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,8 +26,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
     
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService userDetailsService) {
-    	this.jwtTokenProvider = jwtTokenProvider;
-    	this.userDetailsService = userDetailsService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -32,9 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        
+        // Permitir OPTIONS y login sin validación
         if (method.equalsIgnoreCase("OPTIONS") ||
-        	path.equals("/api/auth/login") && method.equalsIgnoreCase("POST")) {
+            (path.equals("/api/auth/login") && method.equalsIgnoreCase("POST"))) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,25 +48,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = obtenerToken(request);
         if (token != null && jwtTokenProvider.validarToken(token)) {
             String username = jwtTokenProvider.obtenerUsername(token);
+            String rol = jwtTokenProvider.obtenerRol(token); // <-- nuevo
+
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            
-            UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            // Reconstruir authorities con el rol del token
+            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
 
+            UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);
-        
-        
     }
 
     private String obtenerToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
         return (bearer != null && bearer.startsWith("Bearer ")) ? bearer.substring(7) : null;
     }
-    
-
 }
-

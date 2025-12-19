@@ -20,7 +20,11 @@ export class LoginComponent implements OnInit {
   login() {
     this.authService.login(this.username, this.password).subscribe({
       next: (response) => {
+        // Guardamos token y rol en localStorage
         localStorage.setItem('token', response.token);
+        localStorage.setItem('rol', response.rol);
+
+        // Redirigimos al dashboard
         this.router.navigate(['/dashboard']);
       },
       error: () => {
@@ -28,11 +32,10 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
   ngOnInit() {
     if (this.authService.isAuthenticated() && !this.authService.isTokenExpired()) {
       this.router.navigate(['/dashboard']);
     }
   }
-
 }
-

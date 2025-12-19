@@ -17,9 +17,9 @@ interface NavItem {
 })
 export class SidebarComponent {
   navItems: NavItem[] = [
-    { label: 'Registros', route: 'registros', roles: ['USER', 'SUPERVISOR', 'ADMIN'] },
-    { label: 'Usuarios', route: 'usuarios', roles: ['ADMIN'] },
-    { label: 'API Keys', route: 'apikeys', roles: ['ADMIN'] }
+    { label: 'Registros', route: 'registros', roles: ['USER', 'SUPERVISOR', 'ADMIN', 'SUPERADMIN'] },
+    { label: 'Usuarios', route: 'usuarios', roles: ['ADMIN', 'SUPERADMIN'] },
+    { label: 'API Keys', route: 'apikeys', roles: ['ADMIN', 'SUPERADMIN'] }
   ];
   logoAnimating = false;
 
@@ -37,6 +37,7 @@ export class SidebarComponent {
   get rol(): string {
     return this.authService.getRol();
   }
+
   goToDashboard(event: Event) {
     event.preventDefault();
     // Animación visual breve antes de navegar
@@ -48,3 +49,4 @@ export class SidebarComponent {
     }, 300);
   }
 }
+

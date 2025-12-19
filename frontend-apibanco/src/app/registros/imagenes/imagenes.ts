@@ -36,7 +36,7 @@ export class ImagenesRegistro implements OnInit {
   cargarRegistro(): void {
     this.registroService.obtenerRegistro(this.numeroSolicitud).subscribe({
       next: (data) => {
-        //console.log('Imagenes recibidas:', data.imagenes);
+        console.log('Imagenes recibidas:', data.imagenes);
         this.registro = data;
         this.imagenes = (data.imagenes || []).map(img => ({
           ...img,
@@ -50,9 +50,8 @@ export class ImagenesRegistro implements OnInit {
     });
   }
 
-
   puedeSubir(): boolean {
-    return this.usuarioRol === 'ADMIN' || this.registro?.creador === this.usuarioActual;
+    return this.usuarioRol === 'SUPERADMIN' || this.registro?.creador === this.usuarioActual;
   }
 
   abrirModal(): void {
@@ -88,7 +87,6 @@ export class ImagenesRegistro implements OnInit {
     link.click();
   }
 
-
   cerrarVisualizacion(): void {
     this.imagenSeleccionada = null;
   }
@@ -116,5 +114,4 @@ export class ImagenesRegistro implements OnInit {
     return nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') ||
            nombre.endsWith('.png') || nombre.endsWith('.gif');
   }
-
 }

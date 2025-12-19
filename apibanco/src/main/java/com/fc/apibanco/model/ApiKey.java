@@ -7,6 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class ApiKey {
@@ -20,10 +23,21 @@ public class ApiKey {
   private boolean escritura;
   private boolean actualizacion;
   private boolean eliminacion;
-  private boolean activo = true;
+  private boolean activo = true; 
 
-  private LocalDateTime fechaCreacion;
-  private LocalDateTime fechaEliminacion;
+  private LocalDateTime fechaCreacion; 
+  private LocalDateTime fechaActualizacion; 
+  private LocalDateTime fechaEliminacion; 
+  
+  @PrePersist 
+  public void prePersist() { 
+	  this.fechaCreacion = LocalDateTime.now(); 
+  } 
+  
+  @PreUpdate 
+  public void preUpdate() { 
+	  this.fechaActualizacion = LocalDateTime.now(); 
+  }
   
   
   public Long getId() {
