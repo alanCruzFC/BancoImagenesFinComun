@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, Inject, PLATFORM_ID, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +11,32 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   protected readonly title = signal('frontend-apibanco');
+  private readonly isBrowser: boolean;
+
+  constructor( private router: Router, 
+    @Inject(PLATFORM_ID) platformId: Object 
+  ) { 
+    this.isBrowser = isPlatformBrowser(platformId); 
+    if (this.isBrowser) {
+      this.router.events.pipe( 
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd) 
+      ).subscribe((e) => { 
+        try { window.localStorage.setItem('ultimaRuta', e.urlAfterRedirects); 
+
+        } catch {} 
+      }); 
+    } 
+  }
+
+  ngOnInit(): void { 
+    if (this.isBrowser) { 
+      try { const ultimaRuta = window.localStorage.getItem('ultimaRuta'); 
+        if (ultimaRuta) { 
+          this.router.navigateByUrl(ultimaRuta); 
+        } 
+      } catch {
+
+      } 
+    } 
+  }
 }

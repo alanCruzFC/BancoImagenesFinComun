@@ -7,7 +7,7 @@
     </ul>
   </div>
   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
     <!-- Email -->
     <div class="col-span-2">
       <label for="email" class="font-semibold text-[#046CAC]">Email:</label>
@@ -137,10 +137,10 @@
     </div>
 
     <!-- Activo --> 
-    <div class="flex items-center space-x-2"> 
+    <div *ngIf="!formData.id" class="flex items-center space-x-2"> 
       <input type="checkbox" [(ngModel)]="formData.activo" name="activo" /> 
       <span class="font-semibold text-[#046CAC]">Activo</span> 
-    </div> 
+    </div>
     <!-- Contraseña: visible solo si no existe (crear) o si el usuario no tiene --> 
     <div class="col-span-2 flex space-x-2 items-end" 
         *ngIf="usuario == null || !usuario.passwordDesencriptada"> 

@@ -31,7 +31,6 @@ export const dashboardRoutes: Routes = [
         data: { roles: ['USER', 'SUPERVISOR', 'ADMIN','SUPERADMIN'] },
         loadComponent: () => import('../registros/imagenes/imagenes').then(m => m.ImagenesRegistro)
       },
-      // 👉 redirección por defecto
       {
         path: '',
         redirectTo: 'registros',
