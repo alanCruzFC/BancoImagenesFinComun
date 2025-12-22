@@ -31,8 +31,8 @@ public class ApibancoApplication {
                 admin.setLastName("Administrator");
                 admin.setEmail("admin@dominio.com");
 
-                String passwordOriginal = "admin123";
-                admin.setPasswordHash(passwordEncoder.encode(passwordOriginal));
+                String psOriginal = "admin123";
+                admin.setPasswordHash(passwordEncoder.encode(psOriginal));
                 admin.setRol("ADMIN");
                 admin.setActivo(true);
 
@@ -45,7 +45,7 @@ public class ApibancoApplication {
 
                 PasswordEncriptada pass = new PasswordEncriptada();
                 pass.setUsuario(admin);
-                pass.setHash(AESUtil.encrypt(passwordOriginal));
+                pass.setHash(AESUtil.encrypt(psOriginal));
                 admin.setPasswordEncriptada(pass);
 
                 passwordEncriptadaRepository.save(pass);
@@ -69,8 +69,8 @@ public class ApibancoApplication {
                 supervisor.setLastName("Supervisor");
                 supervisor.setEmail("supervisor@dominio.com");
 
-                String passwordOriginal = "supervisor123";
-                supervisor.setPasswordHash(passwordEncoder.encode(passwordOriginal));
+                String psOriginal = "supervisor123";
+                supervisor.setPasswordHash(passwordEncoder.encode(psOriginal));
                 supervisor.setRol("SUPERVISOR");
                 supervisor.setActivo(true);
 
@@ -83,7 +83,7 @@ public class ApibancoApplication {
 
                 PasswordEncriptada pass = new PasswordEncriptada();
                 pass.setUsuario(supervisor);
-                pass.setHash(AESUtil.encrypt(passwordOriginal));
+                pass.setHash(AESUtil.encrypt(psOriginal));
                 supervisor.setPasswordEncriptada(pass);
 
                 passwordEncriptadaRepository.save(pass);
@@ -107,8 +107,8 @@ public class ApibancoApplication {
                 superAdmin.setLastName("Super Administrator");
                 superAdmin.setEmail("superadmin@dominio.com");
 
-                String passwordOriginal = "superadmin123";
-                superAdmin.setPasswordHash(passwordEncoder.encode(passwordOriginal));
+                String psOriginal = "superadmin123";
+                superAdmin.setPasswordHash(passwordEncoder.encode(psOriginal));
                 superAdmin.setRol("SUPERADMIN"); // rol diferenciado
                 superAdmin.setActivo(true);
 
@@ -121,7 +121,7 @@ public class ApibancoApplication {
 
                 PasswordEncriptada pass = new PasswordEncriptada();
                 pass.setUsuario(superAdmin);
-                pass.setHash(AESUtil.encrypt(passwordOriginal));
+                pass.setHash(AESUtil.encrypt(psOriginal));
                 superAdmin.setPasswordEncriptada(pass);
 
                 passwordEncriptadaRepository.save(pass);
@@ -132,8 +132,4 @@ public class ApibancoApplication {
             }
         };
     }
-
-
-
-
 }

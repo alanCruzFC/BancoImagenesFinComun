@@ -101,7 +101,7 @@ public class RegistroService {
 
         // ---------------- CREAR USUARIOS AUTORIZADOS ----------------
         for (String correo : request.getCorreosAutorizados()) {
-            usuarioRepository.findByEmail(correo).orElseGet(() -> {
+        	Usuario usuario = usuarioRepository.findByEmail(correo).orElseGet(() -> {
                 Usuario nuevo = new Usuario();
                 nuevo.setUsername(correo);
                 nuevo.setEmail(correo);

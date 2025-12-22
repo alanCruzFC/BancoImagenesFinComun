@@ -82,8 +82,13 @@ export class FormularioImagenes implements OnInit {
     // Documentos fijos
     this.documentosFijos.forEach(doc => {
       if (doc.archivo) {
+        if (!doc.tipo || doc.tipo.trim() === '') {
+          alert(`⚠️ El documento fijo "${this.getNombreArchivo(doc)}" requiere llenar el campo tipo`);
+          return; // no lo subas si está vacío
+        }
+
         const formData = new FormData();
-        formData.append('tipo', doc.tipo);
+        formData.append('tipo', doc.tipo.trim());
         formData.append('archivo', doc.archivo);
 
         peticiones.push(
@@ -93,10 +98,15 @@ export class FormularioImagenes implements OnInit {
     });
 
     // Documentos extra
-    this.documentosExtra.forEach(doc => {
+    this.documentosExtra.forEach((doc, i) => {
       if (doc.archivo) {
+        if (!doc.tipo || doc.tipo.trim() === '') {
+          alert(`⚠️ El documento extra #${i + 1} requiere llenar el campo tipo`);
+          return; // no lo subas si está vacío
+        }
+
         const formData = new FormData();
-        formData.append('tipo', doc.tipo);
+        formData.append('tipo', doc.tipo.trim());
         formData.append('archivo', doc.archivo);
 
         peticiones.push(

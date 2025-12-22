@@ -220,7 +220,7 @@ public class ArchivoController {
 	            }
 	        } else {
 	            // Front → permitir extras, pero no variantes inválidas
-	            if (tipoNormalizado.matches(".*\\d.*")) {
+	            if (tipoNormalizado.chars().anyMatch(Character::isDigit)) {
 	                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 	                    .body(Map.of(Constantes.MSG, "Tipo inválido: " + tipoNormalizado));
 	            }
