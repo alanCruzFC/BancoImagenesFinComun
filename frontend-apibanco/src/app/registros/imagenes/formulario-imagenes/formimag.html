@@ -39,6 +39,7 @@
     <label for="file-extra-{{i}}" class="block font-semibold text-gray-700 mb-2">Tipo de documento:</label>
     <input id="file-extra-{{i}}" 
            name="tipo{{i}}" 
+           [(ngModel)]="doc.tipo"
            required 
            autocomplete="off"
            class="w-48 border border-gray-300 px-3 py-2 rounded-lg focus:ring-[#046BB4] focus:border-[#046BB4] text-sm" />

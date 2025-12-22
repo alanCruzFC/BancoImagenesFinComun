@@ -71,87 +71,95 @@ public class ArchivoController {
 	
     @PostMapping("/subir/{numeroSolicitud}") 
     @PreAuthorize("hasRole('SUPERADMIN')") 
-    public ResponseEntity<Map<String, Object>> subirImagen(@PathVariable String numeroSolicitud, 
-		    											   @RequestParam("tipo") String tipo, 
-		    											   @RequestParam("archivo") MultipartFile archivo, 
-		    											   @AuthenticationPrincipal UserDetails userDetails, 
-		    											   HttpServletRequest request) throws IOException {
+    public ResponseEntity<Map<String, Object>> subirImagen(
+            @PathVariable String numeroSolicitud, 
+            @RequestParam("tipo") String tipo, 
+            @RequestParam("archivo") MultipartFile archivo, 
+            @AuthenticationPrincipal UserDetails userDetails, 
+            HttpServletRequest request) throws IOException {
 
-	    // ---------------- VALIDAR REGISTRO ----------------
-	    Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
+        // ---------------- VALIDAR REGISTRO ----------------
+        Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
 
-	    // ---------------- OBTENER USUARIO AUTENTICADO (solo front) ----------------
-	    if (userDetails == null) {
-	        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debe estar autenticado desde la vista");
-	    }
-	    Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
+        // ---------------- OBTENER USUARIO AUTENTICADO ----------------
+        if (userDetails == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debe estar autenticado desde la vista");
+        }
+        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
 
-	    numeroSolicitud = numeroSolicitud.trim();
-	    Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud);
-	    Files.createDirectories(carpeta);
+        numeroSolicitud = numeroSolicitud.trim();
+        Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud);
+        Files.createDirectories(carpeta);
 
-	    // ---------------- TIPOS FIJOS ----------------
-	    Set<String> TIPOS_FIJOS = Constantes.TIPOS_FIJOS;
+        // ---------------- TIPOS FIJOS ----------------
+        Set<String> TIPOS_FIJOS = Constantes.TIPOS_FIJOS;
 
-	    String tipoNormalizado = tipo.trim().toUpperCase();
+        String tipoNormalizado = tipo.trim().toUpperCase();
 
-	    // ---------------- VALIDACIÓN DE TIPO ----------------
-	    if (TIPOS_FIJOS.contains(tipoNormalizado)) {
-	        // válido como documento fijo
-	    } else {
-	        // documento extra → validar que no sea similar a un fijo
-	        for (String fijo : TIPOS_FIJOS) {
-	            if (tipoNormalizado.startsWith(fijo)) {
-	                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                    .body(Map.of(Constantes.MSG, "Tipo extra inválido por similitud con fijo: " + tipoNormalizado));
-	            }
-	        }
-	        if (tipoNormalizado.matches(".*\\d.*")) {
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                .body(Map.of(Constantes.MSG, "Tipo extra inválido: " + tipoNormalizado));
-	        }
-	    }
+        // ---------------- VALIDACIÓN DE TIPO ----------------
+        if (TIPOS_FIJOS.contains(tipoNormalizado)) {
+            // documento fijo → se guarda normalizado
+        } else {
+            // documento extra → se guarda tal cual lo digitó el usuario
+            String tipoExtra = tipo.trim();
 
-	    // ---------------- VALIDACIÓN DE EXTENSIÓN ----------------
-	    Set<String> extensionesPermitidas = Constantes.EXT_PER;
-	    String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
-	    if (!extensionesPermitidas.contains(extension)) {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	            .body(Map.of(Constantes.MSG, "Extensión no permitida: " + extension));
-	    }
+            // validar que no sea similar a un fijo
+            for (String fijo : TIPOS_FIJOS) {
+                if (tipoExtra.toUpperCase().startsWith(fijo)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of(Constantes.MSG, "Tipo extra inválido por similitud con fijo: " + tipoExtra));
+                }
+            }
+            if (tipoExtra.chars().anyMatch(Character::isDigit)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(Constantes.MSG, "Tipo extra inválido: " + tipoExtra));
+            }
 
-	    String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
-	    Path destino = carpeta.resolve(nombreSeguro).normalize();
-	    if (!destino.startsWith(carpeta)) {
-	        throw new IOException("Ruta fuera del directorio permitido");
-	    }
+            // reasignar para que se guarde lo que digitó el usuario
+            tipoNormalizado = tipoExtra;
+        }
 
-	    // ---------------- AUDITORÍA ----------------
-	    List<Metadata> existentes = metadataRepository.findByRegistroAndTipoDocumento(registro, tipoNormalizado);
-	    for (Metadata existente : existentes) {
-	        existente.setActivo(false);
-	        existente.setFechaDesactivacion(LocalDateTime.now());
-	        metadataRepository.save(existente);
-	    }
+        // ---------------- VALIDACIÓN DE EXTENSIÓN ----------------
+        Set<String> extensionesPermitidas = Constantes.EXT_PER;
+        String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
+        if (!extensionesPermitidas.contains(extension)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(Constantes.MSG, "Extensión no permitida: " + extension));
+        }
 
-	    Metadata metadata = new Metadata();
-	    metadata.setNombreArchivo(nombreSeguro);
-	    metadata.setTipoDocumento(tipoNormalizado);
-	    metadata.setFechaSubida(LocalDateTime.now());
-	    metadata.setRegistro(registro);
-	    metadata.setSubidoPor(usuario); // <-- aquí siempre se registra el usuario autenticado del front
-	    metadata.setActivo(true);
-	    metadataRepository.save(metadata);
+        String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
+        Path destino = carpeta.resolve(nombreSeguro).normalize();
+        if (!destino.startsWith(carpeta)) {
+            throw new IOException("Ruta fuera del directorio permitido");
+        }
 
-	    Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+        // ---------------- AUDITORÍA ----------------
+        List<Metadata> existentes = metadataRepository.findByRegistroAndTipoDocumento(registro, tipoNormalizado);
+        for (Metadata existente : existentes) {
+            existente.setActivo(false);
+            existente.setFechaDesactivacion(LocalDateTime.now());
+            metadataRepository.save(existente);
+        }
 
-	    String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
-	    ArchivoDTO dto = new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro);
+        Metadata metadata = new Metadata();
+        metadata.setNombreArchivo(nombreSeguro);
+        metadata.setTipoDocumento(tipoNormalizado); // aquí ya se guarda fijo o extra según corresponda
+        metadata.setFechaSubida(LocalDateTime.now());
+        metadata.setRegistro(registro);
+        metadata.setSubidoPor(usuario);
+        metadata.setActivo(true);
+        metadataRepository.save(metadata);
 
-	    return ResponseEntity.ok(Map.of(Constantes.MSG, "Archivo subido correctamente", Constantes.ARCHIVOS_CARP, dto));
-	}
+        Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+        String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
+        ArchivoDTO dto = new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro);
+
+        return ResponseEntity.ok(Map.of(Constantes.MSG, "Archivo subido correctamente", Constantes.ARCHIVOS_CARP, dto));
+    }
+
 
 
 	

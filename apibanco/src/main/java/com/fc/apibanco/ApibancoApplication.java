@@ -6,11 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.fc.apibanco.model.PasswordEncriptada;
 import com.fc.apibanco.model.Usuario;
-import com.fc.apibanco.repository.PasswordEncriptadaRepository;
 import com.fc.apibanco.repository.UsuarioRepository;
-import com.fc.apibanco.util.AESUtil;
+
 
 @SpringBootApplication
 public class ApibancoApplication {
@@ -19,117 +17,28 @@ public class ApibancoApplication {
         SpringApplication.run(ApibancoApplication.class, args);
     }
 
-    @Bean
-    public CommandLineRunner crearUsuarioAdmin(UsuarioRepository usuarioRepository,
-                                               PasswordEncriptadaRepository passwordEncriptadaRepository,
-                                               PasswordEncoder passwordEncoder) {
-        return args -> {
-            if (usuarioRepository.findByUsername("admin").isEmpty()) {
-                Usuario admin = new Usuario();
-                admin.setUsername("admin");
-                admin.setFirstName("System");
-                admin.setLastName("Administrator");
-                admin.setEmail("admin@dominio.com");
-
-                String psOriginal = "admin123";
-                admin.setPasswordHash(passwordEncoder.encode(psOriginal));
-                admin.setRol("ADMIN");
-                admin.setActivo(true);
-
-                // Valores por defecto en campos adicionales
-                admin.setTeam("Default Team");
-                admin.setDepartment("Default Department");
-                admin.setSupervisor(null); // el admin no tiene supervisor
-
-                usuarioRepository.save(admin);
-
-                PasswordEncriptada pass = new PasswordEncriptada();
-                pass.setUsuario(admin);
-                pass.setHash(AESUtil.encrypt(psOriginal));
-                admin.setPasswordEncriptada(pass);
-
-                passwordEncriptadaRepository.save(pass);
-
-                System.out.println("✅ Usuario admin creado con valores por defecto y contraseña encriptada");
-            } else {
-                System.out.println("ℹ️ Usuario admin ya existe");
-            }
-        };
-    }
     
-    @Bean
-    public CommandLineRunner crearUsuarioSupervisor(UsuarioRepository usuarioRepository,
-                                                    PasswordEncriptadaRepository passwordEncriptadaRepository,
-                                                    PasswordEncoder passwordEncoder) {
-        return args -> {
-            if (usuarioRepository.findByUsername("supervisor").isEmpty()) {
-                Usuario supervisor = new Usuario();
-                supervisor.setUsername("supervisor");
-                supervisor.setFirstName("Default");
-                supervisor.setLastName("Supervisor");
-                supervisor.setEmail("supervisor@dominio.com");
-
-                String psOriginal = "supervisor123";
-                supervisor.setPasswordHash(passwordEncoder.encode(psOriginal));
-                supervisor.setRol("SUPERVISOR");
-                supervisor.setActivo(true);
-
-                // Valores por defecto
-                supervisor.setTeam("Default Team");
-                supervisor.setDepartment("Default Department");
-                supervisor.setSupervisor(null); // el supervisor no tiene jefe
-
-                usuarioRepository.save(supervisor);
-
-                PasswordEncriptada pass = new PasswordEncriptada();
-                pass.setUsuario(supervisor);
-                pass.setHash(AESUtil.encrypt(psOriginal));
-                supervisor.setPasswordEncriptada(pass);
-
-                passwordEncriptadaRepository.save(pass);
-
-                System.out.println("✅ Usuario supervisor creado con valores por defecto y contraseña encriptada");
-            } else {
-                System.out.println("ℹ️ Usuario supervisor ya existe");
-            }
-        };
-    }
-    
-    @Bean
-    public CommandLineRunner crearUsuarioSuperAdmin(UsuarioRepository usuarioRepository,
-                                                    PasswordEncriptadaRepository passwordEncriptadaRepository,
-                                                    PasswordEncoder passwordEncoder) {
-        return args -> {
-            if (usuarioRepository.findByUsername("superadmin").isEmpty()) {
-                Usuario superAdmin = new Usuario();
-                superAdmin.setUsername("superadmin");
-                superAdmin.setFirstName("System");
-                superAdmin.setLastName("Super Administrator");
-                superAdmin.setEmail("superadmin@dominio.com");
-
-                String psOriginal = "superadmin123";
-                superAdmin.setPasswordHash(passwordEncoder.encode(psOriginal));
-                superAdmin.setRol("SUPERADMIN"); // rol diferenciado
-                superAdmin.setActivo(true);
-
-                // Valores por defecto en campos adicionales
-                superAdmin.setTeam("Global Team");
-                superAdmin.setDepartment("Executive Department");
-                superAdmin.setSupervisor(null); // el superadmin no tiene supervisor
-
-                usuarioRepository.save(superAdmin);
-
-                PasswordEncriptada pass = new PasswordEncriptada();
-                pass.setUsuario(superAdmin);
-                pass.setHash(AESUtil.encrypt(psOriginal));
-                superAdmin.setPasswordEncriptada(pass);
-
-                passwordEncriptadaRepository.save(pass);
-
-                System.out.println("✅ Usuario superadmin creado con valores por defecto y contraseña encriptada");
-            } else {
-                System.out.println("ℹ️ Usuario superadmin ya existe");
-            }
-        };
+    @Bean 
+    CommandLineRunner initSuperAdmin(UsuarioRepository usuarioRepository,
+    								 PasswordEncoder passwordEncoder) { 
+    	return args -> { 
+    		// Si no existe el superadmin, lo creamos 
+    		if (usuarioRepository.findByUsername("superadmin").isEmpty()) { 
+    			Usuario superAdmin = new Usuario(); 
+    			superAdmin.setUsername("superadmin"); 
+    			superAdmin.setRol("SUPERADMIN"); 
+    			superAdmin.setActivo(true); 
+    			// ⚠️ Usa una contraseña segura, no hardcodeada en código 
+    			String initPassword = System.getenv("SUPERADMIN_INITIAL_PASSWORD"); 
+    			if (initPassword == null || initPassword.isBlank()) { 
+    				throw new IllegalStateException("Falta SUPERADMIN_INITIAL_PASSWORD en el entorno"); 
+    			} 
+    			superAdmin.setPasswordHash(passwordEncoder.encode(initPassword)); 
+    			
+    			usuarioRepository.save(superAdmin); 
+    			System.out.println("✅ Usuario SUPERADMIN inicial creado"); 
+    		} 
+    	}; 
+    		
     }
 }
