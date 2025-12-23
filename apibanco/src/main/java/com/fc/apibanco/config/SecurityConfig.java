@@ -44,10 +44,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable())  //NOSONAR
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                // Endpoints públicos
+
                 .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/descargar/**").permitAll()
@@ -56,7 +56,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/subir-multiple/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
 
-                // API Keys: ADMIN solo lectura, SUPERADMIN todo
                 .requestMatchers(HttpMethod.GET, "/api/apikeys/**")
                     .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
                 .requestMatchers(HttpMethod.POST, "/api/apikeys/**")
@@ -66,7 +65,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/apikeys/**")
                     .hasRole(Constantes.SUPERADMIN)
 
-                // Usuarios: ADMIN solo lectura, SUPERADMIN todo
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/**")
                     .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
                 .requestMatchers(HttpMethod.POST, "/api/usuarios/**")
@@ -76,7 +74,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**")
                     .hasRole(Constantes.SUPERADMIN)
 
-                // Cualquier otro endpoint requiere autenticación
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

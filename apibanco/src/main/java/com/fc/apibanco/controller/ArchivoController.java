@@ -100,12 +100,9 @@ public class ArchivoController {
 
         // ---------------- VALIDACIÓN DE TIPO ----------------
         if (TIPOS_FIJOS.contains(tipoNormalizado)) {
-            // documento fijo → se guarda normalizado
         } else {
-            // documento extra → se guarda tal cual lo digitó el usuario
             String tipoExtra = tipo.trim();
 
-            // validar que no sea similar a un fijo
             for (String fijo : TIPOS_FIJOS) {
                 if (tipoExtra.toUpperCase().startsWith(fijo)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -117,7 +114,6 @@ public class ArchivoController {
                     .body(Map.of(Constantes.MSG, "Tipo extra inválido: " + tipoExtra));
             }
 
-            // reasignar para que se guarde lo que digitó el usuario
             tipoNormalizado = tipoExtra;
         }
 
@@ -145,7 +141,7 @@ public class ArchivoController {
 
         Metadata metadata = new Metadata();
         metadata.setNombreArchivo(nombreSeguro);
-        metadata.setTipoDocumento(tipoNormalizado); // aquí ya se guarda fijo o extra según corresponda
+        metadata.setTipoDocumento(tipoNormalizado);
         metadata.setFechaSubida(LocalDateTime.now());
         metadata.setRegistro(registro);
         metadata.setSubidoPor(usuario);
@@ -214,20 +210,18 @@ public class ArchivoController {
 	        String tipo = tipos.get(i);
 
 	        if (archivo == null || archivo.isEmpty() || tipo == null || tipo.isBlank()) {
-	            continue; // ignorar pares incompletos
+	            continue;
 	        }
 
 	        String tipoNormalizado = tipo.trim().toUpperCase();
 
 	        // ---------------- VALIDACIÓN SEGÚN ORIGEN ----------------
 	        if (userDetails == null) {
-	            // API Key → solo tipos fijos
 	            if (!TIPOS_FIJOS.contains(tipoNormalizado)) {
 	                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 	                    .body(Map.of(Constantes.MSG, "Con API Key solo se permiten los tipos fijos: " + TIPOS_FIJOS));
 	            }
 	        } else {
-	            // Front → permitir extras, pero no variantes inválidas
 	            if (tipoNormalizado.chars().anyMatch(Character::isDigit)) {
 	                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 	                    .body(Map.of(Constantes.MSG, "Tipo inválido: " + tipoNormalizado));

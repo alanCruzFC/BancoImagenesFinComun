@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fc.apibanco.dto.RegistroRequest;
 import com.fc.apibanco.model.Registro;
 import com.fc.apibanco.service.RegistroService;
+import com.fc.apibanco.util.Constantes;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -42,14 +43,14 @@ public class RegistroController {
             String consumidor = (String) httpRequest.getAttribute("consumidor");
             if (consumidor == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                     .body(Map.of("mensaje", "Falta autenticación o API key válida"));
+                                     .body(Map.of(Constantes.MSG, "Falta autenticación o API key válida"));
             }
 
             if (request.getCorreosAutorizados() != null && !request.getCorreosAutorizados().isEmpty()) {
                 creadorUsername = request.getCorreosAutorizados().get(0);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                     .body(Map.of("mensaje", "Se requieren correos autorizados para crear registro vía API key"));
+                                     .body(Map.of(Constantes.MSG, "Se requieren correos autorizados para crear registro vía API key"));
             }
         }
 
@@ -57,7 +58,7 @@ public class RegistroController {
 
         String url = "/visualizar/" + registro.getNumeroSolicitud();
         return ResponseEntity.ok(Map.of(
-            "mensaje", "Registro creado exitosamente",
+        		Constantes.MSG, "Registro creado exitosamente",
             "url", url
         ));
     }
