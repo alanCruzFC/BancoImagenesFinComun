@@ -94,16 +94,17 @@ public class ArchivoController {
         Files.createDirectories(carpeta);
 
         // ---------------- TIPOS FIJOS ----------------
-        Set<String> TIPOS_FIJOS = Constantes.TIPOS_FIJOS;
+        Set<String> tipos_fijos = Constantes.TIPOS_FIJOS;
 
         String tipoNormalizado = tipo.trim().toUpperCase();
 
         // ---------------- VALIDACIÓN DE TIPO ----------------
-        if (TIPOS_FIJOS.contains(tipoNormalizado)) {
+        if (tipos_fijos.contains(tipoNormalizado)) {
+        	// No hacemos nada porque ya es un tipo fijo válido
         } else {
             String tipoExtra = tipo.trim();
 
-            for (String fijo : TIPOS_FIJOS) {
+            for (String fijo : tipos_fijos) {
                 if (tipoExtra.toUpperCase().startsWith(fijo)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of(Constantes.MSG, "Tipo extra inválido por similitud con fijo: " + tipoExtra));
@@ -161,113 +162,136 @@ public class ArchivoController {
 	
 	//-----------------------CARGAR MULTIPLES IMAGENES AL MISMO TIEMPO------------------------------------
 	
-    @PostMapping("/subir-multiple/{numeroSolicitud}") 
-    @PreAuthorize("hasRole('SUPERADMIN')") 
-    public ResponseEntity<Map<String, Object>> subirDocumentos(@PathVariable String numeroSolicitud, 
-    														   @RequestParam("archivos") List<MultipartFile> archivos, 
-    														   @RequestParam("tipos") List<String> tipos, 
-    														   @AuthenticationPrincipal UserDetails userDetails, 
-    														   HttpServletRequest request) throws IOException {
+    @PostMapping("/subir-multiple/{numeroSolicitud}")
+    @PreAuthorize("hasRole('SUPERADMIN')")
+    public ResponseEntity<Map<String, Object>> subirDocumentos(
+            @PathVariable String numeroSolicitud,
+            @RequestParam("archivos") List<MultipartFile> archivos,
+            @RequestParam("tipos") List<String> tipos,
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request) throws IOException {
 
-	    Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
+        Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
 
-	    Usuario usuario;
-	    if (userDetails != null) {
-	        usuario = usuarioRepository.findByUsername(userDetails.getUsername())
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
+        Usuario usuario = obtenerUsuario(userDetails, request, registro);
 
-	        String rol = usuario.getRol();
-	        boolean accesoPermitido = rol.equals(Constantes.ADMIN) ||
-	                registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername());
+        numeroSolicitud = numeroSolicitud.trim();
+        Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud);
+        Files.createDirectories(carpeta);
 
-	        if (!accesoPermitido) {
-	            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso denegado");
-	        }
-	    } else {
-	        String consumidor = (String) request.getAttribute("consumidor");
-	        if (consumidor == null) {
-	            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "API key inválida");
-	        }
+        List<ArchivoDTO> archivosSubidos = procesarArchivos(archivos, tipos, userDetails, registro, usuario, carpeta, numeroSolicitud);
 
-	        usuario = registro.getCreador();
-	        if (usuario == null) {
-	            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "El registro no tiene creador definido");
-	        }
-	    }
+        return ResponseEntity.ok(Map.of(
+                Constantes.MSG, "Archivos subidos correctamente",
+                Constantes.ARCHIVOS_CARP, archivosSubidos
+        ));
+    }
+    private Usuario obtenerUsuario(UserDetails userDetails, HttpServletRequest request, Registro registro) {
+        if (userDetails != null) {
+            Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
+            boolean accesoPermitido = usuario.getRol().equals(Constantes.ADMIN)
+                    || registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername());
+            if (!accesoPermitido) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso denegado");
+            }
+            return usuario;
+        }
+        String consumidor = (String) request.getAttribute("consumidor");
+        if (consumidor == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "API key inválida");
+        }
+        Usuario usuario = registro.getCreador();
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "El registro no tiene creador definido");
+        }
+        return usuario;
+    }
 
-	    numeroSolicitud = numeroSolicitud.trim();
-	    Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud);
-	    Files.createDirectories(carpeta);
+    private List<ArchivoDTO> procesarArchivos(List<MultipartFile> archivos, List<String> tipos,
+            UserDetails userDetails, Registro registro,
+            Usuario usuario, Path carpeta, String numeroSolicitud) throws IOException {
+		List<ArchivoDTO> archivosSubidos = new ArrayList<>();
+		Set<String> tiposFijos = Constantes.TIPOS_FIJOS;
+		Set<String> extensionesPermitidas = Constantes.EXT_PER;
+		
+		for (int i = 0; i < archivos.size(); i++) {
+			MultipartFile archivo = archivos.get(i);
+			String tipo = tipos.get(i);
+			
+			if (archivo == null || archivo.isEmpty() || tipo == null || tipo.isBlank()) {
+			continue;
+			}
+			
+			String tipoNormalizado = tipo.trim().toUpperCase();
+			validarTipo(userDetails, tipoNormalizado, tiposFijos);
+			
+			String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
+			validarExtension(extension, extensionesPermitidas);
+			
+			String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
+			Path destino = carpeta.resolve(nombreSeguro).normalize();
+			validarRuta(destino, carpeta);
+			
+			desactivarMetadatosPrevios(registro, tipoNormalizado);
+			
+			Metadata metadata = crearMetadata(nombreSeguro, tipoNormalizado, registro, usuario);
+			metadataRepository.save(metadata);
+			
+			Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+			
+			String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
+			archivosSubidos.add(new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro));
+		}
+		return archivosSubidos;
+    }
+    private void validarTipo(UserDetails userDetails, String tipoNormalizado, Set<String> tiposFijos) {
+        if (userDetails == null) {
+            if (!tiposFijos.contains(tipoNormalizado)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Con API Key solo se permiten los tipos fijos: " + tiposFijos);
+            }
+        } else {
+            if (tipoNormalizado.chars().anyMatch(Character::isDigit)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo inválido: " + tipoNormalizado);
+            }
+        }
+    }
 
-	    // ---------------- TIPOS FIJOS ----------------
-	    Set<String> TIPOS_FIJOS = Constantes.TIPOS_FIJOS;
+    private void validarExtension(String extension, Set<String> extensionesPermitidas) {
+        if (!extensionesPermitidas.contains(extension)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Extensión no permitida: " + extension);
+        }
+    }
 
-	    List<ArchivoDTO> archivosSubidos = new ArrayList<>();
+    private void validarRuta(Path destino, Path carpeta) throws IOException {
+        if (!destino.startsWith(carpeta)) {
+            throw new IOException("Ruta fuera del directorio permitido");
+        }
+    }
 
-	    for (int i = 0; i < archivos.size(); i++) {
-	        MultipartFile archivo = archivos.get(i);
-	        String tipo = tipos.get(i);
+    private void desactivarMetadatosPrevios(Registro registro, String tipoNormalizado) {
+        List<Metadata> existentes = metadataRepository.findByRegistroAndTipoDocumento(registro, tipoNormalizado);
+        for (Metadata existente : existentes) {
+            existente.setActivo(false);
+            existente.setFechaDesactivacion(LocalDateTime.now());
+            metadataRepository.save(existente);
+        }
+    }
 
-	        if (archivo == null || archivo.isEmpty() || tipo == null || tipo.isBlank()) {
-	            continue;
-	        }
+    private Metadata crearMetadata(String nombreSeguro, String tipoNormalizado, Registro registro, Usuario usuario) {
+        Metadata metadata = new Metadata();
+        metadata.setNombreArchivo(nombreSeguro);
+        metadata.setTipoDocumento(tipoNormalizado);
+        metadata.setFechaSubida(LocalDateTime.now());
+        metadata.setRegistro(registro);
+        metadata.setSubidoPor(usuario);
+        metadata.setActivo(true);
+        return metadata;
+    }
 
-	        String tipoNormalizado = tipo.trim().toUpperCase();
 
-	        // ---------------- VALIDACIÓN SEGÚN ORIGEN ----------------
-	        if (userDetails == null) {
-	            if (!TIPOS_FIJOS.contains(tipoNormalizado)) {
-	                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                    .body(Map.of(Constantes.MSG, "Con API Key solo se permiten los tipos fijos: " + TIPOS_FIJOS));
-	            }
-	        } else {
-	            if (tipoNormalizado.chars().anyMatch(Character::isDigit)) {
-	                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                    .body(Map.of(Constantes.MSG, "Tipo inválido: " + tipoNormalizado));
-	            }
-	        }
-
-	        // ---------------- VALIDACIÓN DE EXTENSIÓN ----------------
-	        Set<String> extensionesPermitidas = Constantes.EXT_PER;
-	        String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
-	        if (!extensionesPermitidas.contains(extension)) {
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                .body(Map.of(Constantes.MSG, "Extensión no permitida: " + extension));
-	        }
-
-	        String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
-	        Path destino = carpeta.resolve(nombreSeguro).normalize();
-	        if (!destino.startsWith(carpeta)) {
-	            throw new IOException("Ruta fuera del directorio permitido");
-	        }
-
-	        // ---------------- AUDITORÍA: DESACTIVAR TODOS LOS ANTERIORES ----------------
-	        List<Metadata> existentes = metadataRepository.findByRegistroAndTipoDocumento(registro, tipoNormalizado);
-	        for (Metadata existente : existentes) {
-	            existente.setActivo(false);
-	            existente.setFechaDesactivacion(LocalDateTime.now());
-	            metadataRepository.save(existente);
-	        }
-
-	        // ---------------- CREAR NUEVO METADATA ----------------
-	        Metadata metadata = new Metadata();
-	        metadata.setNombreArchivo(nombreSeguro);
-	        metadata.setTipoDocumento(tipoNormalizado);
-	        metadata.setFechaSubida(LocalDateTime.now());
-	        metadata.setRegistro(registro);
-	        metadata.setSubidoPor(usuario);
-	        metadata.setActivo(true);
-	        metadataRepository.save(metadata);
-
-	        Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-
-	        String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
-	        archivosSubidos.add(new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro));
-	    }
-
-	    return ResponseEntity.ok(Map.of(Constantes.MSG, "Archivos subidos correctamente", Constantes.ARCHIVOS_CARP, archivosSubidos));
-	}
 
 	
 	//-----------------------LISTAR REGISTROS-------------------------------------------------------------
@@ -323,7 +347,7 @@ public class ArchivoController {
 	            return new RegistroDTO(
 	                registro.getNumeroSolicitud(),
 	                registro.getCarpetaRuta(),
-	                registro.getCreador() != null ? registro.getCreador().getUsername() : "Usuario Desconocido",
+	                registro.getCreador() != null ? registro.getCreador().getUsername() : Constantes.USER_DESC,
 	                registro.getFechaCreacion(),
 	                correos
 	            );
@@ -386,7 +410,7 @@ public class ArchivoController {
 	    RegistroDTO dto = new RegistroDTO(
 	        registro.getNumeroSolicitud(),
 	        registro.getCarpetaRuta(),
-	        registro.getCreador() != null ? registro.getCreador().getUsername() : "Usuario Desconocido",
+	        registro.getCreador() != null ? registro.getCreador().getUsername() : Constantes.USER_DESC,
 	        registro.getFechaCreacion(),
 	        correos
 	    );
@@ -395,8 +419,6 @@ public class ArchivoController {
 
 	    return ResponseEntity.ok(dto);
 	}
-
-
 	
 	//----------------------LISTAR USUARIOS Y MOSTRAR CONTRASEÑA -----------------------------------------------
 	
