@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   protected readonly title = signal('frontend-apibanco');
   private readonly isBrowser: boolean;
 
-  constructor( private router: Router, 
+  constructor( private readonly router: Router, 
     @Inject(PLATFORM_ID) platformId: Object 
   ) { 
     this.isBrowser = isPlatformBrowser(platformId); 

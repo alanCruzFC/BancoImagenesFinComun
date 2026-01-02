@@ -6,7 +6,7 @@ import { Observable } from "rxjs";
 export class ApiKeyService {
   private readonly apiUrl = 'http://localhost:8080/api/apikeys';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getApiKeys(): Observable<ApiKey[]> {
     return this.http.get<ApiKey[]>(this.apiUrl);

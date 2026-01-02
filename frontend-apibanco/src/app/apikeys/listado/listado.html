@@ -15,7 +15,6 @@
              aria-label="Buscar API Keys"
              class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
       <button (click)="abrirModalApiKey()" *ngIf="puedeSubir()"
-              aria-label="Crear nueva API Key"
               class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                  shadow-md hover:shadow-glow transform transition-all duration-300
                  hover:scale-[1.05] active:scale-[0.95]
@@ -53,7 +52,6 @@
               {{ claveVisible[key.id] ? key.clave : '************' }}
             </span>
             <button (click)="toggleClave(key.id)"
-                    aria-label="Mostrar u ocultar clave"
                     class="ml-2 text-blue-600 hover:underline text-xs">
               {{ claveVisible[key.id] ? 'Ocultar' : 'Ver clave' }}
             </button>

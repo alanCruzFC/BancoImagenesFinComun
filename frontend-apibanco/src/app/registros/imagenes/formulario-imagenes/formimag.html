@@ -56,7 +56,6 @@
 
       <!-- Botón para abrir selector -->
       <button type="button"
-              aria-label="Seleccionar archivo extra {{i}}"
               (click)="fileInput.click()"
               class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm font-semibold">
         📂 Seleccionar archivo
@@ -66,10 +65,8 @@
     <div class="flex items-center gap-3 mt-3">
       <p class="text-sm text-gray-500 italic">{{ getNombreArchivo(doc) }}</p>
       <button *ngIf="doc.archivo" type="button" (click)="eliminarArchivo(doc)"
-              aria-label="Quitar archivo extra {{i}}"
               class="text-red-500 hover:text-red-700 text-xs font-medium">✖ Quitar archivo</button>
       <button type="button" (click)="eliminarExtra(i)"
-              aria-label="Eliminar documento extra {{i}}"
               class="text-red-600 hover:text-red-800 text-xs font-medium">🗑 Eliminar documento</button>
     </div>
   </div>
@@ -84,7 +81,6 @@
 
   <!-- Botón guardar -->
   <button type="submit" 
-          aria-label="Guardar imágenes"
           class="w-full mt-8 bg-linear-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform font-semibold text-lg">
     💾 Guardar imágenes
   </button>

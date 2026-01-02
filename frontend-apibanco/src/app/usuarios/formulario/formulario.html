@@ -80,7 +80,7 @@
           <option value="" disabled selected>Selecciona un equipo</option>
           <option *ngFor="let t of teams" [value]="t">{{ t }}</option>
         </select>
-        <button type="button" (click)="cambiarAInputTeam()" aria-label="Ingresar nuevo equipo"
+        <button type="button" (click)="cambiarAInputTeam()"
                 class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
       </div>
       <div *ngIf="usarInputTeam">
@@ -103,7 +103,7 @@
           <option value="" disabled selected>Selecciona un departamento</option>
           <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
         </select>
-        <button type="button" (click)="cambiarAInputDepartment()" aria-label="Ingresar nuevo departamento"
+        <button type="button" (click)="cambiarAInputDepartment()"
                 class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
       </div>
       <div *ngIf="usarInputDepartment">
@@ -153,14 +153,14 @@
           Debes generar una contraseña. 
         </p> 
       </div> 
-      <button type="button" (click)="generarPassword()" aria-label="Generar contraseña" class="shrink-0 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"> 
+      <button type="button" (click)="generarPassword()" class="shrink-0 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"> 
         🔑 Generar 
       </button> 
     </div> 
   </div> 
     <!-- Botón submit --> 
     <div class="pt-6"> 
-      <button type="submit" aria-label="Guardar usuario" class="bg-linear-to-r from-[#046BB4] to-[#4484B4] hover:from-[#046CAC] hover:to-[#046BB4] text-white px-6 py-3 rounded-xl shadow-lg w-full transition-all duration-300 transform hover:scale-[1.02]"> 
+      <button type="submit" class="bg-linear-to-r from-[#046BB4] to-[#4484B4] hover:from-[#046CAC] hover:to-[#046BB4] text-white px-6 py-3 rounded-xl shadow-lg w-full transition-all duration-300 transform hover:scale-[1.02]"> 
         {{ usuario ? '💾 Guardar cambios' : '💾 Crear usuario' }} 
       </button> 
     </div> 

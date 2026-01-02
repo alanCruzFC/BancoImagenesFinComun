@@ -33,7 +33,6 @@
     <button *ngIf="formData.id"
             type="button"
             (click)="refactorizarClave()"
-            aria-label="Refactorizar clave"
             class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">
       🔑 Refactorizar
     </button>
@@ -64,7 +63,6 @@
 
   <!-- Botón submit -->
   <button type="submit"
-          aria-label="Guardar API Key"
           class="w-full bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                  shadow-md hover:shadow-glow transform transition-all duration-300
                  hover:scale-[1.05] active:scale-[0.95]
