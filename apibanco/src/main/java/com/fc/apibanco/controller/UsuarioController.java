@@ -53,7 +53,7 @@ public class UsuarioController {
                                           @AuthenticationPrincipal UserDetails userDetails) {
 
         usuarioRepository.findByUsername(userDetails.getUsername())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no válido"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
 
         Optional<Usuario> existenteOpt = usuarioRepository.findByEmail(request.getEmail());
         Usuario usuario;
@@ -152,7 +152,7 @@ public class UsuarioController {
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
     public ResponseEntity<List<UsuarioDTO>> listarUsuariosSinPassword(@AuthenticationPrincipal UserDetails userDetails) {
         usuarioRepository.findByUsername(userDetails.getUsername())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no válido"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
 
         List<UsuarioDTO> usuariosSinPassword = usuarioRepository.findAll().stream()
             .filter(u -> u.getPasswordHash() == null || u.getPasswordHash().isBlank())
@@ -226,7 +226,7 @@ public class UsuarioController {
             @RequestParam(required = false) String filtro) {
 
         usuarioRepository.findByUsername(userDetails.getUsername())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no válido"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
 
         List<String> correos = usuarioRepository.findAll().stream()
             .map(Usuario::getEmail)

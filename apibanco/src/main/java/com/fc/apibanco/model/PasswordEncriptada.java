@@ -42,9 +42,5 @@ public class PasswordEncriptada {
 		this.usuario = usuario;
 	}
 
-	public void save(PasswordEncriptada pass) {
-		
-	}
-
 }
 
