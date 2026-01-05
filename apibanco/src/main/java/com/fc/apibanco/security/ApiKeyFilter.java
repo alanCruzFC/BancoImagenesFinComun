@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class ApiKeyFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApiKeyFilter.class);
+    private static final Logger logg = LoggerFactory.getLogger(ApiKeyFilter.class);
 
     private final ApiKeyService apiKeyService;
     
@@ -49,11 +49,11 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             return;
         }
 
-        logger.debug("ApiKeyFilter - X-API-KEY recibida: {}", apiKeyHeader);
+        logg.debug("ApiKeyFilter - X-API-KEY recibida: {}", apiKeyHeader);
 
         Optional<ApiKey> opt = apiKeyService.findByClave(apiKeyHeader);
         if (opt.isEmpty() || !opt.get().isActivo()) {
-            logger.warn("ApiKeyFilter - API key inválida o inactiva: {}", apiKeyHeader);
+            logg.warn("ApiKeyFilter - API key inválida o inactiva: {}", apiKeyHeader);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "API key inválida o inactiva");
             return;
         }
@@ -63,29 +63,29 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
         // Validar permisos
         if ("GET".equalsIgnoreCase(metodo) && !apiKey.isLectura()) {
-            logger.warn("ApiKeyFilter - consumidor={} intentó GET sin permiso", apiKey.getConsumidor());
+            logg.warn("ApiKeyFilter - consumidor={} intentó GET sin permiso", apiKey.getConsumidor());
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "La API key no tiene permiso de lectura");
             return;
         }
         if ("POST".equalsIgnoreCase(metodo) && !apiKey.isEscritura()) {
-            logger.warn("ApiKeyFilter - consumidor={} intentó POST sin permiso", apiKey.getConsumidor());
+            logg.warn("ApiKeyFilter - consumidor={} intentó POST sin permiso", apiKey.getConsumidor());
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "La API key no tiene permiso de escritura");
             return;
         }
         if ("PUT".equalsIgnoreCase(metodo) && !apiKey.isActualizacion()) {
-            logger.warn("ApiKeyFilter - consumidor={} intentó PUT sin permiso", apiKey.getConsumidor());
+            logg.warn("ApiKeyFilter - consumidor={} intentó PUT sin permiso", apiKey.getConsumidor());
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "La API key no tiene permiso de actualización");
             return;
         }
         if ("DELETE".equalsIgnoreCase(metodo) && !apiKey.isEliminacion()) {
-            logger.warn("ApiKeyFilter - consumidor={} intentó DELETE sin permiso", apiKey.getConsumidor());
+            logg.warn("ApiKeyFilter - consumidor={} intentó DELETE sin permiso", apiKey.getConsumidor());
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "La API key no tiene permiso de eliminación");
             return;
         }
 
         request.setAttribute("consumidor", apiKey.getConsumidor());
 
-        logger.info("ApiKeyFilter - consumidor={} autenticado con permisos {} en {}", 
+        logg.info("ApiKeyFilter - consumidor={} autenticado con permisos {} en {}", 
             apiKey.getConsumidor(), metodo, request.getRequestURI());
 
         filterChain.doFilter(request, response);
