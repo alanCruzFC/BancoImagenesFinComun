@@ -152,7 +152,7 @@ public class ArchivoController {
         Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
         String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
-        ArchivoDTO dto = new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro);
+        ArchivoDTO dto = new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro, tipoNormalizado);
 
         return ResponseEntity.ok(Map.of(Constantes.MSG, "Archivo subido correctamente", Constantes.ARCHIVOS_CARP, dto));
     }
@@ -242,7 +242,7 @@ public class ArchivoController {
 			Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 			
 			String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
-			archivosSubidos.add(new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro));
+			archivosSubidos.add(new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro, tipoNormalizado));
 		}
 		return archivosSubidos;
     }
@@ -396,7 +396,7 @@ public class ArchivoController {
 	                String extension = FilenameUtils.getExtension(meta.getNombreArchivo());
 	                String nombreVisual = meta.getTipoDocumento() + "_" + numeroSolicitud + "." + extension;
 	                String urlDescarga = Constantes.URL_DESC + numeroSolicitud + "/" + meta.getNombreArchivo();
-	                return new ArchivoDTO(nombreVisual, urlDescarga);
+	                return new ArchivoDTO(nombreVisual, urlDescarga, meta.getTipoDocumento());
 	            })
 	            .toList()
 	        : Collections.emptyList();
@@ -464,33 +464,42 @@ public class ArchivoController {
     	return ResponseEntity.ok(respuesta); 
     }
 	
-//	----------------------CARGAR IMAGENES PARA VISUALIZAR------------------------------------------
+//	----------------------DESCARGAR IMAGENES------------------------------------------
 
-	@GetMapping("/descargar/{numeroSolicitud}/{nombreArchivo}") 
-	@PreAuthorize("permitAll()") 
-	public ResponseEntity<Resource> descargarArchivo( @PathVariable String numeroSolicitud, 
-													  @PathVariable String nombreArchivo, 
-													  @RequestParam(defaultValue = "false") boolean inline) throws IOException {
+    @GetMapping("/descargar/{numeroSolicitud}/{nombreArchivo}")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Resource> descargarArchivo(
+            @PathVariable String numeroSolicitud,
+            @PathVariable String nombreArchivo,
+            @RequestParam(defaultValue = "false") boolean inline) throws IOException {
 
-	    Path ruta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud).resolve(nombreArchivo).normalize();
-	    Resource recurso = new UrlResource(ruta.toUri());
+        Path ruta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud).resolve(nombreArchivo).normalize();
+        Resource recurso = new UrlResource(ruta.toUri());
 
-	    if (!recurso.exists()) {
-	        return ResponseEntity.notFound().build();
-	    }
+        if (!recurso.exists()) {
+            return ResponseEntity.notFound().build();
+        }
 
-	    String contentType = Files.probeContentType(ruta);
-	    if (contentType == null) {
-	        contentType = "application/octet-stream";
-	    }
+        String contentType = Files.probeContentType(ruta);
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
 
-	    String disposition = inline
-	            ? "inline; filename=\"" + nombreArchivo + "\""
-	            : "attachment; filename=\"" + nombreArchivo + "\"";
+        Metadata metadata = metadataRepository.findByNombreArchivo(nombreArchivo)
+                .orElse(null);
 
-	    return ResponseEntity.ok()
-	            .contentType(MediaType.parseMediaType(contentType))
-	            .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
-	            .body(recurso);
-	}
+        String tipoDocumento = metadata != null ? metadata.getTipoDocumento() : "archivo";
+        String extension = FilenameUtils.getExtension(nombreArchivo);
+        String nombreDescarga = tipoDocumento + "." + extension;
+
+        String disposition = inline
+                ? "inline; filename=\"" + nombreDescarga + "\""
+                : "attachment; filename=\"" + nombreDescarga + "\"";
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
+                .body(recurso);
+    }
+
 }

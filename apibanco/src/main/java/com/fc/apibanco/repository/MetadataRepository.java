@@ -1,6 +1,7 @@
 package com.fc.apibanco.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,5 +17,7 @@ public interface MetadataRepository extends JpaRepository<Metadata, Long> {
 	List<Metadata> findByRegistroAndActivoTrue(Registro registro);
 	
 	List<Metadata> findByRegistroAndActivoTrueAndFechaDesactivacionIsNull(Registro registro);
+	
+	Optional<Metadata> findByNombreArchivo(String nombreArchivo);
 }
 

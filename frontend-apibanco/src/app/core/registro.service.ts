@@ -6,7 +6,7 @@ import { RegistroRequest } from '../registros/formulario/formulario';
 export interface ArchivoDTO {
   nombreArchivo: string;
   url: string;
-  tipoDocumento?: string;
+  tipoDocumento: string;
 }
 
 export interface RegistroDTO {

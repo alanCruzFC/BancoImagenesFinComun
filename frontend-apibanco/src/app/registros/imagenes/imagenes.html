@@ -25,12 +25,12 @@
 
   <div class="grid grid-cols-3 gap-4">
     <button *ngFor="let img of imagenes"
-            aria-label="Visualizar archivo {{ getNombreArchivo(img.url) }}"
+            aria-label="Visualizar archivo {{ getNombreArchivo(img.tipoDocumento) }}"
             class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
             (click)="abrirVisualizacion(img)">
       <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}" 
            class="w-full h-40 object-cover rounded-lg border border-gray-200" />
-      <p class="text-xs text-gray-500 mt-2 text-center">{{ getNombreArchivo(img.url) }}</p>
+      <p class="text-xs text-gray-500 mt-2 text-center">{{ img.tipoDocumento }}</p>
     </button>
   </div>
 </div>
