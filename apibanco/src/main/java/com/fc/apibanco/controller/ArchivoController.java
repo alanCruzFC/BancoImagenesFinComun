@@ -35,6 +35,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fc.apibanco.dto.ArchivoDTO;
 import com.fc.apibanco.dto.RegistroDTO;
+import com.fc.apibanco.dto.TipoDocumentoStatusDTO;
 import com.fc.apibanco.dto.UsuarioDTO;
 import com.fc.apibanco.model.CorreoAutorizado;
 import com.fc.apibanco.model.Metadata;
@@ -176,17 +177,36 @@ public class ArchivoController {
 
         Usuario usuario = obtenerUsuario(userDetails, request, registro);
 
-        numeroSolicitud = numeroSolicitud.trim();
-        Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud);
+        final String solicitudNormalizada = numeroSolicitud.trim();
+
+        Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, solicitudNormalizada);
         Files.createDirectories(carpeta);
 
-        List<ArchivoDTO> archivosSubidos = procesarArchivos(archivos, tipos, userDetails, registro, usuario, carpeta, numeroSolicitud);
+        List<ArchivoDTO> archivosSubidos = procesarArchivos(
+                archivos, tipos, userDetails, registro, usuario, carpeta, solicitudNormalizada);
+
+        List<TipoDocumentoStatusDTO> status = Constantes.TIPOS_FIJOS.stream()
+            .map(tipo -> {
+                List<Metadata> metas = metadataRepository.findByRegistroAndTipoDocumentoAndActivoTrue(registro, tipo);
+                if (!metas.isEmpty()) {
+                    Metadata meta = metas.get(0);
+                    String url = Constantes.URL_DESC + solicitudNormalizada + "/" + meta.getNombreArchivo();
+                    return new TipoDocumentoStatusDTO(tipo, true, url);
+                } else {
+                    return new TipoDocumentoStatusDTO(tipo, false, null);
+                }
+            })
+            .toList();
 
         return ResponseEntity.ok(Map.of(
-                Constantes.MSG, "Archivos subidos correctamente",
-                Constantes.ARCHIVOS_CARP, archivosSubidos
+                Constantes.MSG, "Proceso de subida completado",
+                Constantes.ARCHIVOS_CARP, archivosSubidos,
+                "statusTipos", status
         ));
     }
+
+
+    
     private Usuario obtenerUsuario(UserDetails userDetails, HttpServletRequest request, Registro registro) {
         if (userDetails != null) {
             Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
@@ -290,8 +310,6 @@ public class ArchivoController {
         metadata.setActivo(true);
         return metadata;
     }
-
-
 
 	
 	//-----------------------LISTAR REGISTROS-------------------------------------------------------------

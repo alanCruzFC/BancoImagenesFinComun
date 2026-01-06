@@ -19,5 +19,7 @@ public interface MetadataRepository extends JpaRepository<Metadata, Long> {
 	List<Metadata> findByRegistroAndActivoTrueAndFechaDesactivacionIsNull(Registro registro);
 	
 	Optional<Metadata> findByNombreArchivo(String nombreArchivo);
+	
+	List<Metadata> findByRegistroAndTipoDocumentoAndActivoTrue(Registro registro, String tipoDocumento);
 }
 

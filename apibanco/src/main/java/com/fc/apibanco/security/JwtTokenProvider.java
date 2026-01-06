@@ -1,7 +1,6 @@
 package com.fc.apibanco.security;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,17 +32,16 @@ public class JwtTokenProvider {
             .orElse(Constantes.USER);
         
         return Jwts.builder()
-            .setSubject(userDetails.getUsername())
-            .claim("rol", rol)
-            .claim("authorities", userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()))
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(SignatureAlgorithm.HS512, secret)
-            .compact();
+                .setSubject(userDetails.getUsername())
+                .claim("rol", rol)
+                .claim("authorities", userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
-
 
     public boolean validarToken(String token) {
         try {
