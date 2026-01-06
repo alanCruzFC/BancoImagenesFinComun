@@ -191,9 +191,9 @@ public class ArchivoController {
                 if (!metas.isEmpty()) {
                     Metadata meta = metas.get(0);
                     String url = Constantes.URL_DESC + solicitudNormalizada + "/" + meta.getNombreArchivo();
-                    return new TipoDocumentoStatusDTO(tipo, true, url);
+                    return new TipoDocumentoStatusDTO(tipo, true);
                 } else {
-                    return new TipoDocumentoStatusDTO(tipo, false, null);
+                    return new TipoDocumentoStatusDTO(tipo, false);
                 }
             })
             .toList();

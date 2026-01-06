@@ -4,6 +4,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.fc.apibanco.exception.EncryptionException;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -11,11 +13,14 @@ import java.util.Arrays;
 import java.util.Base64;
 
 public class AESUtil {
+	
+	private AESUtil() { throw new UnsupportedOperationException("Utility class - no instantiation allowed"); }
+	
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES/GCM/NoPadding";
     private static final String SECRET_KEY = System.getenv("APP_SECRET_KEY");
-    private static final int GCM_TAG_LENGTH = 128; // bits
-    private static final int IV_LENGTH = 12;       // recomendado para GCM
+    private static final int GCM_TAG_LENGTH = 128;
+    private static final int IV_LENGTH = 12;
 
     private static SecretKeySpec getKeySpec() {
         if (SECRET_KEY == null || SECRET_KEY.isBlank()) {
@@ -44,7 +49,7 @@ public class AESUtil {
 
             return Base64.getEncoder().encodeToString(buffer.array());
         } catch (Exception e) {
-            throw new RuntimeException("Error al encriptar", e);
+            throw new EncryptionException("Error al encriptar", e);
         }
     }
 
@@ -62,7 +67,7 @@ public class AESUtil {
 
             return new String(plainText, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new RuntimeException("Error al desencriptar", e);
+            throw new EncryptionException("Error al desencriptar", e);
         }
     }
 }
