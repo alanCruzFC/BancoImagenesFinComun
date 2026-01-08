@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
       this.router.events.pipe( 
         filter((e): e is NavigationEnd => e instanceof NavigationEnd) 
       ).subscribe((e) => { 
-        try { window.localStorage.setItem('ultimaRuta', e.urlAfterRedirects); 
+        try { globalThis.localStorage.setItem('ultimaRuta', e.urlAfterRedirects); 
 
         } catch {} 
       }); 
@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void { 
     if (this.isBrowser) { 
-      try { const ultimaRuta = window.localStorage.getItem('ultimaRuta'); 
+      try { const ultimaRuta = globalThis.localStorage.getItem('ultimaRuta'); 
         if (ultimaRuta) { 
           this.router.navigateByUrl(ultimaRuta); 
         } 
