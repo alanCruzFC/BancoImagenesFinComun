@@ -100,5 +100,16 @@ export class ListadoApiComponent implements OnInit {
   puedeSubir(): boolean {
     return this.rolActual === 'SUPERADMIN';
   }
+
+  copiarClave(clave: string): void {
+    navigator.clipboard.writeText(clave)
+      .then(() => {
+        alert("Clave copiada al portapapeles");
+      })
+      .catch(err => {
+        console.error("Error al copiar la clave: ", err);
+      });
+  }
+
 }
 

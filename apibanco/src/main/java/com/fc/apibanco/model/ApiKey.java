@@ -9,8 +9,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.Data;
 
 @Entity
+@Data
 public class ApiKey {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

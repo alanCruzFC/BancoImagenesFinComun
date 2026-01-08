@@ -10,13 +10,17 @@
 
   <div class="mb-6 text-center">
     <button *ngIf="puedeSubir()" (click)="abrirModal()"
-            class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
-                   shadow-md hover:shadow-glow transform transition-all duration-300
-                   hover:scale-[1.05] active:scale-[0.95]
-                   focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
-                   disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-      📤 Subir archivos
+            class="w-48 bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+                  shadow-md hover:shadow-glow transform transition-all duration-300
+                  hover:scale-[1.05] active:scale-[0.95]
+                  focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                  flex items-center gap-2">
+      <img src="assets/icons/cargando.png" alt="Subir archivos" class="w-5 h-5" />
+      Subir archivos
     </button>
+
+
   </div>
 
   <div *ngIf="imagenes.length === 0" class="text-center p-6">
@@ -30,7 +34,7 @@
             (click)="abrirVisualizacion(img)">
       <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}" 
            class="w-full h-40 object-cover rounded-lg border border-gray-200" />
-      <p class="text-xs text-gray-500 mt-2 text-center">{{ img.tipoDocumento }}</p>
+      <p class="text-base text-black-500 mt-2 text-center">{{ formatDocumento(img.tipoDocumento) }}</p>
     </button>
   </div>
 </div>
@@ -80,22 +84,37 @@
 <div *ngIf="mostrarModal" 
      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
 
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto relative p-6">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto relative">
+    
+    <!-- Encabezado con gradiente -->
+    <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white rounded-t-2xl">
+      <!-- Botón cerrar -->
+      <button (click)="cerrarModal()" 
+              aria-label="Cerrar modal de subida"
+              class="absolute top-4 right-4 bg-gray-200 text-gray-700 hover:bg-gray-300 
+                     rounded-full p-2 shadow-md transition z-50">
+        ✖
+      </button>
 
-    <!-- Botón cerrar -->
-    <button (click)="cerrarModal()" 
-            aria-label="Cerrar modal de subida"
-            class="absolute top-4 right-4 bg-gray-200 text-gray-700 hover:bg-gray-300 
-                  rounded-full p-2 shadow-md transition z-999">
-      ✖
-    </button>
+      <!-- Título -->
+      <h3 class="text-lg font-bold">
+        Subir archivos
+      </h3>
 
+      <!-- Descripción -->
+      <p class="text-white/80 text-sm">
+        Adjunta y gestiona las imágenes asociadas a la solicitud
+      </p>
+    </div>
 
-    <!-- Formulario -->
-    <app-formulario-imagenes *ngIf="registro" 
-                             [numeroSolicitud]="registro.numeroSolicitud" 
-                             (guardado)="onImagenesGuardadas()">
-    </app-formulario-imagenes>
+    <!-- Contenido -->
+    <div class="p-6">
+      <app-formulario-imagenes *ngIf="registro" 
+                               [numeroSolicitud]="registro.numeroSolicitud" 
+                               (guardado)="onImagenesGuardadas()">
+      </app-formulario-imagenes>
+    </div>
   </div>
 </div>
+
 

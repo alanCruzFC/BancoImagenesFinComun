@@ -42,7 +42,6 @@ public class AESUtil {
             cipher.init(Cipher.ENCRYPT_MODE, getKeySpec(), new GCMParameterSpec(GCM_TAG_LENGTH, iv));
             byte[] ciphertext = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
 
-            // Concatenar IV + ciphertext
             ByteBuffer buffer = ByteBuffer.allocate(iv.length + ciphertext.length);
             buffer.put(iv);
             buffer.put(ciphertext);

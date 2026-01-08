@@ -16,12 +16,18 @@
              class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
       <button (click)="abrirModalApiKey()" *ngIf="puedeSubir()"
               class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
-                 shadow-md hover:shadow-glow transform transition-all duration-300
-                 hover:scale-[1.05] active:scale-[0.95]
-                 focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
-                 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-        ➕ Nueva ApiKey
+                    shadow-md hover:shadow-glow transform transition-all duration-300
+                    hover:scale-[1.05] active:scale-[0.95]
+                    focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
+                    disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                    flex items-center gap-2">
+
+        <!-- Icono PNG -->
+        <img src="assets/icons/agregar.png" alt="Nueva ApiKey" class="w-5 h-5" />
+
+        Nueva ApiKey
       </button>
+
     </div>
   </div>
 
@@ -51,10 +57,24 @@
             <span class="font-mono">
               {{ claveVisible[key.id] ? key.clave : '************' }}
             </span>
+            <button *ngIf="claveVisible[key.id]" (click)="copiarClave(key.clave)" 
+                    class="ml-2 text-green-600 hover:underline text-xs" >
+              <img src="assets/icons/archivo.png" alt="Copiar clave" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/>
+            </button>
             <button (click)="toggleClave(key.id)"
                     class="ml-2 text-blue-600 hover:underline text-xs">
-              {{ claveVisible[key.id] ? 'Ocultar' : 'Ver clave' }}
+
+              <img *ngIf="claveVisible[key.id]" 
+                  src="assets/icons/ocultar.png" 
+                  alt="Ocultar clave" 
+                  class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
+
+              <img *ngIf="!claveVisible[key.id]" 
+                  src="assets/icons/ver.png" 
+                  alt="Ver clave" 
+                  class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
             </button>
+
           </td>
           <td class="px-2 py-2 text-center">
             <span [ngClass]="key.activo ? 'text-green-600' : 'text-red-600'">
@@ -86,8 +106,12 @@
           </td>
 
           <td *ngIf="puedeSubir()" class="px-2 py-2 text-center space-x-2"> 
-            <button (click)="abrirModalApiKey(key)" aria-label="Editar API Key {{ key.id }}" class="text-yellow-600 hover:underline text-xs"> ✏️ </button> 
-            <button (click)="borrarApiKey(key.id)" aria-label="Eliminar API Key {{ key.id }}" class="text-red-600 hover:underline text-xs"> 🗑️ </button> 
+            <button (click)="abrirModalApiKey(key)" aria-label="Editar API Key {{ key.id }}" class="text-yellow-600 hover:underline text-xs">
+              <img src="assets/icons/lapiz.png" alt="Editar" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/>  
+            </button> 
+            <button (click)="borrarApiKey(key.id)" aria-label="Eliminar API Key {{ key.id }}" class="text-red-600 hover:underline text-xs">
+              <img src="assets/icons/borrar.png" alt="Eliminar" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/> 
+            </button> 
           </td>
         </tr>
       </tbody>
@@ -97,7 +121,7 @@
   <!-- Modal -->
   <div *ngIf="modalVisibleApikey"
       class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-2xl w-[500px] relative overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-125 relative overflow-hidden">
       <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
         <button (click)="cerrarModalApiKey()" aria-label="Cerrar modal API Key"
                 class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>

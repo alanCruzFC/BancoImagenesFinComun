@@ -113,4 +113,16 @@ export class ImagenesRegistro implements OnInit {
     return nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') ||
            nombre.endsWith('.png') || nombre.endsWith('.gif');
   }
+
+  formatDocumento(value: string): string {
+    if (!value) return '';
+
+    let texto = value.replaceAll('_', ' DE ');
+
+    texto = texto.replaceAll(/([a-zA-Z])([0-9]+)/g, '$1 $2');
+
+    texto = texto.replaceAll(/([a-z])([A-Z])/g, '$1 $2');
+
+    return texto.trim().toUpperCase();
+  }
 }

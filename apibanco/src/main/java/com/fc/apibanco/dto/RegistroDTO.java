@@ -10,7 +10,7 @@ public class RegistroDTO {
     private final LocalDateTime fechaCreacion;
     private final List<String> correosAutorizados;
     private List<ArchivoDTO> imagenes;
-    private boolean esDueño;
+    private boolean esDueno;
 
     public RegistroDTO(String numeroSolicitud, String carpetaRuta, String creador,
                        LocalDateTime fechaCreacion, List<String> correosAutorizados) {
@@ -30,7 +30,7 @@ public class RegistroDTO {
         this.fechaCreacion = fechaCreacion;
         this.correosAutorizados = correosAutorizados;
         this.imagenes = imagenes;
-        this.esDueño = esDueño;
+        this.esDueno = esDueño;
     }
 
     public String getNumeroSolicitud() { return numeroSolicitud; }
@@ -39,10 +39,10 @@ public class RegistroDTO {
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public List<String> getCorreosAutorizados() { return correosAutorizados; }
     public List<ArchivoDTO> getImagenes() { return imagenes; }
-    public boolean isEsDueño() { return esDueño; }
+    public boolean isEsDueño() { return esDueno; }
 
     public void setImagenes(List<ArchivoDTO> imagenes) { this.imagenes = imagenes; }
-    public void setEsDueño(boolean esDueño) { this.esDueño = esDueño; }
+    public void setEsDueño(boolean esDueño) { this.esDueno = esDueño; }
 
     @Override
     public String toString() {
@@ -53,7 +53,7 @@ public class RegistroDTO {
                 ", fechaCreacion=" + fechaCreacion +
                 ", correosAutorizados=" + correosAutorizados +
                 ", imagenes=" + imagenes +
-                ", esDueño=" + esDueño +
+                ", esDueño=" + esDueno +
                 '}';
     }
 }

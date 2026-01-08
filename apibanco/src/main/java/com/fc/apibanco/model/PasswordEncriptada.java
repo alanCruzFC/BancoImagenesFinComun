@@ -13,7 +13,7 @@ public class PasswordEncriptada {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String Encryp;
+    private String encryp;
 
     @OneToOne
     private Usuario usuario;
@@ -27,11 +27,11 @@ public class PasswordEncriptada {
 	}
 
 	public String getHash() {
-		return Encryp;
+		return encryp;
 	}
 
 	public void setHash(String hash) {
-		this.Encryp = hash;
+		this.encryp = hash;
 	}
 
 	public Usuario getUsuario() {

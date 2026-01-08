@@ -10,11 +10,19 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
     <!-- Email -->
     <div class="col-span-2">
-      <label for="email" class="font-semibold text-[#046CAC]">Email:</label>
-      <input id="email" [(ngModel)]="formData.email" name="email" type="email"
-             placeholder="Escribe un email" autocomplete="off"
-             class="w-full border px-4 py-2 rounded-lg focus:ring-[#046BB4] focus:border-[#046BB4]"
-             required [readonly]="usuario != null" />
+      <label for="email" class="font-semibold text-[#046CAC]">Email*:</label>
+      <input id="email"
+          [(ngModel)]="formData.email"
+          name="email"
+          type="email"
+          placeholder="Correo electrónico"
+          autocomplete="off"
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+          [disabled]="!!formData.id"
+          required
+          [class.border-red-500]="hasError('Email')" />
       <p *ngIf="hasError('Email')" class="text-red-500 text-sm mt-1">
         El campo Email es obligatorio o el formato es inválido.
       </p>
@@ -22,11 +30,17 @@
 
     <!-- Nombre -->
     <div>
-      <label for="nombre" class="font-semibold text-[#046CAC]">Nombre:</label>
-      <input id="nombre" [(ngModel)]="formData.firstName" name="firstName"
-             placeholder="Nombre" autocomplete="off"
-             class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
-             [class.border-red-500]="hasError('Nombre')"/>
+      <label for="nombre" class="font-semibold text-[#046CAC]">Nombre*:</label>
+      <input id="nombre"
+          [(ngModel)]="formData.firstName"
+          name="firstName"
+          placeholder="nombre"
+          autocomplete="off"
+          (input)="formData.firstName = formData.firstName.toUpperCase()"
+          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  placeholder:lowercase uppercase" 
+          required
+          [class.border-red-500]="hasError('Nombre')" />
       <p *ngIf="hasError('Nombre')" class="text-red-500 text-sm mt-1">
         El campo Nombre es obligatorio.
       </p>
@@ -34,11 +48,17 @@
 
     <!-- Apellido -->
     <div>
-      <label for="apellido" class="font-semibold text-[#046CAC]">Apellido:</label>
-      <input id="apellido" [(ngModel)]="formData.lastName" name="lastName"
-             placeholder="Apellido" autocomplete="off"
-             class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
-             [class.border-red-500]="hasError('Apellido')"/>
+      <label for="apellido" class="font-semibold text-[#046CAC]">Apellido*:</label>
+      <input id="apellido"
+       [(ngModel)]="formData.lastName"
+       name="lastName"
+       placeholder="apellido"
+       autocomplete="off"
+       (input)="formData.lastName = formData.lastName.toUpperCase()"
+       class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+              placeholder:lowercase uppercase"
+       required
+       [class.border-red-500]="hasError('Apellido')" />
        <p *ngIf="hasError('Apellido')" class="text-red-500 text-sm mt-1">
         El campo Apellido es obligatorio.
       </p>
@@ -46,11 +66,17 @@
 
     <!-- Usuario -->
     <div>
-      <label for="username" class="font-semibold text-[#046CAC]">Usuario:</label>
-      <input id="username" [(ngModel)]="formData.username" name="username"
-             placeholder="Usuario" autocomplete="off"
-             class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
-             [class.border-red-500]="hasError('Usuario')"/> 
+      <label for="username" class="font-semibold text-[#046CAC]">Usuario*:</label>
+      <input id="username"
+       [(ngModel)]="formData.username"
+       name="username"
+       placeholder="usuario"
+       autocomplete="off"
+       (input)="formData.username = formData.username.toUpperCase()"
+       class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+              placeholder:lowercase uppercase"
+       required
+       [class.border-red-500]="hasError('Usuario')" />
        <p *ngIf="hasError('Usuario')" class="text-red-500 text-sm mt-1"> 
         El campo Usuario es obligatorio.
       </p>
@@ -58,7 +84,7 @@
 
     <!-- Rol -->
     <div>
-      <label for="rol" class="font-semibold text-[#046CAC]">Rol:</label>
+      <label for="rol" class="font-semibold text-[#046CAC]">Rol*:</label>
       <select id="rol" [(ngModel)]="formData.rol" name="rol"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
               [class.border-red-500]="hasError('Rol')">
@@ -72,7 +98,7 @@
 
     <!-- Equipo -->
     <div>
-      <label for="team" class="font-semibold text-[#046CAC]">Equipo:</label>
+      <label for="team" class="font-semibold text-[#046CAC]">Equipo*:</label>
       <div *ngIf="!usarInputTeam" class="flex space-x-2">
         <select id="team" [(ngModel)]="formData.team" name="team"
                 class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
@@ -84,9 +110,14 @@
                 class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
       </div>
       <div *ngIf="usarInputTeam">
-        <input [(ngModel)]="formData.team" name="team" placeholder="Nuevo equipo" autocomplete="off"
-              class="w-full border border-gray-300 px-4 py-2 rounded-lg"
-              [class.border-red-500]="hasError('Equipo')" />
+        <input [(ngModel)]="formData.team"
+          name="team"
+          placeholder="nuevo equipo"
+          autocomplete="off"
+          (input)="formData.team = formData.team ? formData.team.toUpperCase() : ''"
+          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  placeholder:lowercase uppercase"
+          [class.border-red-500]="hasError('Equipo')" />
       </div>
       <p *ngIf="hasError('Equipo')" class="text-red-500 text-sm mt-1">
         El campo Equipo es obligatorio.
@@ -95,7 +126,7 @@
 
     <!-- Departamento -->
     <div>
-      <label for="department" class="font-semibold text-[#046CAC]">Departamento:</label>
+      <label for="department" class="font-semibold text-[#046CAC]">Departamento*:</label>
       <div *ngIf="!usarInputDepartment" class="flex space-x-2">
         <select id="department" [(ngModel)]="formData.department" name="department"
                 class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
@@ -107,9 +138,14 @@
                 class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
       </div>
       <div *ngIf="usarInputDepartment">
-        <input [(ngModel)]="formData.department" name="department" placeholder="Nuevo departamento" autocomplete="off"
-              class="w-full border border-gray-300 px-4 py-2 rounded-lg"
-              [class.border-red-500]="hasError('Departamento')" />
+        <input [(ngModel)]="formData.department"
+          name="department"
+          placeholder="nuevo departamento"
+          autocomplete="off"
+          (input)="formData.department = formData.department ? formData.department.toUpperCase() : ''"
+          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  placeholder:lowercase uppercase"
+          [class.border-red-500]="hasError('Departamento')" />
       </div>
       <p *ngIf="hasError('Departamento')" class="text-red-500 text-sm mt-1">
         El campo Departamento es obligatorio.
@@ -145,7 +181,7 @@
     <div class="col-span-2 flex space-x-2 items-end" 
         *ngIf="usuario == null || !usuario.passwordDesencriptada"> 
       <div class="flex-1"> 
-        <label for="password" class="font-semibold text-[#046CAC]">Contraseña generada:</label> 
+        <label for="password" class="font-semibold text-[#046CAC]">Contraseña*:</label> 
         <input id="password" [(ngModel)]="formData.password" name="password" 
                 placeholder="Contraseña generada" class="w-full border border-gray-300 px-4 py-2 rounded-lg" readonly required 
                 [class.border-red-500]="hasError('Contraseña')" /> 

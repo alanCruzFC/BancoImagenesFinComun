@@ -11,6 +11,8 @@ import { ApiKey } from '../listado/listado';
   templateUrl: './formulario.html',
 })
 export class FormularioApiKey implements OnInit {
+    validationErrors: string[] = [];
+
   @Output() creado = new EventEmitter<void>();
   @Input() apiKey: ApiKey | null = null; 
 
@@ -39,6 +41,10 @@ export class FormularioApiKey implements OnInit {
 
   toggleClave(): void {
     this.claveVisible = !this.claveVisible;
+  }
+
+  hasError(field: string): boolean {
+    return this.validationErrors.includes(field);
   }
 
   refactorizarClave(): void {

@@ -12,19 +12,25 @@
              class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
 
       <button (click)="abrirModal()" 
-              class=" bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
-                 shadow-md hover:shadow-glow transform transition-all duration-300
-                 hover:scale-[1.05] active:scale-[0.95]
-                 focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
-                 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                 *ngIf="rol === 'SUPERADMIN'|| rol === 'SUPERVISOR' || rol === 'USER'">
-        ➕ Nuevo registro
-      </button>
+                class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+                      shadow-md hover:shadow-glow transform transition-all duration-300
+                      hover:scale-[1.05] active:scale-[0.95]
+                      focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
+                      disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                      flex items-center gap-2"
+                *ngIf="rol === 'SUPERADMIN'|| rol === 'SUPERVISOR' || rol === 'USER'">
+
+          <!-- Icono PNG -->
+          <img src="assets/icons/agregar.png" alt="Nuevo" class="w-5 h-5" />
+
+          Nuevo registro
+        </button>
+
     </div>
   </div>
 
   <!-- Contenedor con scroll interno SOLO para la tabla --> 
-  <div class="overflow-x-auto overflow-y-auto max-h-[500px] rounded-xl shadow-md">
+  <div class="overflow-x-auto overflow-y-auto max-h-125 rounded-xl shadow-md">
     <table class="table-auto w-full text-sm border-collapse">
       <thead>
         <tr class="bg-linear-to-r from-[#046BB4]/10 to-[#4484B4]/10">
@@ -46,8 +52,8 @@
           <td class="px-4 py-2">{{ registro.fechaCreacion | date:'short' }}</td>
           <td class="px-4 py-2 text-center">
             <a [routerLink]="['/dashboard/visualizar', registro.numeroSolicitud]"
-               class="text-blue-600 hover:text-blue-800 hover:underline transition">
-              🔍 Ver archivos
+               class="inline-flex items-center text-blue-600 hover:text-blue-800 transition">
+              <img src="assets/icons/imagen.png" alt="ver registro" class="w-5 h-5 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
             </a>
           </td>
           <td *ngIf="rol === 'ADMIN' || rol === 'SUPERADMIN'" class="px-4 py-2">
@@ -62,16 +68,37 @@
 </div>
 
 <!-- Modal -->
-<div *ngIf="mostrarModal" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-  <div class="bg-white rounded-2xl shadow-2xl w-[600px] max-h-[90vh] overflow-auto relative p-6">
-    
-    <!-- Botón cerrar -->
-    <button (click)="cerrarModal()" 
-            class="absolute top-3 right-3 z-50 
-                   bg-gray-200 text-gray-700 hover:bg-gray-300 
-                   rounded-full p-2 shadow-md transition">✖</button>
+<div *ngIf="mostrarModal" 
+     class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
 
-    <!-- Aquí va tu formulario de nuevo registro -->
-    <app-formulario-registro (registroCreado)="onRegistroCreado($event)" (guardado)="onRegistroGuardado()"></app-formulario-registro>
+  <div class="bg-white rounded-2xl shadow-2xl w-150 max-h-[90vh] overflow-auto relative">
+    
+    <!-- Encabezado con gradiente -->
+    <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white rounded-t-2xl">
+      <!-- Botón cerrar -->
+      <button (click)="cerrarModal()" 
+              aria-label="Cerrar modal registro"
+              class="absolute top-3 right-3 z-50 
+                     bg-gray-200 text-gray-700 hover:bg-gray-300 
+                     rounded-full p-2 shadow-md transition">✖</button>
+
+      <h3 class="text-lg font-bold">
+        Nuevo Registro
+      </h3>
+
+      <!-- Descripción -->
+      <p class="text-white/80 text-sm">
+        Introdusco los datos del nuevo registro a continuación.
+      </p>
+    </div>
+
+    <!-- Contenido -->
+    <div class="p-6">
+      <app-formulario-registro 
+        (registroCreado)="onRegistroCreado($event)" 
+        (guardado)="onRegistroGuardado()">
+      </app-formulario-registro>
+    </div>
   </div>
 </div>
+

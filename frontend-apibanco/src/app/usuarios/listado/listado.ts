@@ -32,10 +32,21 @@ export class ListadoComponent implements OnInit {
 
   cargarUsuarios(): void {
     this.usuarioService.getUsuarios().subscribe({
-      next: (data) => this.usuarios = data.filter(u => u.activo), // solo activos
+      next: (data) => {
+        let activos = data.filter(u => u.activo);
+
+        if (this.rolActual === 'SUPERADMIN') {
+          this.usuarios = activos;
+        } else if (this.rolActual === 'ADMIN') {
+          this.usuarios = activos.filter(u => u.rol !== 'SUPERADMIN');
+        } else {
+          this.usuarios = [];
+        }
+      },
       error: () => console.error('❌ Error al obtener usuarios')
     });
   }
+
 
   mostrarPassword(usuario: Usuario): void {
     if (this.rolActual === 'ADMIN' || this.rolActual === 'SUPERADMIN') {
@@ -69,7 +80,10 @@ export class ListadoComponent implements OnInit {
   copiarPassword(): void {
     if (this.usuarioSeleccionado?.passwordDesencriptada) {
       navigator.clipboard.writeText(this.usuarioSeleccionado.passwordDesencriptada)
-        .then(() => alert('✅ Contraseña copiada al portapapeles'))
+        .then(() => {
+          alert('✅ Contraseña copiada al portapapeles')
+          this.cerrarModal();
+        })
         .catch(() => alert('❌ Error al copiar la contraseña'));
     }
   }

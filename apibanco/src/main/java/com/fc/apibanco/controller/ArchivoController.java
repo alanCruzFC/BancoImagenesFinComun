@@ -95,17 +95,17 @@ public class ArchivoController {
         Files.createDirectories(carpeta);
 
         // ---------------- TIPOS FIJOS ----------------
-        Set<String> tipos_fijos = Constantes.TIPOS_FIJOS;
+        Set<String> tiposfijos = Constantes.TIPOS_FIJOS;
 
         String tipoNormalizado = tipo.trim().toUpperCase();
 
         // ---------------- VALIDACIÓN DE TIPO ----------------
-        if (tipos_fijos.contains(tipoNormalizado)) {
+        if (tiposfijos.contains(tipoNormalizado)) {
         	// No hacemos nada porque ya es un tipo fijo válido
         } else {
             String tipoExtra = tipo.trim();
 
-            for (String fijo : tipos_fijos) {
+            for (String fijo : tiposfijos) {
                 if (tipoExtra.toUpperCase().startsWith(fijo)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of(Constantes.MSG, "Tipo extra inválido por similitud con fijo: " + tipoExtra));
@@ -189,8 +189,6 @@ public class ArchivoController {
             .map(tipo -> {
                 List<Metadata> metas = metadataRepository.findByRegistroAndTipoDocumentoAndActivoTrue(registro, tipo);
                 if (!metas.isEmpty()) {
-                    Metadata meta = metas.get(0);
-                    String url = Constantes.URL_DESC + solicitudNormalizada + "/" + meta.getNombreArchivo();
                     return new TipoDocumentoStatusDTO(tipo, true);
                 } else {
                     return new TipoDocumentoStatusDTO(tipo, false);
@@ -380,7 +378,7 @@ public class ArchivoController {
     @GetMapping("/registros/{numeroSolicitud}") 
     @PreAuthorize("hasAnyRole('USER','SUPERVISOR','ADMIN','SUPERADMIN')") 
     public ResponseEntity<RegistroDTO> obtenerRegistro( @PathVariable String numeroSolicitud, 
-    													@AuthenticationPrincipal UserDetails userDetails) throws IOException {
+    													@AuthenticationPrincipal UserDetails userDetails) {
 
 	    //--------Validar usuario autenticado--------
 	    Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
@@ -420,7 +418,7 @@ public class ArchivoController {
 	        : Collections.emptyList();
 
 	    //--------Validar si es dueño (mantiene lógica actual)
-	    boolean esDueño = usuario.getRol().equals(Constantes.ADMIN) ||
+	    boolean esDueno = usuario.getRol().equals(Constantes.ADMIN) ||
 	                      (registro.getCreador() != null &&
 	                       registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername()));
 
@@ -433,7 +431,7 @@ public class ArchivoController {
 	        correos
 	    );
 	    dto.setImagenes(archivos);
-	    dto.setEsDueño(esDueño);
+	    dto.setEsDueño(esDueno);
 
 	    return ResponseEntity.ok(dto);
 	}

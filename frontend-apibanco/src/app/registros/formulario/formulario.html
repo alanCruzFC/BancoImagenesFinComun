@@ -1,15 +1,17 @@
 <form [formGroup]="form" (ngSubmit)="guardar()" class="p-6 space-y-4">
-  <h3 class="text-xl font-bold text-[#046CAC]">Nuevo Registro</h3>
+
 
   <!-- Número de solicitud -->
   <div>
     <label for="numeroSolicitud" class="block text-sm font-medium text-gray-700">Número de solicitud</label>
     <input id="numeroSolicitud"
-           type="text"
-           formControlName="numeroSolicitud"
-           autocomplete="off"
-           class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
-  </div>
+       type="text"
+       formControlName="numeroSolicitud"
+       autocomplete="off"
+       (input)="form.get('numeroSolicitud')?.setValue(form.get('numeroSolicitud')?.value?.toUpperCase(), { emitEvent: false })"
+       class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
+
+</div>
 
   <!-- Correos autorizados con chips -->
   <div>
