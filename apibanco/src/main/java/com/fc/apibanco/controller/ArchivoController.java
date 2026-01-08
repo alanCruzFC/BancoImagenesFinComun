@@ -479,6 +479,7 @@ public class ArchivoController {
     			.toList(); 
     	return ResponseEntity.ok(respuesta); 
     }
+
 	
 //	----------------------DESCARGAR IMAGENES------------------------------------------
 
