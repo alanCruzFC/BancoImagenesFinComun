@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     if (this.isBrowser) { 
       try { const ultimaRuta = globalThis.localStorage.getItem('ultimaRuta'); 
         if (ultimaRuta) { 
-          this.router.navigateByUrl(ultimaRuta); 
+          this.router.navigateByUrl(ultimaRuta);
         } 
       } catch {
 

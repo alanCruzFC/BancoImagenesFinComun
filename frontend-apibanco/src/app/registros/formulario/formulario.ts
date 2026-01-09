@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { RegistroDTO, RegistroService } from '../../core/registro.service';
 import { UsuarioService } from '../../core/usuario.service';
@@ -27,10 +27,11 @@ export class FormularioRegistro {
   constructor(
     private readonly fb: FormBuilder,
     private readonly registroService: RegistroService,
-    private readonly usuarioService: UsuarioService   
+    private readonly usuarioService: UsuarioService
   ) {
     this.form = this.fb.group({
-      numeroSolicitud: ['', Validators.required],
+      // ✅ Validación: requerido y no solo espacios
+      numeroSolicitud: ['', [Validators.required, Validators.pattern(/\S+/)]],
       correoInput: ['']
     });
 
@@ -56,7 +57,8 @@ export class FormularioRegistro {
 
   guardar(): void {
     if (this.form.invalid) {
-      alert('⚠️ El formulario es inválido, revisa los campos');
+      // ✅ Ya no usamos alert, el template mostrará los mensajes debajo del input
+      this.form.markAllAsTouched();
       return;
     }
 
@@ -68,9 +70,7 @@ export class FormularioRegistro {
     this.registroService.crearRegistro(dto).subscribe({
       next: (nuevo: RegistroDTO) => {
         alert('✅ Registro creado correctamente');
-        // Emitimos el registro creado para que el listado lo agregue directamente
         this.registroCreado.emit(nuevo);
-        // Emitimos guardado para que el listado recargue si lo necesita
         this.guardado.emit();
       },
       error: (err) => {

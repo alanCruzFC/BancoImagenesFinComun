@@ -1,17 +1,27 @@
 <form [formGroup]="form" (ngSubmit)="guardar()" class="p-6 space-y-4">
 
 
-  <!-- Número de solicitud -->
-  <div>
-    <label for="numeroSolicitud" class="block text-sm font-medium text-gray-700">Número de solicitud</label>
-    <input id="numeroSolicitud"
-       type="text"
-       formControlName="numeroSolicitud"
-       autocomplete="off"
-       (input)="form.get('numeroSolicitud')?.setValue(form.get('numeroSolicitud')?.value?.toUpperCase(), { emitEvent: false })"
-       class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
 
-</div>
+<!-- Número de solicitud -->
+  <div>
+    <label for="numeroSolicitud" class="block text-sm font-medium text-gray-700">
+      Número de solicitud
+    </label>
+    <input id="numeroSolicitud"
+          type="text"
+          formControlName="numeroSolicitud"
+          autocomplete="off"
+          (input)="form.get('numeroSolicitud')?.setValue(form.get('numeroSolicitud')?.value?.toUpperCase(), { emitEvent: false })"
+          [class.border-red-500]="form.get('numeroSolicitud')?.invalid && form.get('numeroSolicitud')?.touched"
+          class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
+
+    <!-- ✅ Mensaje dinámico de error -->
+    <div *ngIf="form.get('numeroSolicitud')?.invalid && form.get('numeroSolicitud')?.touched"
+        class="text-red-500 text-sm mt-1">
+      El número de solicitud no puede estar vacío ni contener solo espacios.
+    </div>
+  </div>
+
 
   <!-- Correos autorizados con chips -->
   <div>

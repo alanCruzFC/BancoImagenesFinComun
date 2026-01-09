@@ -34,7 +34,6 @@ export class FormularioApiKey implements OnInit {
 
   ngOnInit(): void {
     if (this.apiKey) {
-      // ✅ Clonamos el objeto para evitar mutaciones directas
       this.formData = { ...this.apiKey };
     }
   }
@@ -71,8 +70,19 @@ export class FormularioApiKey implements OnInit {
   }
 
   submit(): void {
-    const payload = { ...this.formData };
+    this.validationErrors = [];
 
+    // ✅ Validación de consumidor: no vacío y no solo espacios
+    if (!this.formData.consumidor || this.formData.consumidor.trim() === '') {
+      this.validationErrors.push('Consumidor');
+    }
+
+    // Si hay errores, no continuar
+    if (this.validationErrors.length > 0) {
+      return;
+    }
+
+    const payload = { ...this.formData };
     const isEdit = !!this.formData.id;
     const url = isEdit
       ? `http://localhost:8080/api/apikeys/${this.formData.id}`
@@ -96,4 +106,5 @@ export class FormularioApiKey implements OnInit {
       }
     });
   }
+
 }
