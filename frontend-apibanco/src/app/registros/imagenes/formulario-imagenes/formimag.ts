@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
+import { ToastService } from '../../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-formulario-imagenes',
@@ -25,7 +26,10 @@ export class FormularioImagenes implements OnInit {
   documentosFijos: { tipo: string; archivo: File | null }[] = [];
   documentosExtra: { tipo: string; archivo: File | null }[] = [];
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     // Inicializamos los documentos fijos
@@ -50,7 +54,7 @@ export class FormularioImagenes implements OnInit {
     const file = input.files?.item(0);
 
     if (!file) {
-      console.warn('No se seleccionó archivo extra');
+      this.toastService.error('No se seleccionó archivo extra', 'Error');
       return;
     }
     doc.archivo = file;
@@ -70,7 +74,7 @@ export class FormularioImagenes implements OnInit {
 
   guardarImagenes(): void {
     if (!this.numeroSolicitud) {
-      alert('⚠️ No se encontró el número de solicitud');
+      this.toastService.error('No se encontró el número de solicitud', 'Error');
       return;
     }
 
@@ -103,18 +107,17 @@ export class FormularioImagenes implements OnInit {
     });
 
     if (peticiones.length === 0) {
-      alert('⚠️ No hay documentos para subir');
+      this.toastService.warning('No hay documentos para subir', 'Advertencia');
       return;
     }
 
     forkJoin(peticiones).subscribe({
       next: () => {
-        alert('✅ Imágenes guardadas correctamente');
+        this.toastService.success('Imágenes guardadas correctamente', 'Éxito');
         this.guardado.emit();
       },
       error: (err) => {
-        console.error('❌ Error al guardar imágenes', err);
-        alert('❌ Error al guardar imágenes');
+        this.toastService.error('Error al guardar imágenes', 'Error');
       }
     });
   }

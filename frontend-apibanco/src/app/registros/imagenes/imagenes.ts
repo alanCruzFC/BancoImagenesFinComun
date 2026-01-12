@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { ArchivoDTO, RegistroDTO, RegistroService } from '../../core/registro.service';
 import { FormularioImagenes } from "./formulario-imagenes/formimag";
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-imagenes-registro',
@@ -23,7 +24,8 @@ export class ImagenesRegistro implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly authService: AuthService,
-    private readonly registroService: RegistroService
+    private readonly registroService: RegistroService,
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +45,7 @@ export class ImagenesRegistro implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('Error al cargar registro:', err);
+        this.toastService.error('Error al cargar el registro', 'Error');
         this.imagenes = [];
       }
     });

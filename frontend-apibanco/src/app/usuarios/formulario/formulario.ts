@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { ToastService } from '../../shared/toast/toast.service';
 
 interface SupervisorDTO {
   id: number;
@@ -59,7 +60,7 @@ export class FormularioUsuario implements OnInit {
   usarInputTeam = false;
   usarInputDepartment = false;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient, private readonly toastService: ToastService) {}
 
   ngOnInit(): void {
     if (this.usuario) {
@@ -84,7 +85,7 @@ export class FormularioUsuario implements OnInit {
         this.departments = [...new Set(usuarios.map(u => u.department).filter(d => !!d))];
         this.supervisores = usuarios.filter(u => u.rol === 'SUPERVISOR');
       },
-      error: (err) => console.error('❌ Error al obtener usuarios', err)
+      error: (err) => this.toastService.error('Error al cargar datos para el formulario')
     });
   }
 
@@ -172,20 +173,19 @@ export class FormularioUsuario implements OnInit {
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({
       next: (response: string) => {
-        alert(response || '✅ Operación completada con éxito');
+        this.toastService.success('Operación completada con éxito');
         this.creado.emit();
       },
       error: (error: HttpErrorResponse) => {
-        let errorMessage = '❌ Error de comunicación con el servidor.';
+        let errorMessage = 'Error de comunicación con el servidor.';
         if (error.error && (error.error.reason || error.error.message)) {
-          errorMessage = `❌ Error (${error.status}): ${error.error.reason || error.error.message}`;
+          errorMessage = `Error (${error.status}): ${error.error.reason || error.error.message}`;
         } else if (error.status === 403) {
-          errorMessage = '❌ Acceso denegado. No tienes permisos para esta acción.';
+          errorMessage = 'Acceso denegado. No tienes permisos para esta acción.';
         } else if (error.statusText) {
-          errorMessage = `❌ Error (${error.status}): ${error.statusText}`;
+          errorMessage = `Error (${error.status}): ${error.statusText}`;
         }
-        alert(errorMessage);
-        console.error(error);
+        this.toastService.error(errorMessage);
       }
     });
   }

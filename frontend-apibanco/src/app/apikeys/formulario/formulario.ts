@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ApiKey } from '../listado/listado'; 
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-formulario-apikey',
@@ -30,7 +31,7 @@ export class FormularioApiKey implements OnInit {
 
   claveVisible = false;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient, private readonly toastService: ToastService) {}
 
   ngOnInit(): void {
     if (this.apiKey) {
@@ -48,7 +49,7 @@ export class FormularioApiKey implements OnInit {
 
   refactorizarClave(): void {
     if (!this.formData.id) {
-      alert('❌ Solo puedes refactorizar una API Key existente');
+      this.toastService.error('Solo puedes refactorizar una API Key existente', 'Error');
       return;
     }
 
@@ -58,13 +59,12 @@ export class FormularioApiKey implements OnInit {
       { responseType: 'json' }
     ).subscribe({
       next: (res) => {
-        alert(res.mensaje || '✅ Clave refactorizada correctamente');
+        this.toastService.success('Clave refactorizada correctamente', 'Éxito');
         this.formData.clave = res.nuevaClave;
         this.claveVisible = true;
       },
       error: (err: HttpErrorResponse) => {
-        alert('❌ Error al refactorizar la API Key');
-        console.error('Error refactorizando API Key:', err);
+        this.toastService.error('❌ Error al refactorizar la API Key', 'Error');
       }
     });
   }
@@ -91,7 +91,7 @@ export class FormularioApiKey implements OnInit {
 
     this.http.request(method, url, { body: payload, responseType: 'text' }).subscribe({
       next: () => {
-        alert(isEdit ? '✅ API Key actualizada correctamente' : '✅ API Key creada correctamente');
+        this.toastService.success(isEdit ? 'API Key actualizada correctamente' : 'API Key creada correctamente', 'Éxito');
         this.creado.emit();
       },
       error: (err: HttpErrorResponse) => {

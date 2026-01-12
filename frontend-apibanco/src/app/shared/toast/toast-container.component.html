@@ -1,0 +1,50 @@
+
+<!-- Overlay accesible y sin bloquear clics fuera de los toasts -->
+<div class="toast-stack fixed bottom-4 right-4 z-50 pointer-events-none" aria-live="polite" aria-atomic="true">
+  <!-- Stack en columna -->
+  <div class="flex flex-col space-y-3 w-full max-w-sm">
+    <div *ngFor="let t of toasts; trackBy: trackById" class="toast-item pointer-events-auto">
+      <div
+        class="relative flex items-start gap-3 rounded-lg shadow-lg p-4 toast-enter overflow-hidden"
+        [ngClass]="{
+          'bg-green-50 text-green-800': t.type === 'success',
+          'bg-blue-50 text-blue-800': t.type === 'info',
+          'bg-yellow-50 text-yellow-800': t.type === 'warning',
+          'bg-red-50 text-red-800': t.type === 'error'
+        }"
+      >
+        <!-- Barra lateral -->
+        <div
+          class="absolute left-0 top-0 h-full w-1"
+          [ngClass]="{
+            'bg-green-500': t.type === 'success',
+            'bg-blue-500': t.type === 'info',
+            'bg-yellow-500': t.type === 'warning',
+            'bg-red-500': t.type === 'error'
+          }"
+        ></div>
+
+        <!-- Ícono -->
+        <div class="text-2xl flex-shrink-0">
+          {{ iconFor(t.type) }}
+        </div>
+
+        <!-- Contenido -->
+        <div class="flex-1">
+          <div *ngIf="t.title" class="font-semibold text-base">{{ t.title }}</div>
+          <div class="text-sm">{{ t.message }}</div>
+        </div>
+
+        <!-- Botón cerrar -->
+        <button
+          type="button"
+          class="ml-2 rounded-full hover:bg-gray-200 p-1 text-gray-600 transition"
+          (click)="dismiss(t.id)"
+          aria-label="Cerrar notificación"
+        >
+          ✖
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

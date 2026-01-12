@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { UsuarioService, Usuario } from '../../core/usuario.service';
 import { FormularioUsuario } from "../formulario/formulario";
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-usuarios-listado',
@@ -19,9 +20,13 @@ export class ListadoComponent implements OnInit {
   busqueda: string = '';
   rolActual: string = '';
 
+  showConfirmDeleteUser = false;
+  idUsuarioPendiente: number | null = null;
+
   constructor(
     private readonly authService: AuthService,
-    private readonly usuarioService: UsuarioService
+    private readonly usuarioService: UsuarioService,
+    private readonly toastService: ToastService
   ) {
     this.rolActual = this.authService.getRol();
   }
@@ -43,7 +48,7 @@ export class ListadoComponent implements OnInit {
           this.usuarios = [];
         }
       },
-      error: () => console.error('❌ Error al obtener usuarios')
+      error: () => this.toastService.error('Error al cargar usuarios')
     });
   }
 
@@ -54,7 +59,7 @@ export class ListadoComponent implements OnInit {
       this.modalVisible = true;
       setTimeout(() => this.cerrarModal(), 10000);
     } else {
-      alert('⚠️ No tienes permisos para ver contraseñas');
+      this.toastService.warning('No tienes permisos para ver contraseñas');
     }
   }
 
@@ -81,20 +86,20 @@ export class ListadoComponent implements OnInit {
     if (this.usuarioSeleccionado?.passwordDesencriptada) {
       navigator.clipboard.writeText(this.usuarioSeleccionado.passwordDesencriptada)
         .then(() => {
-          alert('✅ Contraseña copiada al portapapeles')
+          this.toastService.success('Contraseña copiada al portapapeles');
           this.cerrarModal();
         })
-        .catch(() => alert('❌ Error al copiar la contraseña'));
+        .catch(() => this.toastService.error('❌ Error al copiar la contraseña'));
     }
   }
 
   borrarUsuario(id: number): void {
     this.usuarioService.borrarUsuario(id).subscribe({
       next: () => {
-        alert('🗑️ Usuario desactivado correctamente');
+        this.toastService.success('Usuario desactivado correctamente');
         this.cargarUsuarios();
       },
-      error: () => alert('❌ Error al desactivar usuario')
+      error: () => this.toastService.error('Error al desactivar usuario')
     });
   }
 
@@ -123,4 +128,23 @@ export class ListadoComponent implements OnInit {
   puedeSubir(): boolean {
     return this.rolActual === 'SUPERADMIN';
   }
+
+  pedirConfirmacionEliminarUsuario(id: number): void {
+    this.idUsuarioPendiente = id;
+    this.showConfirmDeleteUser = true;
+  }
+
+  cancelarEliminarUsuario(): void {
+    this.showConfirmDeleteUser = false;
+    this.idUsuarioPendiente = null;
+  }
+
+  confirmarEliminarUsuario(): void {
+    if (this.idUsuarioPendiente != null) {
+      this.borrarUsuario(this.idUsuarioPendiente);
+    }
+    this.showConfirmDeleteUser = false;
+    this.idUsuarioPendiente = null;
+  }
+
 }

@@ -5,6 +5,7 @@ import { RouterLink } from "@angular/router";
 import { FormularioRegistro } from '../formulario/formulario';
 import { AuthService } from '../../core/auth.service';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-listado',
@@ -20,7 +21,8 @@ export class ListadoRegComponent implements OnInit {
 
   constructor(
     private readonly registroService: RegistroService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly toastService: ToastService
   ) {
     this.rol = this.authService.getRol();
   }
@@ -32,7 +34,7 @@ export class ListadoRegComponent implements OnInit {
   cargarRegistros(): void {
     this.registroService.obtenerRegistros().subscribe({
       next: (data) => this.registros = data,
-      error: () => console.error('Error al obtener registros')
+      error: () => this.toastService.error('Error al cargar registros', 'Error')
     });
   }
 

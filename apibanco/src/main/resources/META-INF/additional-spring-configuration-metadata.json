@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "app.archivos.ruta-base",
+    "type": "java.lang.String",
+    "description": "A description for 'app.archivos.ruta-base'"
+  },
+  {
+    "name": "app.s3.bucket",
+    "type": "java.lang.String",
+    "description": "A description for 'app.s3.bucket'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "jwt.expiration",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.expiration'"
+  },
+  {
+    "name": "cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.allowed-origins'"
+  },
+  {
+    "name": "cors.allowed-methods",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.allowed-methods'"
+  },
+  {
+    "name": "cors.allowed-headers",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.allowed-headers'"
+  }
+]}

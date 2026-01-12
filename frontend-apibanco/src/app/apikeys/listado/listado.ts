@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormularioApiKey } from "../formulario/formulario";
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 export interface ApiKey {
   id: number;
@@ -15,7 +16,7 @@ export interface ApiKey {
   actualizacion: boolean;
   eliminacion: boolean;
   fechaCreacion: Date | null;
-  fechaEliminacion?: Date | null; // opcional para auditoría
+  fechaEliminacion?: Date | null;
 }
 
 @Component({
@@ -34,11 +35,15 @@ export class ListadoApiComponent implements OnInit {
   apikeySeleccionada: ApiKey | null = null;
   rolActual: string = '';
 
+  showConfirmDelete = false;
+  idPendienteBorrar: number | null = null;
+
   private readonly apiUrl = 'http://localhost:8080/api/apikeys';
 
   constructor(
     private readonly http: HttpClient,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -55,12 +60,12 @@ export class ListadoApiComponent implements OnInit {
             fechaCreacion: item.fechaCreacion ? new Date(item.fechaCreacion) : null,
             fechaEliminacion: item.fechaEliminacion ? new Date(item.fechaEliminacion) : null
           }))
-          .filter(item => item.activo); // solo activas
+          .filter(item => item.activo);
 
         this.apikeys.forEach(key => this.claveVisible[key.id] = false);
         this.apikeysFiltradas = [...this.apikeys];
       },
-      error: (err) => console.error('❌ Error al obtener API Keys', err)
+      error: (err) => this.toast.error('❌ Error al cargar las API Keys', 'Error')
     });
   }
 
@@ -90,10 +95,10 @@ export class ListadoApiComponent implements OnInit {
   borrarApiKey(id: number): void {
     this.http.delete<void>(`${this.apiUrl}/${id}`).subscribe({
       next: () => {
-        alert('🗑️ API Key desactivada correctamente');
+        this.toast.success('API Key desactivada correctamente', 'Éxito');
         this.cargarApiKeys();
       },
-      error: () => alert('❌ Error al desactivar API Key')
+      error: () => this.toast.error('❌ Error al desactivar la API Key', 'Error')
     });
   }
 
@@ -104,12 +109,36 @@ export class ListadoApiComponent implements OnInit {
   copiarClave(clave: string): void {
     navigator.clipboard.writeText(clave)
       .then(() => {
-        alert("Clave copiada al portapapeles");
+        this.toast.success('Clave copiada al portapapeles', 'Éxito');
       })
       .catch(err => {
-        console.error("Error al copiar la clave: ", err);
+        this.toast.error('❌ Error al copiar la clave', 'Error');
       });
   }
+  
+
+
+  /** Abre el modal y guarda el id a borrar */
+  pedirConfirmacionBorrar(id: number): void {
+    this.idPendienteBorrar = id;
+    this.showConfirmDelete = true;
+  }
+
+  /** Cierra el modal sin borrar */
+  cancelarBorrado(): void {
+    this.showConfirmDelete = false;
+    this.idPendienteBorrar = null;
+  }
+
+  /** Confirma y ejecuta tu lógica existente de borrado */
+  confirmarBorrado(): void {
+    if (this.idPendienteBorrar != null) {
+      this.borrarApiKey(this.idPendienteBorrar); // ✅ usa tu lógica actual
+    }
+    this.showConfirmDelete = false;
+    this.idPendienteBorrar = null;
+  }
+
 
 }
 

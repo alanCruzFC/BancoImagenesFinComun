@@ -16,8 +16,41 @@
   } 
 } 
   
+
 @layer utilities {
-  .bg-gradient-to-tr-custom { 
-    background-image: linear-gradient(to top right, #4f46e5, #3b82f6); 
+  /* Animación de entrada: desliza hacia abajo */
+  @keyframes toastSlideDown {
+    from { transform: translateY(-12px); opacity: 0; }
+    to   { transform: translateY(0);      opacity: 1; }
   }
- }
+
+  .toast-enter {
+    animation: toastSlideDown 200ms ease-out;
+    will-change: transform, opacity;
+  }
+
+  /* Animación de salida: desvanecer y subir un poco */
+  @keyframes toastFadeOutUp {
+    from { transform: translateY(0);      opacity: 1; }
+    to   { transform: translateY(-8px);   opacity: 0; }
+  }
+
+  .toast-leave {
+    animation: toastFadeOutUp 180ms ease-in forwards;
+    will-change: transform, opacity;
+  }
+
+  /* Utilidad opcional para el contenedor del stack (bottom-right) */
+  .toast-stack {
+    position: fixed;
+    right: 1rem;   /* = tailwind right-4 */
+    bottom: 1rem;  /* = tailwind bottom-4 */
+    z-index: 1000; /* = tailwind z-1000 (o tu escala) */
+    pointer-events: none; /* evita bloquear clicks fuera de los toasts */
+  }
+
+  /* Cada toast debe permitir interacción */
+  .toast-item {
+    pointer-events: auto;
+  }
+}

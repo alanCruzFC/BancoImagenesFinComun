@@ -2,10 +2,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { ToastContainerComponent } from "./shared/toast/toast-container.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ToastContainerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
