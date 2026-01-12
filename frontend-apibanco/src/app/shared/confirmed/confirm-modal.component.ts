@@ -1,9 +1,11 @@
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgIf } from "@angular/common"
 
 @Component({
   selector: 'app-confirm-modal',
   templateUrl: './confirm-modal.component.html',
+  imports: [NgIf],
 })
 export class ConfirmModalComponent {
   @Input() title = 'Confirmación';

@@ -1,5 +1,4 @@
 <div class="p-6 h-screen bg-gray-50 flex flex-col shadow-lg border border-gray-200 rounded-2xl overflow-hidden box-border">
-  <!-- Encabezado -->
   <div class="flex justify-between items-center mb-4 flex-none">
     <h2 class="text-2xl font-bold text-[#046CAC]">Usuarios registrados</h2>
     <div class="flex items-center gap-3">
@@ -13,8 +12,6 @@
                     focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
                     disabled:opacity-50 disabled:cursor-not-allowed
                     flex items-center gap-2">
-
-        <!-- Icono PNG -->
         <img src="assets/icons/agregar.png" alt="Nuevo usuario" class="w-5 h-5" />
 
         Nuevo usuario
@@ -22,8 +19,6 @@
 
     </div>
   </div>
-
-  <!-- Scroll SOLO dentro de la tabla -->
   <div class="flex-1 overflow-auto min-h-0 rounded-xl shadow-md">
     <div class="overflow-x-auto">
       <table class="table-auto w-full text-sm border-collapse">
@@ -93,7 +88,6 @@
   <div *ngIf="modalVisible"
        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl w-105 relative overflow-hidden animate-scale-in">
-      <!-- Header -->
       <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white relative">
         <button (click)="cerrarModal()" 
                 aria-label="Cerrar modal contraseña"
@@ -103,7 +97,6 @@
         <h3 class="text-xl font-bold tracking-wide">🔑 Contraseña</h3>
         <p class="text-white/80 text-sm mt-1">{{ usuarioSeleccionado?.email }}</p>
       </div>
-      <!-- Body -->
       <div class="p-6 flex flex-col items-center">
         <div class="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full text-center shadow-inner">
           <p class="text-gray-900 text-2xl font-mono tracking-wider select-all">
@@ -145,28 +138,20 @@
 
 <!-- Modal de confirmación para eliminar usuario -->
 <div *ngIf="showConfirmDeleteUser" class="fixed inset-0 z-50 flex items-center justify-center">
-  <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/50" (click)="cancelarEliminarUsuario()" aria-hidden="true"></div>
+<div class="absolute inset-0 bg-black/50" (click)="cancelarEliminarUsuario()" (keydown.escape)="cancelarEliminarUsuario()" aria-hidden="true"></div>
 
-  <!-- Contenedor del modal -->
   <div
     class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6 animate-[toastSlideDown_200ms_ease-out]"
     role="dialog"
     aria-modal="true"
     aria-labelledby="confirm-title-user"
-    aria-describedby="confirm-desc-user"
-  >
-    <!-- Título -->
+    aria-describedby="confirm-desc-user">
     <h2 id="confirm-title-user" class="text-lg font-semibold mb-2">
       ¿Eliminar usuario?
     </h2>
-
-    <!-- Mensaje -->
     <p id="confirm-desc-user" class="text-gray-700 mb-6">
       Esta acción desactivará al usuario seleccionado y no se puede deshacer.
     </p>
-
-    <!-- Botones -->
     <div class="flex justify-end gap-3">
       <button
         type="button"
@@ -183,8 +168,6 @@
         Eliminar
       </button>
     </div>
-
-    <!-- Botón cerrar -->
     <button
       type="button"
       class="absolute top-3 right-3 rounded-full p-1 text-gray-500 hover:bg-gray-100"

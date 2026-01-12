@@ -146,7 +146,7 @@
 <!-- Modal de confirmación (Tailwind) -->
 <div *ngIf="showConfirmDelete" class="fixed inset-0 z-50 flex items-center justify-center">
   <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/50" (click)="cancelarBorrado()" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-black/50" (click)="cancelarBorrado()" (keydown.escape)="cancelarBorrado()" aria-hidden="true"></div>
 
   <!-- Contenedor del modal -->
   <div
