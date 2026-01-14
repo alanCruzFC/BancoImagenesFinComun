@@ -33,7 +33,6 @@
     <table class="table-auto w-full text-sm">
       <thead>
         <tr class="bg-linear-to-r from-[#046BB4]/10 to-[#4484B4]/10">
-          <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Id</th>
           <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Consumidor</th>
           <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Clave</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Activo</th>
@@ -48,7 +47,6 @@
       <tbody class="divide-y divide-gray-100">
         <tr *ngFor="let key of apikeysFiltradas"
             class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
-          <td class="px-2 py-2 font-medium text-[#046CAC]">{{ key.id }}</td>
           <td class="px-2 py-2">{{ key.consumidor }}</td>
           <td class="px-2 py-2">
             <span class="font-mono">

@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.fc.apibanco.model.Metadata;
 import com.fc.apibanco.model.Registro;
 
+@Repository
 public interface MetadataRepository extends JpaRepository<Metadata, Long> {
 	
     List<Metadata> findByRegistro_NumeroSolicitud(String numeroSolicitud);
