@@ -3,57 +3,79 @@
 
   <!-- Título -->
   <p class="text-xl font-extrabold mb-6 bg-linear-to-r from-[#ac0404] to-[#b40404] bg-clip-text text-transparent tracking-tight">
-    (*Las extenciones permitidas son: .jpg, .jpeg, .png, .gif, .pdf, .doc, .docx, .xls, .xlsx)
+    (*Las extenciones permitidas son: .jpg, .jpeg, .png, .gif, .pdf, .doc, .docx)
   </p>
 
+  
   <!-- Documentos fijos -->
   <div *ngFor="let doc of documentosFijos" class="mb-6">
-    <label for="file-fijo-{{doc.tipo}}" class="block font-semibold text-gray-700 mb-2">{{ doc.tipo }}:</label>
+    <label for="file-fijo-{{doc.tipo}}" class="block font-semibold text-gray-700 mb-2">
+      {{ formatDocumento(doc.tipo) }}:
+    </label> 
     <div class="flex items-center gap-4">
       <input id="file-fijo-{{doc.tipo}}" 
-             type="file" 
-             #fileInput 
-             hidden 
-             accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx" 
-             (change)="onFileSelected($event, doc)" />
+            type="file" 
+            #fileInput 
+            hidden 
+            accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx" 
+            (change)="onFileSelected($event, doc)" />
       <button type="button"
-              aria-label="Seleccionar archivo para {{doc.tipo}}"
-              (click)="fileInput.click()"
+              aria-label="Seleccionar archivo para {{ formatDocumento(doc.tipo) }}"
+              (click)="fileInput.click()
+              "
               class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white px-3 py-2 rounded-lg shadow-md hover:scale-105 transition-transform flex items-center gap-2">
         📂 <span>Seleccionar archivo</span>
       </button>
-      <span class="text-sm text-gray-500 italic">{{ getNombreArchivo(doc) }}</span>
+
+      <!-- NUEVO: miniatura/ícono + nombre -->
+      <div class="flex items-center gap-2">
+        <img *ngIf="doc.archivo" 
+            [src]="getThumbnailLocal(doc)" 
+            [alt]="'Miniatura de ' + formatDocumento(doc.tipo)"
+            class="w-8 h-8 object-cover rounded border border-gray-200" />
+        <span class="text-sm text-gray-500 italic">{{ getNombreArchivo(doc) }}</span>
+      </div>
+
       <button *ngIf="doc.archivo" type="button" (click)="eliminarArchivo(doc)"
-              aria-label="Eliminar archivo de {{doc.tipo}}"
+              aria-label="Eliminar archivo de {{ formatDocumento(doc.tipo) }}"
               class="text-red-500 hover:text-red-700 text-lg font-bold">✖</button>
     </div>
   </div>
 
   <!-- Documentos extra -->
+  
   <h3 class="text-xl font-bold mt-10 mb-4 bg-linear-to-r from-[#E45D96] to-[#F2A408] bg-clip-text text-transparent">
     📎 Documentos extra
   </h3>
 
   <div *ngFor="let doc of documentosExtra; let i = index" 
-       class="border border-gray-200 rounded-xl p-6 shadow-sm mb-6 bg-white/90 backdrop-blur-sm hover:shadow-md transition">
+      class="border border-gray-200 rounded-xl p-6 shadow-sm mb-6 bg-white/90 backdrop-blur-sm hover:shadow-md transition">
+
+    <!-- Tipo de documento -->
     <label for="file-extra-{{i}}" class="block font-semibold text-gray-700 mb-2">Tipo de documento:</label>
     <input id="file-extra-{{i}}" 
-       name="tipo{{i}}" 
-       [(ngModel)]="doc.tipo"
-       required 
-       autocomplete="off"
-       class="w-48 border border-gray-300 px-3 py-2 rounded-lg 
-              focus:ring-[#046BB4] focus:border-[#046BB4] text-sm uppercase" />
+          name="tipo{{i}}" 
+          [(ngModel)]="doc.tipo"
+          required 
+          autocomplete="off"
+          class="w-48 border border-gray-300 px-3 py-2 rounded-lg 
+                  focus:ring-[#046BB4] focus:border-[#046BB4] text-sm uppercase" />
 
+    <!-- Vista del tipo "tipeado" (igual que en la grilla) -->
+    <p class="text-xs text-gray-500 mt-1">
+      Vista: <strong>{{ formatDocumento(doc.tipo) }}</strong>
+    </p>
+
+    <!-- Archivo -->
     <label for="file-extra-archivo-{{i}}" class="block font-semibold text-gray-700 mt-4 mb-2">Archivo:</label>
     <div class="flex items-center gap-3">
       <!-- Input oculto -->
       <input type="file"
-             id="file-extra-archivo-{{i}}"
-             #fileInput
-             hidden
-             accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx"
-             (change)="onFileSelectedExtra($event, doc)" />
+            id="file-extra-archivo-{{i}}"
+            #fileInput
+            hidden
+            accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx"
+            (change)="onFileSelectedExtra($event, doc)" />
 
       <!-- Botón para abrir selector -->
       <button type="button"
@@ -64,15 +86,24 @@
     </div>
 
     <div class="flex items-center gap-3 mt-3">
-      <p class="text-sm text-gray-500 italic">{{ getNombreArchivo(doc) }}</p>
+      <!-- Miniatura/ícono + nombre del archivo -->
+      <div class="flex items-center gap-2">
+        <img *ngIf="doc.archivo" 
+            [src]="getThumbnailLocal(doc)" 
+            [alt]="'Miniatura de ' + formatDocumento(doc.tipo)"
+            class="w-8 h-8 object-cover rounded border border-gray-200" />
+        <p class="text-sm text-gray-500 italic">{{ getNombreArchivo(doc) }}</p>
+      </div>
+
       <button *ngIf="doc.archivo" type="button" (click)="eliminarArchivo(doc)"
               class="text-red-500 hover:text-red-700 text-xs font-medium">✖ Quitar archivo</button>
       <button type="button" (click)="eliminarExtra(i)"
-              class="text-red-600 hover:text-red-800 text-xs font-medium">🗑 Eliminar documento</button>
+              class="text-red-600 hover:text-red-800 text-xs font-medium">
+        <img src="assets/icons/borrar.png" alt="Eliminar" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-75" />
+      </button>
     </div>
   </div>
 
-  <!-- Botón agregar documento extra -->
   <button type="button" (click)="agregarDocumentoExtra()"
           [disabled]="documentosExtra.length > 0 && !documentosExtra[documentosExtra.length-1].archivo"
           aria-label="Agregar documento extra"
@@ -85,4 +116,5 @@
           class="w-full mt-8 bg-linear-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform font-semibold text-lg">
     💾 Guardar imágenes
   </button>
+
 </form>

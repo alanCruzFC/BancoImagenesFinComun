@@ -22,25 +22,26 @@
 
 
   </div>
-
-  <div *ngIf="imagenes.length === 0" class="text-center p-6">
-    <p class="text-gray-600">No hay archivos cargados</p>
+  <div class="overflow-x-auto overflow-y-auto max-h-160 rounded-xl shadow-md p-4 bg-white/80 backdrop-blur-sm">
+    <div *ngIf="imagenes.length === 0" class="text-center p-6">
+      <p class="text-gray-600">No hay archivos cargados</p>
+    </div>
   </div>
 
-  <div class="grid grid-cols-3 gap-4">
+  <div class="grid grid-cols-4 gap-4 overflow-x-auto overflow-y-auto max-h-160">
     <button *ngFor="let img of imagenes"
             aria-label="Visualizar archivo {{ getNombreArchivo(img.tipoDocumento) }}"
             class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
             (click)="abrirVisualizacion(img)">
       <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}" 
-           class="w-full h-40 object-cover rounded-lg border border-gray-200" />
+          class="w-full h-40 object-cover rounded-lg border border-gray-200" />
       <p class="text-base text-black-500 mt-2 text-center">{{ formatDocumento(img.tipoDocumento) }}</p>
     </button>
   </div>
 </div>
 
 <!-- Modal de visualización SOLO para imágenes -->
-<div *ngIf="imagenSeleccionada" class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+<div *ngIf="imagenSeleccionada" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
   <div class="bg-white rounded-2xl shadow-2xl max-w-5xl h-[90vh] flex flex-col overflow-hidden relative">
 
     <!-- Header -->

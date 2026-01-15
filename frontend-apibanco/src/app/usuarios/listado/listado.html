@@ -1,4 +1,4 @@
-<div class="p-6 h-screen bg-gray-50 flex flex-col shadow-lg border border-gray-200 rounded-2xl overflow-hidden box-border">
+<div class="p-6 flex-1 bg-gray-50 flex flex-col shadow-lg border border-gray-200 rounded-2xl overflow-hidden box-border">
   <div class="flex justify-between items-center mb-4 flex-none">
     <h2 class="text-2xl font-bold text-[#046CAC]">Usuarios registrados</h2>
     <div class="flex items-center gap-3">
@@ -19,7 +19,7 @@
 
     </div>
   </div>
-  <div class="flex-1 overflow-auto min-h-0 rounded-xl shadow-md">
+  <div class="overflow-x-auto overflow-y-auto max-h-160 rounded-xl shadow-md">
     <div class="overflow-x-auto">
       <table class="table-auto w-full text-sm border-collapse">
         <thead class="sticky top-0 bg-linear-to-r from-[#046BB4]/5 to-[#4484B4]/5 border-b border-gray-200">
@@ -113,7 +113,7 @@
 
   <!-- Modal crear/editar usuario -->
   <div *ngIf="modalVisible2"
-       class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+       class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-250 max-h-[80vh] relative overflow-auto">
       <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
         <button (click)="cerrarModal2()" 
@@ -143,9 +143,7 @@
   <div
     class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6 animate-[toastSlideDown_200ms_ease-out]"
     role="dialog"
-    aria-modal="true"
-    aria-labelledby="confirm-title-user"
-    aria-describedby="confirm-desc-user">
+    aria-modal="true">
     <h2 id="confirm-title-user" class="text-lg font-semibold mb-2">
       ¿Eliminar usuario?
     </h2>
