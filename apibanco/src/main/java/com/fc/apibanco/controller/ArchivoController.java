@@ -1,20 +1,14 @@
 package com.fc.apibanco.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.apache.commons.io.FilenameUtils;
@@ -46,6 +40,7 @@ import com.fc.apibanco.repository.CorreoAutorizadoRepository;
 import com.fc.apibanco.repository.MetadataRepository;
 import com.fc.apibanco.repository.RegistroRepository;
 import com.fc.apibanco.repository.UsuarioRepository;
+import com.fc.apibanco.service.FileStorageService;
 import com.fc.apibanco.util.AESUtil;
 import com.fc.apibanco.util.Constantes;
 
@@ -56,66 +51,69 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class ArchivoController {
 
-	private final MetadataRepository metadataRepository;
-	private final RegistroRepository registroRepository;
-	private final UsuarioRepository usuarioRepository;
-	private final CorreoAutorizadoRepository correoAutorizadoRepository;
+    private final MetadataRepository metadataRepository;
+    private final RegistroRepository registroRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final CorreoAutorizadoRepository correoAutorizadoRepository;
+    private final FileStorageService fileStorageService;
 
-    public ArchivoController(MetadataRepository metadataRepository, RegistroRepository registroRepository, UsuarioRepository usuarioRepository, CorreoAutorizadoRepository correoAutorizadoRepository) {
+    public ArchivoController(MetadataRepository metadataRepository,
+            RegistroRepository registroRepository,
+            UsuarioRepository usuarioRepository,
+            CorreoAutorizadoRepository correoAutorizadoRepository,
+            FileStorageService fileStorageService) {
         this.metadataRepository = metadataRepository;
         this.registroRepository = registroRepository;
         this.usuarioRepository = usuarioRepository;
         this.correoAutorizadoRepository = correoAutorizadoRepository;
+        this.fileStorageService = fileStorageService;
     }
-	
-//----------------------CARGAR IMAGENES AL SERVIDOR Y METADATA------------------------------------	
-	
-    @PostMapping("/subir/{numeroSolicitud}") 
-    @PreAuthorize("hasRole('SUPERADMIN')") 
+
+    // ----------------------CARGAR IMAGENES AL SERVIDOR Y METADATA------------------------------------
+
+    @PostMapping("/subir/{numeroSolicitud}")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<Map<String, Object>> subirImagen(
-            @PathVariable String numeroSolicitud, 
-            @RequestParam("tipo") String tipo, 
-            @RequestParam("archivo") MultipartFile archivo, 
-            @AuthenticationPrincipal UserDetails userDetails, 
+            @PathVariable String numeroSolicitud,
+            @RequestParam("tipo") String tipo,
+            @RequestParam("archivo") MultipartFile archivo,
+            @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request) throws IOException {
 
         // ---------------- VALIDAR REGISTRO ----------------
         Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
 
         // ---------------- OBTENER USUARIO AUTENTICADO ----------------
         if (userDetails == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debe estar autenticado desde la vista");
         }
         Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
 
         numeroSolicitud = numeroSolicitud.trim();
-        Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud);
-        Files.createDirectories(carpeta);
+        // Usamos el servicio para asegurar el folder (en local)
+        fileStorageService.createFolder(numeroSolicitud);
 
         // ---------------- TIPOS FIJOS ----------------
         Set<String> tiposfijos = Constantes.TIPOS_FIJOS;
-
         String tipoNormalizado = tipo.trim().toUpperCase();
 
         // ---------------- VALIDACIÓN DE TIPO ----------------
         if (tiposfijos.contains(tipoNormalizado)) {
-        	// No hacemos nada porque ya es un tipo fijo válido
+            // No hacemos nada porque ya es un tipo fijo válido
         } else {
             String tipoExtra = tipo.trim();
-
             for (String fijo : tiposfijos) {
                 if (tipoExtra.toUpperCase().startsWith(fijo)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of(Constantes.MSG, "Tipo extra inválido por similitud con fijo: " + tipoExtra));
+                            .body(Map.of(Constantes.MSG, "Tipo extra inválido por similitud con fijo: " + tipoExtra));
                 }
             }
             if (tipoExtra.chars().anyMatch(Character::isDigit)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of(Constantes.MSG, "Tipo extra inválido: " + tipoExtra));
+                        .body(Map.of(Constantes.MSG, "Tipo extra inválido: " + tipoExtra));
             }
-
             tipoNormalizado = tipoExtra;
         }
 
@@ -124,14 +122,10 @@ public class ArchivoController {
         String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
         if (!extensionesPermitidas.contains(extension)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of(Constantes.MSG, "Extensión no permitida: " + extension));
+                    .body(Map.of(Constantes.MSG, "Extensión no permitida: " + extension));
         }
 
         String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
-        Path destino = carpeta.resolve(nombreSeguro).normalize();
-        if (!destino.startsWith(carpeta)) {
-            throw new IOException("Ruta fuera del directorio permitido");
-        }
 
         // ---------------- AUDITORÍA ----------------
         List<Metadata> existentes = metadataRepository.findByRegistroAndTipoDocumento(registro, tipoNormalizado);
@@ -150,19 +144,18 @@ public class ArchivoController {
         metadata.setActivo(true);
         metadataRepository.save(metadata);
 
-        Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+        // GUARDAR ARCHIVO USANDO EL SERVICIO
+        fileStorageService.store(archivo, numeroSolicitud, nombreSeguro);
 
         String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
-        ArchivoDTO dto = new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro, tipoNormalizado);
+        ArchivoDTO dto = new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro,
+                tipoNormalizado);
 
         return ResponseEntity.ok(Map.of(Constantes.MSG, "Archivo subido correctamente", Constantes.ARCHIVOS_CARP, dto));
     }
 
+    // -----------------------CARGAR MULTIPLES IMAGENES AL MISMO TIEMPO------------------------------------
 
-
-	
-	//-----------------------CARGAR MULTIPLES IMAGENES AL MISMO TIEMPO------------------------------------
-	
     @PostMapping("/subir-multiple/{numeroSolicitud}")
     @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<Map<String, Object>> subirDocumentos(
@@ -176,35 +169,32 @@ public class ArchivoController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
 
         Usuario usuario = obtenerUsuario(userDetails, request, registro);
-
         final String solicitudNormalizada = numeroSolicitud.trim();
 
-        Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, solicitudNormalizada);
-        Files.createDirectories(carpeta);
+        // Crear folder
+        fileStorageService.createFolder(solicitudNormalizada);
 
         List<ArchivoDTO> archivosSubidos = procesarArchivos(
-                archivos, tipos, userDetails, registro, usuario, carpeta, solicitudNormalizada);
+                archivos, tipos, userDetails, registro, usuario, solicitudNormalizada);
 
         List<TipoDocumentoStatusDTO> status = Constantes.TIPOS_FIJOS.stream()
-            .map(tipo -> {
-                List<Metadata> metas = metadataRepository.findByRegistroAndTipoDocumentoAndActivoTrue(registro, tipo);
-                if (!metas.isEmpty()) {
-                    return new TipoDocumentoStatusDTO(tipo, true);
-                } else {
-                    return new TipoDocumentoStatusDTO(tipo, false);
-                }
-            })
-            .toList();
+                .map(tipo -> {
+                    List<Metadata> metas = metadataRepository.findByRegistroAndTipoDocumentoAndActivoTrue(registro,
+                            tipo);
+                    if (!metas.isEmpty()) {
+                        return new TipoDocumentoStatusDTO(tipo, true);
+                    } else {
+                        return new TipoDocumentoStatusDTO(tipo, false);
+                    }
+                })
+                .toList();
 
         return ResponseEntity.ok(Map.of(
                 Constantes.MSG, "Proceso de subida completado",
                 Constantes.ARCHIVOS_CARP, archivosSubidos,
-                "statusTipos", status
-        ));
+                "statusTipos", status));
     }
 
-
-    
     private Usuario obtenerUsuario(UserDetails userDetails, HttpServletRequest request, Registro registro) {
         if (userDetails != null) {
             Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
@@ -229,41 +219,41 @@ public class ArchivoController {
 
     private List<ArchivoDTO> procesarArchivos(List<MultipartFile> archivos, List<String> tipos,
             UserDetails userDetails, Registro registro,
-            Usuario usuario, Path carpeta, String numeroSolicitud) throws IOException {
-		List<ArchivoDTO> archivosSubidos = new ArrayList<>();
-		Set<String> tiposFijos = Constantes.TIPOS_FIJOS;
-		Set<String> extensionesPermitidas = Constantes.EXT_PER;
-		
-		for (int i = 0; i < archivos.size(); i++) {
-			MultipartFile archivo = archivos.get(i);
-			String tipo = tipos.get(i);
-			
-			if (archivo == null || archivo.isEmpty() || tipo == null || tipo.isBlank()) {
-			continue;
-			}
-			
-			String tipoNormalizado = tipo.trim().toUpperCase();
-			validarTipo(userDetails, tipoNormalizado, tiposFijos);
-			
-			String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
-			validarExtension(extension, extensionesPermitidas);
-			
-			String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
-			Path destino = carpeta.resolve(nombreSeguro).normalize();
-			validarRuta(destino, carpeta);
-			
-			desactivarMetadatosPrevios(registro, tipoNormalizado);
-			
-			Metadata metadata = crearMetadata(nombreSeguro, tipoNormalizado, registro, usuario);
-			metadataRepository.save(metadata);
-			
-			Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-			
-			String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
-			archivosSubidos.add(new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro, tipoNormalizado));
-		}
-		return archivosSubidos;
+            Usuario usuario, String numeroSolicitud) throws IOException {
+        List<ArchivoDTO> archivosSubidos = new ArrayList<>();
+        Set<String> tiposFijos = Constantes.TIPOS_FIJOS;
+        Set<String> extensionesPermitidas = Constantes.EXT_PER;
+
+        for (int i = 0; i < archivos.size(); i++) {
+            MultipartFile archivo = archivos.get(i);
+            String tipo = tipos.get(i);
+
+            if (archivo == null || archivo.isEmpty() || tipo == null || tipo.isBlank()) {
+                continue;
+            }
+
+            String tipoNormalizado = tipo.trim().toUpperCase();
+            validarTipo(userDetails, tipoNormalizado, tiposFijos);
+
+            String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
+            validarExtension(extension, extensionesPermitidas);
+
+            String nombreSeguro = UUID.randomUUID().toString() + "." + extension;
+
+            desactivarMetadatosPrevios(registro, tipoNormalizado);
+
+            Metadata metadata = crearMetadata(nombreSeguro, tipoNormalizado, registro, usuario);
+            metadataRepository.save(metadata);
+
+            fileStorageService.store(archivo, numeroSolicitud, nombreSeguro);
+
+            String nombreLogico = tipoNormalizado + "_" + numeroSolicitud + "." + extension;
+            archivosSubidos.add(new ArchivoDTO(nombreLogico, Constantes.URL_DESC + numeroSolicitud + "/" + nombreSeguro,
+                    tipoNormalizado));
+        }
+        return archivosSubidos;
     }
+
     private void validarTipo(UserDetails userDetails, String tipoNormalizado, Set<String> tiposFijos) {
         if (userDetails == null) {
             if (!tiposFijos.contains(tipoNormalizado)) {
@@ -283,11 +273,7 @@ public class ArchivoController {
         }
     }
 
-    private void validarRuta(Path destino, Path carpeta) throws IOException {
-        if (!destino.startsWith(carpeta)) {
-            throw new IOException("Ruta fuera del directorio permitido");
-        }
-    }
+    // validarRuta ya no es necesario aquí, lo maneja el servicio si es localfile
 
     private void desactivarMetadatosPrevios(Registro registro, String tipoNormalizado) {
         List<Metadata> existentes = metadataRepository.findByRegistroAndTipoDocumento(registro, tipoNormalizado);
@@ -309,179 +295,173 @@ public class ArchivoController {
         return metadata;
     }
 
-	
-	//-----------------------LISTAR REGISTROS-------------------------------------------------------------
-	
-    @GetMapping("/registros") 
-    @PreAuthorize("hasAnyRole('USER','SUPERVISOR','ADMIN','SUPERADMIN')") 
+    // -----------------------LISTAR REGISTROS-------------------------------------------------------------
+
+    @GetMapping("/registros")
+    @PreAuthorize("hasAnyRole('USER','SUPERVISOR','ADMIN','SUPERADMIN')")
     public ResponseEntity<List<RegistroDTO>> obtenerRegistros(@AuthenticationPrincipal UserDetails userDetails) {
 
-	    Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
+        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
 
-	    String rol = usuario.getRol();
-	    String correoUsuario = usuario.getEmail();
+        String rol = usuario.getRol();
+        String correoUsuario = usuario.getEmail();
 
-	    List<Registro> registros;
-	    
-	    if (rol.equals(Constantes.SUPERADMIN)) { 
-	    	registros = registroRepository.findByFechaEliminacionIsNull();
-	    } else if (rol.equals(Constantes.ADMIN)) {
-	        registros = registroRepository.findByFechaEliminacionIsNull();
-	    } else if (rol.equals(Constantes.USER)) {
-	        registros = registroRepository.findByFechaEliminacionIsNull().stream()
-	            .filter(registro ->
-	                (registro.getCreador() != null && registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername())) ||
-	                registro.getCorreosAutorizados().stream()
-	                    .map(CorreoAutorizado::getCorreo)
-	                    .anyMatch(correo -> correo.equalsIgnoreCase(correoUsuario)))
-	            .toList();
-	    } else if (rol.equals(Constantes.SUPERVISOR)) {
-	        registros = registroRepository.findByFechaEliminacionIsNull().stream()
-	                .filter(registro ->
-	                    (registro.getCreador() != null && registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername())) ||
-	                    (registro.getCreador() != null && registro.getCreador().getSupervisor() != null &&
-	                     registro.getCreador().getSupervisor().getId().equals(usuario.getId())))
-	                .toList();
-	    } else {
-	        registros = registroRepository.findByFechaEliminacionIsNull().stream()
-	            .filter(registro ->
-	                registro.getCorreosAutorizados().stream()
-	                    .map(CorreoAutorizado::getCorreo)
-	                    .anyMatch(correo -> correo.equalsIgnoreCase(correoUsuario)))
-	            .toList();
-	    }
+        List<Registro> registros;
 
-	    List<RegistroDTO> respuesta = registros.stream()
-	        .map(registro -> {
-	            List<String> correos = correoAutorizadoRepository.findByRegistroId(registro.getId())
-	                .stream()
-	                .map(CorreoAutorizado::getCorreo)
-	                .filter(c -> !c.equalsIgnoreCase(registro.getCreador().getEmail()))
-	                .toList();
+        if (rol.equals(Constantes.SUPERADMIN)) {
+            registros = registroRepository.findByFechaEliminacionIsNull();
+        } else if (rol.equals(Constantes.ADMIN)) {
+            registros = registroRepository.findByFechaEliminacionIsNull();
+        } else if (rol.equals(Constantes.USER)) {
+            registros = registroRepository.findByFechaEliminacionIsNull().stream()
+                    .filter(registro -> (registro.getCreador() != null
+                            && registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername())) ||
+                            registro.getCorreosAutorizados().stream()
+                                    .map(CorreoAutorizado::getCorreo)
+                                    .anyMatch(correo -> correo.equalsIgnoreCase(correoUsuario)))
+                    .toList();
+        } else if (rol.equals(Constantes.SUPERVISOR)) {
+            registros = registroRepository.findByFechaEliminacionIsNull().stream()
+                    .filter(registro -> (registro.getCreador() != null
+                            && registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername())) ||
+                            (registro.getCreador() != null && registro.getCreador().getSupervisor() != null &&
+                                    registro.getCreador().getSupervisor().getId().equals(usuario.getId())))
+                    .toList();
+        } else {
+            registros = registroRepository.findByFechaEliminacionIsNull().stream()
+                    .filter(registro -> registro.getCorreosAutorizados().stream()
+                            .map(CorreoAutorizado::getCorreo)
+                            .anyMatch(correo -> correo.equalsIgnoreCase(correoUsuario)))
+                    .toList();
+        }
 
-	            return new RegistroDTO(
-	                registro.getNumeroSolicitud(),
-	                registro.getCarpetaRuta(),
-	                registro.getCreador() != null ? registro.getCreador().getUsername() : Constantes.USER_DESC,
-	                registro.getFechaCreacion(),
-	                correos
-	            );
-	        })
-	        .toList();
+        List<RegistroDTO> respuesta = registros.stream()
+                .map(registro -> {
+                    List<String> correos = correoAutorizadoRepository.findByRegistroId(registro.getId())
+                            .stream()
+                            .map(CorreoAutorizado::getCorreo)
+                            .filter(c -> !c.equalsIgnoreCase(registro.getCreador().getEmail()))
+                            .toList();
 
-	    return ResponseEntity.ok(respuesta);
-	}
-	
-//--------------------------OBTENER REGISTRO POR NUMERO DE SOLICITUD-------------------------------------------------------------------------------------
-	
-    @GetMapping("/registros/{numeroSolicitud}") 
-    @PreAuthorize("hasAnyRole('USER','SUPERVISOR','ADMIN','SUPERADMIN')") 
-    public ResponseEntity<RegistroDTO> obtenerRegistro( @PathVariable String numeroSolicitud, 
-    													@AuthenticationPrincipal UserDetails userDetails) {
+                    return new RegistroDTO(
+                            registro.getNumeroSolicitud(),
+                            registro.getCarpetaRuta(),
+                            registro.getCreador() != null ? registro.getCreador().getUsername() : Constantes.USER_DESC,
+                            registro.getFechaCreacion(),
+                            correos);
+                })
+                .toList();
 
-	    //--------Validar usuario autenticado--------
-	    Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
-
-	    //--------Buscar el registro
-	    Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
-	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
-
-	    //--------Correos autorizados (mantiene lógica actual)
-	    List<String> correos = correoAutorizadoRepository.findByRegistroId(registro.getId())
-	        .stream()
-	        .map(CorreoAutorizado::getCorreo)
-	        .filter(c -> registro.getCreador() != null && !c.equalsIgnoreCase(registro.getCreador().getEmail()))
-	        .toList();
-
-	    //--------Carpeta física
-	    Path carpeta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud.trim()).normalize();
-
-	    //--------Obtener solo metadatos activos desde BD
-	    List<Metadata> activos = metadataRepository.findByRegistroAndActivoTrueAndFechaDesactivacionIsNull(registro);
-
-	    //--------Filtrar: solo los que existen físicamente en la carpeta
-	    List<ArchivoDTO> archivos = Files.exists(carpeta)
-	        ? activos.stream()
-	            .filter(meta -> {
-	                Path rutaArchivo = carpeta.resolve(meta.getNombreArchivo()).normalize();
-	                return Files.exists(rutaArchivo) && Files.isRegularFile(rutaArchivo);
-	            })
-	            .map(meta -> {
-	                String extension = FilenameUtils.getExtension(meta.getNombreArchivo());
-	                String nombreVisual = meta.getTipoDocumento() + "_" + numeroSolicitud + "." + extension;
-	                String urlDescarga = Constantes.URL_DESC + numeroSolicitud + "/" + meta.getNombreArchivo();
-	                return new ArchivoDTO(nombreVisual, urlDescarga, meta.getTipoDocumento());
-	            })
-	            .toList()
-	        : Collections.emptyList();
-
-	    //--------Validar si es dueño (mantiene lógica actual)
-	    boolean esDueno = usuario.getRol().equals(Constantes.ADMIN) ||
-	                      (registro.getCreador() != null &&
-	                       registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername()));
-
-	    //--------Construir DTO
-	    RegistroDTO dto = new RegistroDTO(
-	        registro.getNumeroSolicitud(),
-	        registro.getCarpetaRuta(),
-	        registro.getCreador() != null ? registro.getCreador().getUsername() : Constantes.USER_DESC,
-	        registro.getFechaCreacion(),
-	        correos
-	    );
-	    dto.setImagenes(archivos);
-	    dto.setEsDueño(esDueno);
-
-	    return ResponseEntity.ok(dto);
-	}
-	
-	//----------------------LISTAR USUARIOS Y MOSTRAR CONTRASEÑA -----------------------------------------------
-	
-    @GetMapping("/usuarios") 
-    @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')") 
-    public ResponseEntity<List<UsuarioDTO>> listarUsuarios(@AuthenticationPrincipal UserDetails userDetails) { 
-    	Usuario solicitante = usuarioRepository.findByUsername(userDetails.getUsername()) 
-    			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO)); 
-    	
-    	// ✅ Permitimos tanto ADMIN como SUPERADMIN 
-    	if (!(Constantes.ADMIN.equals(solicitante.getRol()) || Constantes.SUPERADMIN.equals(solicitante.getRol()))) { 
-    		throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso denegado"); 
-    		} 
-    	List<Usuario> usuarios = usuarioRepository.findAll(); 
-    	
-    	List<UsuarioDTO> respuesta = usuarios.stream()
-    			.map(usuario -> { 
-    				String desencriptada = null; 
-    				PasswordEncriptada pass = usuario.getPasswordEncriptada(); 
-    				if (pass != null && pass.getHash() != null) { 
-    					try { 
-    						desencriptada = AESUtil.decrypt(pass.getHash()); 
-    						} catch (Exception e) { 
-    							desencriptada = "[Error al desencriptar]";
-    							} 
-    					} 
-    				return new UsuarioDTO( 
-    						usuario.getId(), 
-    						usuario.getUsername(), 
-    						usuario.getFirstName(), 
-    						usuario.getLastName(), 
-    						usuario.getEmail(), 
-    						usuario.getRol(), 
-    						usuario.isActivo(), 
-    						usuario.getTeam(), 
-    						usuario.getDepartment(), 
-    						usuario.getSupervisor() != null ? usuario.getSupervisor().getId() : null, 
-    						usuario.getSupervisor() != null ? usuario.getSupervisor().getFirstName() + " " + usuario.getSupervisor().getLastName() : null, 
-    						desencriptada // ✅ ahora sí se devuelve la contraseña desencriptada 
-    					); 
-    				}) 
-    			.toList(); 
-    	return ResponseEntity.ok(respuesta); 
+        return ResponseEntity.ok(respuesta);
     }
 
-	
-//	----------------------DESCARGAR IMAGENES------------------------------------------
+    // --------------------------OBTENER REGISTRO POR NUMERO DE SOLICITUD-------------------------------------------------------------------------------------
+
+    @GetMapping("/registros/{numeroSolicitud}")
+    @PreAuthorize("hasAnyRole('USER','SUPERVISOR','ADMIN','SUPERADMIN')")
+    public ResponseEntity<RegistroDTO> obtenerRegistro(@PathVariable String numeroSolicitud,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        // --------Validar usuario autenticado--------
+        Usuario usuario = usuarioRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
+
+        // --------Buscar el registro
+        Registro registro = registroRepository.findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
+
+        // --------Correos autorizados (mantiene lógica actual)
+        List<String> correos = correoAutorizadoRepository.findByRegistroId(registro.getId())
+                .stream()
+                .map(CorreoAutorizado::getCorreo)
+                .filter(c -> registro.getCreador() != null && !c.equalsIgnoreCase(registro.getCreador().getEmail()))
+                .toList();
+
+        // --------Obtener solo metadatos activos desde BD
+        List<Metadata> activos = metadataRepository.findByRegistroAndActivoTrueAndFechaDesactivacionIsNull(registro);
+
+        // -------- AHORA DEBEMOS CONFIAR EN LA BD SI ESTAMOS EN S3, O VERIFICAR CON LOAD SI ES LOCAL -------
+        // Para eficiencia, asumiremos que si está en BD activo, existe.
+        // O podríamos hacer un 'checkExists' en el servicio, pero S3 es lento para eso
+        // 1 por 1.
+        // Simplificaremos asumiendo la metadata:
+
+        List<ArchivoDTO> archivos = activos.stream()
+                .map(meta -> {
+                    String extension = FilenameUtils.getExtension(meta.getNombreArchivo());
+                    String nombreVisual = meta.getTipoDocumento() + "_" + numeroSolicitud + "." + extension;
+                    String urlDescarga = Constantes.URL_DESC + numeroSolicitud + "/" + meta.getNombreArchivo();
+                    return new ArchivoDTO(nombreVisual, urlDescarga, meta.getTipoDocumento());
+                })
+                .toList();
+
+        // --------Validar si es dueño (mantiene lógica actual)
+        boolean esDueno = usuario.getRol().equals(Constantes.ADMIN) ||
+                (registro.getCreador() != null &&
+                        registro.getCreador().getUsername().equalsIgnoreCase(usuario.getUsername()));
+
+        // --------Construir DTO
+        RegistroDTO dto = new RegistroDTO(
+                registro.getNumeroSolicitud(),
+                registro.getCarpetaRuta(),
+                registro.getCreador() != null ? registro.getCreador().getUsername() : Constantes.USER_DESC,
+                registro.getFechaCreacion(),
+                correos);
+        dto.setImagenes(archivos);
+        dto.setEsDueño(esDueno);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    // ----------------------LISTAR USUARIOS Y MOSTRAR CONTRASEÑA-----------------------------------------------
+
+    @GetMapping("/usuarios")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
+    public ResponseEntity<List<UsuarioDTO>> listarUsuarios(@AuthenticationPrincipal UserDetails userDetails) {
+        Usuario solicitante = usuarioRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constantes.NO_AUTORIZADO));
+
+        // ✅ Permitimos tanto ADMIN como SUPERADMIN
+        if (!(Constantes.ADMIN.equals(solicitante.getRol()) || Constantes.SUPERADMIN.equals(solicitante.getRol()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acceso denegado");
+        }
+        List<Usuario> usuarios = usuarioRepository.findAll();
+
+        List<UsuarioDTO> respuesta = usuarios.stream()
+                .map(usuario -> {
+                    String desencriptada = null;
+                    PasswordEncriptada pass = usuario.getPasswordEncriptada();
+                    if (pass != null && pass.getHash() != null) {
+                        try {
+                            desencriptada = AESUtil.decrypt(pass.getHash());
+                        } catch (Exception e) {
+                            desencriptada = "[Error al desencriptar]";
+                        }
+                    }
+                    return new UsuarioDTO(
+                            usuario.getId(),
+                            usuario.getUsername(),
+                            usuario.getFirstName(),
+                            usuario.getLastName(),
+                            usuario.getEmail(),
+                            usuario.getRol(),
+                            usuario.isActivo(),
+                            usuario.getTeam(),
+                            usuario.getDepartment(),
+                            usuario.getSupervisor() != null ? usuario.getSupervisor().getId() : null,
+                            usuario.getSupervisor() != null
+                                    ? usuario.getSupervisor().getFirstName() + " "
+                                            + usuario.getSupervisor().getLastName()
+                                    : null,
+                            desencriptada // ✅ ahora sí se devuelve la contraseña desencriptada
+                    );
+                })
+                .toList();
+        return ResponseEntity.ok(respuesta);
+    }
+
+    // ----------------------DESCARGAR IMAGENES------------------------------------------
 
     @GetMapping("/descargar/{numeroSolicitud}/{nombreArchivo}")
     @PreAuthorize("permitAll()")
@@ -490,24 +470,42 @@ public class ArchivoController {
             @PathVariable String nombreArchivo,
             @RequestParam(defaultValue = "false") boolean inline) throws IOException {
 
-        Path ruta = Paths.get(Constantes.ARCHIVOS_CARP, numeroSolicitud).resolve(nombreArchivo).normalize();
-        Resource recurso = new UrlResource(ruta.toUri());
+        Resource recurso = fileStorageService.load(numeroSolicitud, nombreArchivo);
 
         if (!recurso.exists()) {
             return ResponseEntity.notFound().build();
         }
 
-        String contentType = Files.probeContentType(ruta);
-        if (contentType == null) {
-            contentType = "application/octet-stream";
+        // Detectar content type. Para S3 o Streams es más dificil hacer
+        // probeContentType por path.
+        // Podemos intentar adivinar por extensión o metadata.
+        String contentType = "application/octet-stream";
+        try {
+            // Si es un archivo local UrlResource, probeContentType funciona.
+            // Si es InputStreamResource (S3), no tiene path file system real.
+            if (recurso.getFile() != null) {
+                contentType = java.nio.file.Files.probeContentType(recurso.getFile().toPath());
+            }
+        } catch (Exception e) {
+            // Fallback por extensión
+            String ext = FilenameUtils.getExtension(nombreArchivo).toLowerCase();
+            if (ext.equals("png"))
+                contentType = "image/png";
+            else if (ext.equals("jpg") || ext.equals("jpeg"))
+                contentType = "image/jpeg";
+            else if (ext.equals("pdf"))
+                contentType = "application/pdf";
         }
+
+        if (contentType == null)
+            contentType = "application/octet-stream";
 
         Metadata metadata = metadataRepository.findByNombreArchivo(nombreArchivo)
                 .orElse(null);
 
         String tipoDocumento = metadata != null ? metadata.getTipoDocumento() : "archivo";
         String extension = FilenameUtils.getExtension(nombreArchivo);
-        String nombreDescarga = tipoDocumento + "." + extension;
+        String nombreDescarga = tipoDocumento + "_" + numeroSolicitud + "." + extension;
 
         String disposition = inline
                 ? "inline; filename=\"" + nombreDescarga + "\""

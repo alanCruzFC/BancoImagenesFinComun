@@ -79,7 +79,7 @@ public class ApiKeyController {
         ApiKey apiKey = apiKeyRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
 
-        String nuevaClave = UUID.randomUUID().toString().replace("-", "");
+        String nuevaClave = UUID.randomUUID().toString();
         apiKey.setClave(nuevaClave);
         apiKey.setFechaEliminacion(null);
 

@@ -1,9 +1,6 @@
 package com.fc.apibanco.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,35 +22,37 @@ public class RegistroService {
 
     private final UsuarioRepository usuarioRepository;
     private final RegistroRepository registroRepository;
-    
-    public RegistroService(UsuarioRepository usuarioRepository, RegistroRepository registroRepository) {
+    private final FileStorageService fileStorageService;
+
+    public RegistroService(UsuarioRepository usuarioRepository,
+            RegistroRepository registroRepository,
+            FileStorageService fileStorageService) {
         this.registroRepository = registroRepository;
         this.usuarioRepository = usuarioRepository;
+        this.fileStorageService = fileStorageService;
     }
-
-    private static final Path BASE_PATH = Paths.get(Constantes.ARCHIVOS_CARP).normalize();
 
     public Registro crearRegistro(RegistroRequest request, String creadorUsername) {
         String numeroSolicitud = request.getNumeroSolicitud().trim();
 
         // ---------------- VALIDACIÓN DE ROL ----------------
         Usuario creador = usuarioRepository.findByEmail(creadorUsername)
-            .orElseGet(() -> usuarioRepository.findByUsername(creadorUsername).orElse(null));
+                .orElseGet(() -> usuarioRepository.findByUsername(creadorUsername).orElse(null));
 
         if (creador != null) {
             String rol = creador.getRol();
             if (Constantes.ADMIN.equalsIgnoreCase(rol)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "El rol ADMIN no puede crear registros");
+                        "El rol ADMIN no puede crear registros");
             }
         }
 
         // ---------------- VALIDAR DUPLICADOS ----------------
         Optional<Registro> existente = registroRepository
-            .findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud);
+                .findByNumeroSolicitudAndFechaEliminacionIsNull(numeroSolicitud);
         if (existente.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
-                "Ya existe un registro con el número de solicitud " + numeroSolicitud);
+                    "Ya existe un registro con el número de solicitud " + numeroSolicitud);
         }
 
         // ---------------- CREAR USUARIO SI NO EXISTE ----------------
@@ -69,38 +68,37 @@ public class RegistroService {
         }
 
         // ---------------- CREAR CARPETA ----------------
-        Path carpeta = BASE_PATH.resolve(numeroSolicitud).normalize();
-        if (!carpeta.startsWith(BASE_PATH)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Ruta fuera del directorio permitido");
+        try {
+            // Usamos el servicio de almacenamiento
+            // En local crea la carpeta real, en S3 es una operación lógica o no-op
+            fileStorageService.createFolder(numeroSolicitud);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "No se pudo crear la carpeta para la solicitud " + numeroSolicitud, e);
         }
 
-        try {
-            Files.createDirectories(carpeta);
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo crear la carpeta para la solicitud " + numeroSolicitud, e);
-        }
+        String rutaRelativa = numeroSolicitud; // Ahora guardamos la referencia relativa o lógica
 
         // ---------------- CREAR REGISTRO ----------------
         Registro registro = new Registro();
         registro.setNumeroSolicitud(numeroSolicitud);
         registro.setFechaCreacion(LocalDateTime.now());
         registro.setCreador(creador);
-        registro.setCarpetaRuta(carpeta.toString());
+        registro.setCarpetaRuta(rutaRelativa);
 
         List<CorreoAutorizado> autorizados = request.getCorreosAutorizados().stream()
-            .map(correo -> {
-                CorreoAutorizado ca = new CorreoAutorizado();
-                ca.setCorreo(correo);
-                ca.setRegistro(registro);
-                return ca;
-            })
-            .toList();
+                .map(correo -> {
+                    CorreoAutorizado ca = new CorreoAutorizado();
+                    ca.setCorreo(correo);
+                    ca.setRegistro(registro);
+                    return ca;
+                })
+                .toList();
         registro.setCorreosAutorizados(autorizados);
 
         // ---------------- CREAR USUARIOS AUTORIZADOS ----------------
         for (String correo : request.getCorreosAutorizados()) {
-        	Usuario usuario = usuarioRepository.findByEmail(correo).orElseGet(() -> {
+            Usuario usuario = usuarioRepository.findByEmail(correo).orElseGet(() -> {
                 Usuario nuevo = new Usuario();
                 nuevo.setUsername(correo);
                 nuevo.setEmail(correo);
