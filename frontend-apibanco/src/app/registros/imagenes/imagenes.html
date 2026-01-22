@@ -1,4 +1,4 @@
-<div *ngIf="registro" class="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20">
+<div *ngIf="registro" class="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 ">
   <h2 class="text-2xl font-bold mb-4 bg-linear-to-r from-[#046CAC] to-[#046BB4] bg-clip-text text-transparent">
     Registro {{ registro.numeroSolicitud }}
   </h2>
@@ -9,8 +9,7 @@
   </div>
 
   <div class="mb-6 text-center">
-    <button *ngIf="puedeSubir()" (click)="abrirModal()"
-            class="w-48 bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+    <button *ngIf="puedeSubir()" (click)="abrirModal()" class="w-48 bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                   shadow-md hover:shadow-glow transform transition-all duration-300
                   hover:scale-[1.05] active:scale-[0.95]
                   focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
@@ -28,19 +27,18 @@
   </div>
 
   <div class="grid grid-cols-4 gap-4 overflow-x-auto overflow-y-auto max-h-180">
-    <button *ngFor="let img of imagenes"
-            aria-label="Visualizar archivo {{ getNombreArchivo(img.tipoDocumento) }}"
-            class="rounded-lg shadow hover:scale-103 transition cursor-pointer w-11/12"
-            (click)="abrirVisualizacion(img)">
-      <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}" 
-          class="w-full h-40 object-cover rounded-lg border border-gray-200" />
+    <button *ngFor="let img of imagenes" aria-label="Visualizar archivo {{ getNombreArchivo(img.tipoDocumento) }}"
+      class="rounded-lg shadow hover:scale-103 transition cursor-pointer w-11/12" (click)="abrirVisualizacion(img)">
+      <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}"
+        class="w-full h-40 object-cover rounded-lg border border-gray-200" />
       <p class="text-base text-black-500 mt-2 text-center">{{ formatDocumento(img.tipoDocumento) }}</p>
     </button>
   </div>
 </div>
 
 <!-- Modal de visualización SOLO para imágenes -->
-<div *ngIf="imagenSeleccionada" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+<div *ngIf="imagenSeleccionada"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
   <div class="bg-white rounded-2xl shadow-2xl max-w-5xl h-[90vh] flex flex-col overflow-hidden relative">
 
     <!-- Header -->
@@ -49,27 +47,21 @@
         <h2 class="font-semibold text-lg">{{ imagenSeleccionada.tipoDocumento }}</h2>
         <p class="text-sm text-white/80">{{ getNombreArchivo(imagenSeleccionada.url) }}</p>
       </div>
-      <button (click)="cerrarVisualizacion()" 
-              aria-label="Cerrar visualización"
-              class="bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">
+      <button (click)="cerrarVisualizacion()" aria-label="Cerrar visualización"
+        class="bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">
         ✖
       </button>
     </div>
 
     <!-- Contenido -->
     <div class="flex-1 overflow-auto bg-slate-900 flex items-center justify-center p-4">
-      <img [src]="imagenSeleccionada.url"
-           alt="Documento seleccionado"
-           width="800"
-           height="600"
-           loading="lazy"
-           class="max-w-full max-h-full object-contain transition-transform duration-200"/>
+      <img [src]="imagenSeleccionada.url" alt="Documento seleccionado" width="800" height="600" loading="lazy"
+        class="max-w-full max-h-full object-contain transition-transform duration-200" />
     </div>
 
     <!-- Footer con botón de descarga opcional -->
     <div class="p-4 border-t bg-gray-100 flex justify-end">
-      <a [href]="imagenSeleccionada.url" download="{{ imagenSeleccionada.nombreArchivo }}"
-         class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+      <a [href]="imagenSeleccionada.url" download="{{ imagenSeleccionada.nombreArchivo }}" class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                  shadow-md hover:shadow-glow transform transition-all duration-300
                  hover:scale-[1.05] active:scale-[0.95]
                  focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
@@ -81,17 +73,14 @@
 </div>
 
 <!-- Modal de subida -->
-<div *ngIf="mostrarModal"
-     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+<div *ngIf="mostrarModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
 
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto relative">
-    
+
     <!-- Encabezado con gradiente -->
     <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white rounded-t-2xl">
       <!-- Botón cerrar -->
-      <button (click)="cerrarModal()" 
-              aria-label="Cerrar modal de subida"
-              class="absolute top-4 right-4 bg-gray-200 text-gray-700 hover:bg-gray-300 
+      <button (click)="cerrarModal()" aria-label="Cerrar modal de subida" class="absolute top-4 right-4 bg-gray-200 text-gray-700 hover:bg-gray-300 
                      rounded-full p-2 shadow-md transition z-50">
         ✖
       </button>
@@ -109,12 +98,9 @@
 
     <!-- Contenido -->
     <div class="p-6">
-      <app-formulario-imagenes *ngIf="registro" 
-                               [numeroSolicitud]="registro.numeroSolicitud" 
-                               (guardado)="onImagenesGuardadas()">
+      <app-formulario-imagenes *ngIf="registro" [numeroSolicitud]="registro.numeroSolicitud"
+        (guardado)="onImagenesGuardadas()">
       </app-formulario-imagenes>
     </div>
   </div>
 </div>
-
-

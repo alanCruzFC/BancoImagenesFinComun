@@ -64,6 +64,8 @@ apibanco/
 │       ├── AESUtil.java               # Encriptación AES
 │       └── Constantes.java            # Constantes globales
 └── src/main/resources/
+    ├── db/migration/                  # Scripts de migración Flyway
+    │   └── V1__initial_schema.sql     # Esquema inicial
     └── application.properties         # Configuración de la aplicación
 ```
 

@@ -7,15 +7,10 @@
 
     <!-- Barra de búsqueda + botón -->
     <div class="flex items-center gap-3">
-      <input [(ngModel)]="searchTerm"
-             (input)="filtrarApiKeys()"
-             type="text"
-             placeholder="🔍 Buscar..."
-             autocomplete="off"
-             aria-label="Buscar API Keys"
-             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
-      <button (click)="abrirModalApiKey()" *ngIf="puedeSubir()"
-              class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+      <input [(ngModel)]="searchTerm" (input)="filtrarApiKeys()" type="text" placeholder="🔍 Buscar..."
+        autocomplete="off" aria-label="Buscar API Keys"
+        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
+      <button (click)="abrirModalApiKey()" *ngIf="puedeSubir()" class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                     shadow-md hover:shadow-glow transform transition-all duration-300
                     hover:scale-[1.05] active:scale-[0.95]
                     focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
@@ -46,28 +41,24 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr *ngFor="let key of apikeysFiltradas"
-            class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
+          class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
           <td class="px-2 py-2">{{ key.consumidor }}</td>
           <td class="px-2 py-2">
-            <span class="font-mono">
+            <span class="font-mono" [ngClass]="{'font-bold': claveVisible[key.id]}">
               {{ claveVisible[key.id] ? key.clave : '****************************************' }}
             </span>
-            <button *ngIf="claveVisible[key.id]" (click)="copiarClave(key.clave)" 
-                    class="ml-2 text-green-600 hover:underline text-xs" >
-              <img src="assets/icons/archivo.png" alt="Copiar clave" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/>
+            <button *ngIf="claveVisible[key.id]" (click)="copiarClave(key.clave)"
+              class="ml-2 text-green-600 hover:underline text-xs">
+              <img src="assets/icons/archivo.png" alt="Copiar clave"
+                class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
             </button>
-            <button (click)="toggleClave(key.id)"
-                    class="ml-2 text-blue-600 hover:underline text-xs">
+            <button (click)="toggleClave(key.id)" class="ml-2 text-blue-600 hover:underline text-xs">
 
-              <img *ngIf="claveVisible[key.id]" 
-                  src="assets/icons/ocultar.png" 
-                  alt="Ocultar clave"
-                  class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
+              <img *ngIf="claveVisible[key.id]" src="assets/icons/ocultar.png" alt="Ocultar clave"
+                class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
 
-              <img *ngIf="!claveVisible[key.id]" 
-                  src="assets/icons/ver.png" 
-                  alt="Ver clave" 
-                  class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
+              <img *ngIf="!claveVisible[key.id]" src="assets/icons/ver.png" alt="Ver clave"
+                class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
             </button>
 
           </td>
@@ -100,13 +91,17 @@
             {{ key.fechaCreacion ? (key.fechaCreacion | date:'dd/MM/yyyy HH:mm') : '—' }}
           </td>
 
-          <td *ngIf="puedeSubir()" class="px-2 py-2 text-center space-x-2"> 
-            <button (click)="abrirModalApiKey(key)" aria-label="Editar API Key {{ key.id }}" class="text-yellow-600 hover:underline text-xs">
-              <img src="assets/icons/lapiz.png" alt="Editar" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/>  
-            </button> 
-            <button (click)="pedirConfirmacionBorrar(key.id)" aria-label="Eliminar API Key {{ key.id }}" class="text-red-600 hover:underline text-xs">
-              <img src="assets/icons/borrar.png" alt="Eliminar" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/> 
-            </button> 
+          <td *ngIf="puedeSubir()" class="px-2 py-2 text-center space-x-2">
+            <button (click)="abrirModalApiKey(key)" aria-label="Editar API Key {{ key.id }}"
+              class="text-yellow-600 hover:underline text-xs">
+              <img src="assets/icons/lapiz.png" alt="Editar"
+                class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
+            </button>
+            <button (click)="pedirConfirmacionBorrar(key.id)" aria-label="Eliminar API Key {{ key.id }}"
+              class="text-red-600 hover:underline text-xs">
+              <img src="assets/icons/borrar.png" alt="Eliminar"
+                class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
+            </button>
           </td>
         </tr>
       </tbody>
@@ -114,22 +109,21 @@
   </div>
   <!-- Modal -->
   <div *ngIf="modalVisibleApikey"
-      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl w-125 relative overflow-hidden">
       <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
         <button (click)="cerrarModalApiKey()" aria-label="Cerrar modal API Key"
-                class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
+          class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
         <h3 class="text-lg font-bold">
           {{ apikeySeleccionada ? 'Actualizar API Key' : 'Crear nueva API Key' }}
         </h3>
         <p class="text-white/80 text-sm">
-          {{ apikeySeleccionada ? 'Modifica los datos y refactoriza la clave si lo requieres' : 'Completa los datos de la nueva API Key' }}
+          {{ apikeySeleccionada ? 'Modifica los datos y refactoriza la clave si lo requieres' : 'Completa los datos de
+          la nueva API Key' }}
         </p>
       </div>
       <div class="p-6">
-        <app-formulario-apikey
-          [apiKey]="apikeySeleccionada"
-          (creado)="cerrarModalApiKey(); ngOnInit()">
+        <app-formulario-apikey [apiKey]="apikeySeleccionada" (creado)="cerrarModalApiKey(); ngOnInit()">
         </app-formulario-apikey>
       </div>
     </div>
@@ -138,16 +132,12 @@
 <!-- Modal de confirmación (Tailwind) -->
 <div *ngIf="showConfirmDelete" class="fixed inset-0 z-50 flex items-center justify-center">
   <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/50" (click)="cancelarBorrado()" (keydown.escape)="cancelarBorrado()" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-black/50" (click)="cancelarBorrado()" (keydown.escape)="cancelarBorrado()"
+    aria-hidden="true"></div>
 
   <!-- Contenedor del modal -->
-  <div
-    class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6 animate-[toastSlideDown_200ms_ease-out]"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="confirm-title"
-    aria-describedby="confirm-desc"
-  >
+  <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6 animate-[toastSlideDown_200ms_ease-out]"
+    role="dialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-desc">
     <!-- Título -->
     <h2 id="confirm-title" class="text-lg font-semibold mb-2">
       ¿Confirmar desactivación de API Key?
@@ -160,31 +150,20 @@
 
     <!-- Botones -->
     <div class="flex justify-end gap-3">
-      <button
-        type="button"
-        class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
-        (click)="cancelarBorrado()"
-      >
+      <button type="button" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+        (click)="cancelarBorrado()">
         Cancelar
       </button>
-      <button
-        type="button"
-        class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
-        (click)="confirmarBorrado()"
-      >
+      <button type="button" class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
+        (click)="confirmarBorrado()">
         Desactivar
       </button>
     </div>
 
     <!-- Botón cerrar (esquina) -->
-    <button
-      type="button"
-      class="absolute top-3 right-3 rounded-full p-1 text-gray-500 hover:bg-gray-100"
-      (click)="cancelarBorrado()"
-      aria-label="Cerrar"
-    >
+    <button type="button" class="absolute top-3 right-3 rounded-full p-1 text-gray-500 hover:bg-gray-100"
+      (click)="cancelarBorrado()" aria-label="Cerrar">
       ✖
     </button>
   </div>
 </div>
-

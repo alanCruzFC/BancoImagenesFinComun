@@ -1,20 +1,12 @@
 <form (ngSubmit)="submit()" class="space-y-4 p-4">
-  <h2 class="text-xl font-semibold mb-4">
-    {{ formData.id ? 'Actualizar API Key' : 'Crear nueva API Key' }}
-  </h2>
 
   <!-- Consumidor -->
   <div>
-   <label for="consumidor" class="block text-sm font-medium text-gray-700">Consumidor</label>
-    <input id="consumidor"
-          [(ngModel)]="formData.consumidor"
-          name="consumidor"
-          placeholder="nombre del consumidor"
-          autocomplete="off"
-          (input)="formData.consumidor = formData.consumidor.toUpperCase()"
-          class="w-full border px-4 py-2 rounded-lg placeholder:lowercase uppercase"
-          [class.border-red-500]="hasError('Consumidor')"
-          required />
+    <label for="consumidor" class="block text-sm font-medium text-gray-700">Consumidor</label>
+    <input id="consumidor" [(ngModel)]="formData.consumidor" name="consumidor" placeholder="nombre del consumidor"
+      autocomplete="off" (input)="formData.consumidor = formData.consumidor.toUpperCase()"
+      class="w-full border px-4 py-2 rounded-lg placeholder:lowercase uppercase"
+      [class.border-red-500]="hasError('Consumidor')" required />
     <!-- ✅ Mensaje dinámico de error -->
     <div *ngIf="hasError('Consumidor')" class="text-red-500 text-sm mt-1">
       El campo consumidor no puede estar vacío ni contener solo espacios.
@@ -24,22 +16,14 @@
   <div *ngIf="formData.id" class="flex items-end space-x-2 mt-4">
     <div class="flex-1">
       <label for="clave" class="font-semibold text-[#046CAC]">Clave:</label>
-      <input [type]="claveVisible ? 'text' : 'password'"
-             id="clave"
-             [(ngModel)]="formData.clave"
-             name="clave"
-             class="w-full border px-4 py-2 rounded font-mono"
-             readonly />
+      <input [type]="claveVisible ? 'text' : 'password'" id="clave" [(ngModel)]="formData.clave" name="clave"
+        class="w-full border px-4 py-2 rounded font-mono" readonly />
     </div>
-    <button type="button"
-            (click)="toggleClave()"
-            class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">
+    <button type="button" (click)="toggleClave()" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">
       {{ claveVisible ? 'Ocultar' : 'Ver' }}
     </button>
-    <button *ngIf="formData.id"
-            type="button"
-            (click)="refactorizarClave()"
-            class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">
+    <button *ngIf="formData.id" type="button" (click)="refactorizarClave()"
+      class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">
       🔑 Refactorizar
     </button>
   </div>
@@ -68,8 +52,7 @@
   </label>
 
   <!-- Botón submit -->
-  <button type="submit"
-          class="w-full bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+  <button type="submit" class="w-full bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                  shadow-md hover:shadow-glow transform transition-all duration-300
                  hover:scale-[1.05] active:scale-[0.95]
                  focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
