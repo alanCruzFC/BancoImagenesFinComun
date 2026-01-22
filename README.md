@@ -2,7 +2,7 @@
 
 Este proyecto es una aplicación completa para la gestión de archivos e imágenes, compuesta por un backend robusto en Spring Boot y un frontend moderno en Angular.
 
-## 🚀 Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 ### Backend (`apibanco`)
 *   **Java**: 17
@@ -17,7 +17,7 @@ Este proyecto es una aplicación completa para la gestión de archivos e imágen
 *   **Estilos**: TailwindCSS 4 + Flowbite 4
 *   **Iconos**: FontAwesome
 
-## 📋 Prerrequisitos
+## Prerrequisitos
 
 Asegúrate de tener instalado lo siguiente en tu entorno local:
 *   [Java JDK 17](https://www.oracle.com/java/technologies/downloads/#java17)
@@ -25,7 +25,7 @@ Asegúrate de tener instalado lo siguiente en tu entorno local:
 *   [Maven](https://maven.apache.org/)
 *   [MySQL Server](https://dev.mysql.com/downloads/mysql/)
 
-## 🛠️ Instalación y Configuración
+## Instalación y Configuración
 
 ### 1. Backend (API)
 
@@ -55,12 +55,12 @@ Asegúrate de tener instalado lo siguiente en tu entorno local:
     ```
 4.  Abre tu navegador en `http://localhost:4200/`.
 
-## ✨ Características Principales
+## Características Principales
 
 *   **Autenticación Segura**: Login y gestión de usuarios mediante tokens JWT.
 *   **Gestión de Archivos**: Subida, descarga y administración de imágenes/archivos (integración con AWS S3).
 
-## 🤝 Contribución
+## Contribución
 
 1.  Haz un Fork del proyecto.
 2.  Crea tu rama de funcionalidad (`git checkout -b feature/NuevaFuncionalidad`).
