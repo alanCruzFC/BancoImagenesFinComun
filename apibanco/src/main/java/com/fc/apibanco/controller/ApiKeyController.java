@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,15 +32,16 @@ import com.fc.apibanco.util.Constantes;
 public class ApiKeyController {
 
     private final ApiKeyService apiKeyService;
-    
+
     private final ApiKeyRepository apiKeyRepository;
-    
-    public ApiKeyController(ApiKeyRepository apiKeyRepository, ApiKeyService apiKeyService) { 
-        this.apiKeyRepository = apiKeyRepository; 
-        this.apiKeyService = apiKeyService; 
+
+    public ApiKeyController(ApiKeyRepository apiKeyRepository, ApiKeyService apiKeyService) {
+        this.apiKeyRepository = apiKeyRepository;
+        this.apiKeyService = apiKeyService;
     }
-    
-    //---------------------LISTAR APIKEYS------------------------------------------------------------------------------
+
+    // ---------------------LISTAR
+    // APIKEYS------------------------------------------------------------------------------
     @GetMapping("/apikeys")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
     public ResponseEntity<List<ApiKey>> listarApiKeys() {
@@ -47,13 +49,14 @@ public class ApiKeyController {
         return ResponseEntity.ok(claves);
     }
 
-    //------------------------CREAR UNA API KEY-------------------------------------------------------------------------    
+    // ------------------------CREAR UNA API
+    // KEY-------------------------------------------------------------------------
     @PostMapping("/apikeys")
     @PreAuthorize("hasRole('SUPERADMIN')")
-    public ResponseEntity<?> crearApiKey(@RequestBody ApiKeyRequest request){
-        
+    public ResponseEntity<?> crearApiKey(@RequestBody ApiKeyRequest request) {
+
         String claveGenerada = UUID.randomUUID().toString();
-        
+
         ApiKey apiKey = new ApiKey();
         apiKey.setClave(claveGenerada);
         apiKey.setConsumidor(request.getConsumidor());
@@ -63,21 +66,21 @@ public class ApiKeyController {
         apiKey.setEliminacion(request.isEliminacion());
         apiKey.setFechaCreacion(LocalDateTime.now());
         apiKey.setFechaEliminacion(null);
-        
+
         apiKeyRepository.save(apiKey);
-        
+
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-            Constantes.MSG, "API key Creada Exitosamente"
-        ));
+                Constantes.MSG, "API key Creada Exitosamente"));
     }
 
-    //-------------------------REGENERAR API KEY--------------------------------------------------------------------------
+    // -------------------------REGENERAR API
+    // KEY--------------------------------------------------------------------------
     @PutMapping("/apikeys/{id}/refactorizar")
     @PreAuthorize("hasRole('SUPERADMIN')")
-    public ResponseEntity<?> regenerarApiKey(@PathVariable Long id) {
+    public ResponseEntity<?> regenerarApiKey(@PathVariable long id) {
 
         ApiKey apiKey = apiKeyRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Constantes.NOT_FOUND));
 
         String nuevaClave = UUID.randomUUID().toString();
         apiKey.setClave(nuevaClave);
@@ -86,44 +89,44 @@ public class ApiKeyController {
         apiKeyRepository.save(apiKey);
 
         return ResponseEntity.ok(Map.of(
-            Constantes.MSG, "API key regenerada exitosamente",
-            "nuevaClave", nuevaClave
-        ));
+                Constantes.MSG, "API key regenerada exitosamente",
+                "nuevaClave", nuevaClave));
     }
-    
-    //-------------------------------ACTUALIZAR API KEY------------------------------------------------------------------
+
+    // -------------------------------ACTUALIZAR API
+    // KEY------------------------------------------------------------------
     @PutMapping("/apikeys/{id}")
     @PreAuthorize("hasRole('SUPERADMIN')")
-    public ResponseEntity<?> actualizarApiKey(@PathVariable Long id, @RequestBody ApiKey apiKeyActualizada) {
+    public ResponseEntity<?> actualizarApiKey(@PathVariable @NonNull Long id, @RequestBody ApiKey apiKeyActualizada) {
         return apiKeyRepository.findById(id)
-            .map(apiKey -> {
+                .map(apiKey -> {
 
-                apiKey.setConsumidor(apiKeyActualizada.getConsumidor());
-                apiKey.setActivo(apiKeyActualizada.isActivo());
-                apiKey.setLectura(apiKeyActualizada.isLectura());
-                apiKey.setEscritura(apiKeyActualizada.isEscritura());
-                apiKey.setActualizacion(apiKeyActualizada.isActualizacion());
-                apiKey.setEliminacion(apiKeyActualizada.isEliminacion());
+                    apiKey.setConsumidor(apiKeyActualizada.getConsumidor());
+                    apiKey.setActivo(apiKeyActualizada.isActivo());
+                    apiKey.setLectura(apiKeyActualizada.isLectura());
+                    apiKey.setEscritura(apiKeyActualizada.isEscritura());
+                    apiKey.setActualizacion(apiKeyActualizada.isActualizacion());
+                    apiKey.setEliminacion(apiKeyActualizada.isEliminacion());
 
-                if (apiKeyActualizada.getClave() != null && !apiKeyActualizada.getClave().isBlank()) {
-                    apiKey.setClave(apiKeyActualizada.getClave());
-                }
+                    if (apiKeyActualizada.getClave() != null && !apiKeyActualizada.getClave().isBlank()) {
+                        apiKey.setClave(apiKeyActualizada.getClave());
+                    }
 
-                apiKeyRepository.save(apiKey);
-                return ResponseEntity.ok("✅ API Key actualizada correctamente");
-            })
-            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ API Key no encontrada"));
+                    apiKeyRepository.save(apiKey);
+                    return ResponseEntity.ok("✅ API Key actualizada correctamente");
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ API Key no encontrada"));
     }
-    
-    @DeleteMapping("/apikeys/{id}") 
+
+    @DeleteMapping("/apikeys/{id}")
     @PreAuthorize("hasRole('SUPERADMIN')")
-    public ResponseEntity<Void> borrarApiKey(@PathVariable Long id) { 
-    	apiKeyService.desactivarApiKey(id); 
-    	return ResponseEntity.noContent().build(); 
+    public ResponseEntity<Void> borrarApiKey(@PathVariable Long id) {
+        apiKeyService.desactivarApiKey(id);
+        return ResponseEntity.noContent().build();
     }
-    
-    @GetMapping 
-    public ResponseEntity<List<ApiKey>> listarActivas() { 
-    	return ResponseEntity.ok(apiKeyService.listarActivas()); 
+
+    @GetMapping
+    public ResponseEntity<List<ApiKey>> listarActivas() {
+        return ResponseEntity.ok(apiKeyService.listarActivas());
     }
 }

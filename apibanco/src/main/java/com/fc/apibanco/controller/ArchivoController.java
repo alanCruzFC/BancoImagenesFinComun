@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.core.io.Resource;
+import org.springframework.lang.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.apache.commons.io.FilenameUtils;
@@ -69,7 +70,8 @@ public class ArchivoController {
         this.fileStorageService = fileStorageService;
     }
 
-    // ----------------------CARGAR IMAGENES AL SERVIDOR Y METADATA------------------------------------
+    // ----------------------CARGAR IMAGENES AL SERVIDOR Y
+    // METADATA------------------------------------
 
     @PostMapping("/subir/{numeroSolicitud}")
     @PreAuthorize("hasRole('SUPERADMIN')")
@@ -154,10 +156,11 @@ public class ArchivoController {
         return ResponseEntity.ok(Map.of(Constantes.MSG, "Archivo subido correctamente", Constantes.ARCHIVOS_CARP, dto));
     }
 
-    // -----------------------CARGAR MULTIPLES IMAGENES AL MISMO TIEMPO------------------------------------
+    // -----------------------CARGAR MULTIPLES IMAGENES AL MISMO
+    // TIEMPO------------------------------------
 
     @PostMapping("/subir-multiple/{numeroSolicitud}")
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    // @PreAuthorize("hasRole('SUPERADMIN')") // Comentado para permitir API Key
     public ResponseEntity<Map<String, Object>> subirDocumentos(
             @PathVariable String numeroSolicitud,
             @RequestParam("archivos") List<MultipartFile> archivos,
@@ -284,6 +287,7 @@ public class ArchivoController {
         }
     }
 
+    @NonNull
     private Metadata crearMetadata(String nombreSeguro, String tipoNormalizado, Registro registro, Usuario usuario) {
         Metadata metadata = new Metadata();
         metadata.setNombreArchivo(nombreSeguro);
@@ -295,7 +299,8 @@ public class ArchivoController {
         return metadata;
     }
 
-    // -----------------------LISTAR REGISTROS-------------------------------------------------------------
+    // -----------------------LISTAR
+    // REGISTROS-------------------------------------------------------------
 
     @GetMapping("/registros")
     @PreAuthorize("hasAnyRole('USER','SUPERVISOR','ADMIN','SUPERADMIN')")
@@ -356,7 +361,8 @@ public class ArchivoController {
         return ResponseEntity.ok(respuesta);
     }
 
-    // --------------------------OBTENER REGISTRO POR NUMERO DE SOLICITUD-------------------------------------------------------------------------------------
+    // --------------------------OBTENER REGISTRO POR NUMERO DE
+    // SOLICITUD-------------------------------------------------------------------------------------
 
     @GetMapping("/registros/{numeroSolicitud}")
     @PreAuthorize("hasAnyRole('USER','SUPERVISOR','ADMIN','SUPERADMIN')")
@@ -381,7 +387,8 @@ public class ArchivoController {
         // --------Obtener solo metadatos activos desde BD
         List<Metadata> activos = metadataRepository.findByRegistroAndActivoTrueAndFechaDesactivacionIsNull(registro);
 
-        // -------- AHORA DEBEMOS CONFIAR EN LA BD SI ESTAMOS EN S3, O VERIFICAR CON LOAD SI ES LOCAL -------
+        // -------- AHORA DEBEMOS CONFIAR EN LA BD SI ESTAMOS EN S3, O VERIFICAR CON
+        // LOAD SI ES LOCAL -------
         // Para eficiencia, asumiremos que si está en BD activo, existe.
         // O podríamos hacer un 'checkExists' en el servicio, pero S3 es lento para eso
         // 1 por 1.
@@ -414,7 +421,8 @@ public class ArchivoController {
         return ResponseEntity.ok(dto);
     }
 
-    // ----------------------LISTAR USUARIOS Y MOSTRAR CONTRASEÑA-----------------------------------------------
+    // ----------------------LISTAR USUARIOS Y MOSTRAR
+    // CONTRASEÑA-----------------------------------------------
 
     @GetMapping("/usuarios")
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
@@ -461,7 +469,8 @@ public class ArchivoController {
         return ResponseEntity.ok(respuesta);
     }
 
-    // ----------------------DESCARGAR IMAGENES------------------------------------------
+    // ----------------------DESCARGAR
+    // IMAGENES------------------------------------------
 
     @GetMapping("/descargar/{numeroSolicitud}/{nombreArchivo}")
     @PreAuthorize("permitAll()")

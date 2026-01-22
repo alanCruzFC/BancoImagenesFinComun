@@ -23,7 +23,7 @@ export class SidebarComponent {
   ];
   logoAnimating = false;
 
-  constructor(private readonly authService: AuthService, private readonly router: Router) {}
+  constructor(private readonly authService: AuthService, private readonly router: Router) { }
 
   get visibleItems(): NavItem[] {
     const rol = this.authService.getRol();

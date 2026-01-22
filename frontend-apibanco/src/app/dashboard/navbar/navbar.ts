@@ -13,7 +13,7 @@ export class NavbarComponent {
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router
-  ) {}
+  ) { }
 
   get nombre(): string {
     return this.authService.getNombre();

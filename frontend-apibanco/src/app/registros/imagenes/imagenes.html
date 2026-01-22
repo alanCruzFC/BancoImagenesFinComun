@@ -27,10 +27,10 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-4 gap-4 overflow-x-auto overflow-y-auto max-h-160">
+  <div class="grid grid-cols-4 gap-4 overflow-x-auto overflow-y-auto max-h-180">
     <button *ngFor="let img of imagenes"
             aria-label="Visualizar archivo {{ getNombreArchivo(img.tipoDocumento) }}"
-            class="rounded-lg shadow hover:scale-105 transition cursor-pointer"
+            class="rounded-lg shadow hover:scale-103 transition cursor-pointer w-11/12"
             (click)="abrirVisualizacion(img)">
       <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}" 
           class="w-full h-40 object-cover rounded-lg border border-gray-200" />

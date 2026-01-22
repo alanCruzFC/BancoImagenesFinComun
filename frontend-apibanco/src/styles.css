@@ -1,38 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'); 
-@import "tailwindcss"; 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
 @import "flowbite/src/themes/default";
 
-@layer base { html, body 
-  { 
-    font-family: 'Inter', sans-serif; 
-  } 
-} 
-@layer components { 
-  .active { 
-    @apply bg-white/10 text-white font-semibold; 
-  } 
-  .toast-custom { 
-    @apply flex items-center w-full max-w-xs p-4 rounded-lg shadow bg-white text-gray-700; 
-  } 
-} 
-  
+@layer base {
+
+  html,
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .active {
+    @apply bg-white/10 text-white font-semibold;
+  }
+
+  .toast-custom {
+    @apply flex items-center w-full max-w-xs p-4 rounded-lg shadow bg-white text-gray-700;
+  }
+}
+
 
 @layer utilities {
-  /* Animación de entrada: desliza hacia abajo */
+
   @keyframes toastSlideDown {
-    from { transform: translateY(-12px); opacity: 0; }
-    to   { transform: translateY(0);      opacity: 1; }
+    from {
+      transform: translateY(-200px) scale(0.80);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
   }
 
   .toast-enter {
-    animation: toastSlideDown 200ms ease-out;
+    animation: toastSlideDown 1000ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform, opacity;
   }
 
-  /* Animación de salida: desvanecer y subir un poco */
   @keyframes toastFadeOutUp {
-    from { transform: translateY(0);      opacity: 1; }
-    to   { transform: translateY(-8px);   opacity: 0; }
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    to {
+      transform: translateY(-8px);
+      opacity: 0;
+    }
   }
 
   .toast-leave {
@@ -40,16 +57,14 @@
     will-change: transform, opacity;
   }
 
-  /* Utilidad opcional para el contenedor del stack (bottom-right) */
   .toast-stack {
     position: fixed;
-    right: 1rem;   /* = tailwind right-4 */
-    bottom: 1rem;  /* = tailwind bottom-4 */
-    z-index: 1000; /* = tailwind z-1000 (o tu escala) */
-    pointer-events: none; /* evita bloquear clicks fuera de los toasts */
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1000;
+    pointer-events: none;
   }
 
-  /* Cada toast debe permitir interacción */
   .toast-item {
     pointer-events: auto;
   }
