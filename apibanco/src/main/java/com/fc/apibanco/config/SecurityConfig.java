@@ -34,8 +34,8 @@ public class SecurityConfig {
     private final ApiKeyFilter apiKeyFilter;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          JwtAuthenticationFilter jwtAuthenticationFilter,
-                          ApiKeyFilter apiKeyFilter) {
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            ApiKeyFilter apiKeyFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.apiKeyFilter = apiKeyFilter;
@@ -44,43 +44,42 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf.disable())  //NOSONAR
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf.disable()) // NOSONAR
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/descargar/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/registro").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/subir/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/subir-multiple/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/descargar/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/registro").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/subir/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/subir-multiple/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
 
-                .requestMatchers(HttpMethod.GET, Constantes.URL_API)
-                    .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
-                .requestMatchers(HttpMethod.POST, Constantes.URL_API)
-                    .hasRole(Constantes.SUPERADMIN)
-                .requestMatchers(HttpMethod.PUT, Constantes.URL_API)
-                    .hasRole(Constantes.SUPERADMIN)
-                .requestMatchers(HttpMethod.DELETE, Constantes.URL_API)
-                    .hasRole(Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.GET, Constantes.URL_API)
+                        .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.POST, Constantes.URL_API)
+                        .hasRole(Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.PUT, Constantes.URL_API)
+                        .hasRole(Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.DELETE, Constantes.URL_API)
+                        .hasRole(Constantes.SUPERADMIN)
 
-                .requestMatchers(HttpMethod.GET, Constantes.URL_USER)
-                    .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
-                .requestMatchers(HttpMethod.POST, Constantes.URL_USER)
-                    .hasRole(Constantes.SUPERADMIN)
-                .requestMatchers(HttpMethod.PUT, Constantes.URL_USER)
-                    .hasRole(Constantes.SUPERADMIN)
-                .requestMatchers(HttpMethod.DELETE, Constantes.URL_USER)
-                    .hasRole(Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.GET, Constantes.URL_USER)
+                        .hasAnyRole(Constantes.ADMIN, Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.POST, Constantes.URL_USER)
+                        .hasRole(Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.PUT, Constantes.URL_USER)
+                        .hasRole(Constantes.SUPERADMIN)
+                        .requestMatchers(HttpMethod.DELETE, Constantes.URL_USER)
+                        .hasRole(Constantes.SUPERADMIN)
 
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
@@ -97,6 +96,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("deprecation")
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
@@ -114,4 +114,3 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
-

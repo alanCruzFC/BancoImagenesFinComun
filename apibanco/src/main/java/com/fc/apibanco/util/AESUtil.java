@@ -13,9 +13,11 @@ import java.util.Arrays;
 import java.util.Base64;
 
 public class AESUtil {
-	
-	private AESUtil() { throw new UnsupportedOperationException("Utility class - no instantiation allowed"); }
-	
+
+    private AESUtil() {
+        throw new UnsupportedOperationException("Utility class - no instantiation allowed");
+    }
+
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES/GCM/NoPadding";
     private static final String SECRET_KEY = System.getenv("APP_SECRET_KEY");
@@ -56,7 +58,6 @@ public class AESUtil {
         try {
             byte[] decoded = Base64.getDecoder().decode(encryptedText);
 
-            // Separar IV y ciphertext
             byte[] iv = Arrays.copyOfRange(decoded, 0, IV_LENGTH);
             byte[] ciphertext = Arrays.copyOfRange(decoded, IV_LENGTH, decoded.length);
 

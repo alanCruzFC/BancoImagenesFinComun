@@ -10,16 +10,15 @@ import com.fc.apibanco.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
-    
     private final UsuarioRepository usuarioRepository;
-    
+
     public UsuarioService(UsuarioRepository usuarioRepository) {
-    	this.usuarioRepository = usuarioRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    public void desactivarUsuario(Long id) {
+    public void desactivarUsuario(long id) {
         Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         usuario.setActivo(false);
         usuario.setDeletedAt(LocalDateTime.now());
@@ -27,4 +26,3 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 }
-

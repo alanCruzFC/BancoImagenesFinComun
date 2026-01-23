@@ -39,15 +39,16 @@ public class ApiKeyService {
         }
         return apiKeyRepository.findByClaveAndFechaEliminacionIsNull(apiKey);
     }
-    
-    public void desactivarApiKey(Long id) { 
-    	ApiKey apiKey = apiKeyRepository.findById(id) 
-    			.orElseThrow(() -> new RuntimeException("API Key no encontrada")); 
-    	apiKey.setActivo(false); apiKey.setFechaEliminacion(LocalDateTime.now()); 
-    	apiKeyRepository.save(apiKey); 
-    } 
-    
-    public List<ApiKey> listarActivas() { 
-    	return apiKeyRepository.findByActivoTrue(); 
+
+    public void desactivarApiKey(long id) {
+        ApiKey apiKey = apiKeyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("API Key no encontrada"));
+        apiKey.setActivo(false);
+        apiKey.setFechaEliminacion(LocalDateTime.now());
+        apiKeyRepository.save(apiKey);
+    }
+
+    public List<ApiKey> listarActivas() {
+        return apiKeyRepository.findByActivoTrue();
     }
 }

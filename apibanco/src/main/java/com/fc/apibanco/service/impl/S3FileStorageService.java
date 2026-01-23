@@ -1,6 +1,7 @@
 package com.fc.apibanco.service.impl;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -72,7 +73,7 @@ public class S3FileStorageService implements FileStorageService {
                     .build();
 
             // Retornamos un InputStreamResource del stream de S3
-            return new InputStreamResource(s3Client.getObject(getOb));
+            return new InputStreamResource(Objects.requireNonNull(s3Client.getObject(getOb)));
         } catch (S3Exception e) {
             throw new IOException("Error descargando archivo de S3", e);
         }

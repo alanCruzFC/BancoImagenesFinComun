@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -53,7 +54,7 @@ public class LocalFileStorageService implements FileStorageService {
     public Resource load(String path, String filename) throws IOException {
         Path file = getBasePath().resolve(path).resolve(filename).normalize();
         try {
-            Resource resource = new UrlResource(file.toUri());
+            Resource resource = new UrlResource(Objects.requireNonNull(file.toUri(), "URI cannot be null"));
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
