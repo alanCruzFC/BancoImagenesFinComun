@@ -20,19 +20,20 @@
     </button>
 
   </div>
-  <div class="overflow-x-auto overflow-y-auto max-h-160 rounded-xl shadow-md p-4 bg-white/80 backdrop-blur-sm">
-    <div *ngIf="imagenes.length === 0" class="text-center p-6">
+  <div class="shadow-md bg-black/10 rounded-xl p-4">
+    <div *ngIf="imagenes.length === 0" class="text-center p-6 bg-white/80 backdrop-blur-sm rounded-xl">
       <p class="text-gray-600">No hay archivos cargados</p>
     </div>
-  </div>
 
-  <div class="grid grid-cols-4 gap-4 overflow-x-auto overflow-y-auto max-h-180">
-    <button *ngFor="let img of imagenes" aria-label="Visualizar archivo {{ getNombreArchivo(img.tipoDocumento) }}"
-      class="rounded-lg shadow hover:scale-103 transition cursor-pointer w-11/12" (click)="abrirVisualizacion(img)">
-      <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}"
-        class="w-full h-40 object-cover rounded-lg border border-gray-200" />
-      <p class="text-base text-black-500 mt-2 text-center">{{ formatDocumento(img.tipoDocumento) }}</p>
-    </button>
+    <div *ngIf="imagenes.length > 0"
+      class="grid grid-cols-4 gap-4 overflow-x-auto overflow-y-auto max-h-120 rounded-xl shadow-md p-4 bg-white/80 backdrop-blur-sm">
+      <button *ngFor="let img of imagenes" aria-label="Visualizar archivo {{ getNombreArchivo(img.tipoDocumento) }}"
+        class="rounded-lg shadow hover:scale-103 transition cursor-pointer" (click)="abrirVisualizacion(img)">
+        <img [src]="getThumbnail(img)" alt="Miniatura de {{ img.tipoDocumento }}"
+          class="w-full h-40 object-cover rounded-lg border border-gray-200" />
+        <p class="text-base text-black-500 mt-2 text-center">{{ formatDocumento(img.tipoDocumento) }}</p>
+      </button>
+    </div>
   </div>
 </div>
 
