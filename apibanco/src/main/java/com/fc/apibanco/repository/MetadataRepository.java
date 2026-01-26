@@ -11,17 +11,16 @@ import com.fc.apibanco.model.Registro;
 
 @Repository
 public interface MetadataRepository extends JpaRepository<Metadata, Long> {
-	
-    List<Metadata> findByRegistro_NumeroSolicitud(String numeroSolicitud);
-    
+
+	List<Metadata> findByRegistro_NumeroSolicitud(String numeroSolicitud);
+
 	List<Metadata> findByRegistroAndTipoDocumento(Registro registro, String tipo);
-	
+
 	List<Metadata> findByRegistroAndActivoTrue(Registro registro);
-	
+
 	List<Metadata> findByRegistroAndActivoTrueAndFechaDesactivacionIsNull(Registro registro);
-	
+
 	Optional<Metadata> findByNombreArchivo(String nombreArchivo);
-	
+
 	List<Metadata> findByRegistroAndTipoDocumentoAndActivoTrue(Registro registro, String tipoDocumento);
 }
-

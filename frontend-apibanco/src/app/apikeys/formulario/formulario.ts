@@ -39,10 +39,6 @@ export class FormularioApiKey implements OnInit {
     }
   }
 
-  toggleClave(): void {
-    this.claveVisible = !this.claveVisible;
-  }
-
   hasError(field: string): boolean {
     return this.validationErrors.includes(field);
   }

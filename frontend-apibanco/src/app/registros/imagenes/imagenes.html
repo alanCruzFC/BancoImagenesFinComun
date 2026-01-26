@@ -45,7 +45,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between p-4 border-b bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white">
       <div>
-        <h2 class="font-semibold text-lg">{{ imagenSeleccionada.tipoDocumento }}</h2>
+        <h2 class="font-semibold text-lg">{{ imagenSeleccionada.tipoDocumento | uppercase }}</h2>
         <p class="text-sm text-white/80">{{ getNombreArchivo(imagenSeleccionada.url) }}</p>
       </div>
       <button (click)="cerrarVisualizacion()" aria-label="Cerrar visualización"

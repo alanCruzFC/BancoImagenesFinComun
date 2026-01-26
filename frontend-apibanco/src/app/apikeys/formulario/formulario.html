@@ -19,9 +19,6 @@
       <input [type]="claveVisible ? 'text' : 'password'" id="clave" [(ngModel)]="formData.clave" name="clave"
         class="w-full border px-4 py-2 rounded font-mono" readonly />
     </div>
-    <button type="button" (click)="toggleClave()" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">
-      {{ claveVisible ? 'Ocultar' : 'Ver' }}
-    </button>
     <button *ngIf="formData.id" type="button" (click)="refactorizarClave()"
       class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">
       🔑 Refactorizar
