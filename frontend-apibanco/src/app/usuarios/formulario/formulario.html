@@ -72,9 +72,9 @@
        name="username"
        placeholder="usuario"
        autocomplete="off"
-       (input)="formData.username = formData.username.toUpperCase()"
+       (input)="formData.username = formData.username"
        class="w-full border border-gray-300 px-4 py-2 rounded-lg 
-              placeholder:lowercase uppercase"
+              placeholder:lowercase"
        required
        [class.border-red-500]="hasError('Usuario')" />
        <p *ngIf="hasError('Usuario')" class="text-red-500 text-sm mt-1"> 

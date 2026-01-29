@@ -51,7 +51,6 @@ export class FormularioUsuario implements OnInit {
 
   validationErrors: string[] = [];
 
-  // ✅ Incluimos SUPERADMIN
   roles: string[] = ['SUPERADMIN', 'ADMIN', 'SUPERVISOR', 'USER'];
   teams: string[] = [];
   departments: string[] = [];
@@ -89,7 +88,6 @@ export class FormularioUsuario implements OnInit {
     });
   }
 
-  // Generador de contraseña con reglas concretas:
   generarPassword(): void {
     const length = 16;
     const lowers = 'abcdefghijkmnopqrstuvwxyz'; 

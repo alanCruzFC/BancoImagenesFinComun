@@ -245,7 +245,8 @@ public class ArchivoController {
 
             desactivarMetadatosPrevios(registro, tipoNormalizado);
 
-            Metadata metadata = crearMetadata(nombreSeguro, tipoNormalizado, registro, usuario);
+            Metadata metadata = crearMetadata(nombreSeguro, tipoNormalizado, registro, usuario,
+                    archivo.getOriginalFilename(), numeroSolicitud);
             metadataRepository.save(metadata);
 
             fileStorageService.store(archivo, numeroSolicitud, nombreSeguro);
@@ -288,7 +289,8 @@ public class ArchivoController {
     }
 
     @NonNull
-    private Metadata crearMetadata(String nombreSeguro, String tipoNormalizado, Registro registro, Usuario usuario) {
+    private Metadata crearMetadata(String nombreSeguro, String tipoNormalizado, Registro registro, Usuario usuario,
+            String nombreOriginal, String numeroSolicitud) {
         Metadata metadata = new Metadata();
         metadata.setNombreArchivo(nombreSeguro);
         metadata.setTipoDocumento(tipoNormalizado);

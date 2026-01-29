@@ -11,21 +11,21 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Metadata {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String nombreArchivo;
-    private String tipoDocumento;
-    private LocalDateTime fechaSubida;
-    private LocalDateTime fechaDesactivacion;
-    private boolean activo;
+	private String nombreArchivo;
+	private String tipoDocumento;
+	private LocalDateTime fechaSubida;
+	private LocalDateTime fechaDesactivacion;
+	private boolean activo;
 
-    @ManyToOne
-    private Registro registro;
+	@ManyToOne
+	private Registro registro;
 
-    @ManyToOne
-    private Usuario subidoPor;
+	@ManyToOne
+	private Usuario subidoPor;
 
 	public Long getId() {
 		return id;
@@ -90,6 +90,5 @@ public class Metadata {
 	public void setActivo(boolean activo) {
 		this.activo = activo;
 	}
-    
-    
+
 }
