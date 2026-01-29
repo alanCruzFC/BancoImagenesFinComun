@@ -38,22 +38,22 @@ export class RegistroService {
     });
   }
 
-  private getAuthHeaders(): HttpHeaders {
-  const token = localStorage.getItem('token');
-  return new HttpHeaders({
-    Authorization: `Bearer ${token}`
-  });
-}
+    private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  }
   subirImagen(numeroSolicitud: string, formData: FormData): Observable<any> {
     return this.http.post(`${this.baseUrl}/${numeroSolicitud}/imagenes`, formData, {
       headers: this.getAuthHeaders()
     });
   }
   crearRegistro(dto: RegistroRequest): Observable<RegistroDTO> {
-  return this.http.post<RegistroDTO>(this.base2Url, dto, {
-    headers: this.getAuthHeaders()
-  });
-}
+    return this.http.post<RegistroDTO>(this.base2Url, dto, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
 
 

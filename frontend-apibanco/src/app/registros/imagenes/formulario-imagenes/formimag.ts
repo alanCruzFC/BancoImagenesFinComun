@@ -40,7 +40,6 @@ export class FormularioImagenes implements OnInit {
     const file = event.target.files[0];
     if (file) {
       doc.archivo = file;
-      // NUEVO: revocamos cualquier URL antigua (por si re-seleccionan) para liberar memoria
       this.revokePreviewURL(doc);
     }
   }
@@ -60,7 +59,6 @@ export class FormularioImagenes implements OnInit {
       return;
     }
     doc.archivo = file;
-    // NUEVO: revocar anteriores URL de preview
     this.revokePreviewURL(doc);
   }
 
@@ -69,13 +67,11 @@ export class FormularioImagenes implements OnInit {
   }
 
   eliminarArchivo(doc: { tipo: string; archivo: File | null }): void {
-    // NUEVO: limpiar URL de preview antes de quitar archivo
     this.revokePreviewURL(doc);
     doc.archivo = null;
   }
 
   eliminarExtra(index: number): void {
-    // NUEVO: limpiar URL de preview si existe
     const doc = this.documentosExtra[index];
     if (doc) this.revokePreviewURL(doc);
     this.documentosExtra.splice(index, 1);
@@ -145,30 +141,19 @@ export class FormularioImagenes implements OnInit {
     return texto.trim().toUpperCase();
   }
 
-  // =========================
-  // NUEVO: Miniatura/ícono local (como en getThumbnail de imágenes)
-  // =========================
+  private readonly previewUrls = new WeakMap<{ tipo: string; archivo: File | null }, string>();
 
-  // Mantenemos URLs de preview temporales por doc para revocarlas después
-  private previewUrls = new WeakMap<{ tipo: string; archivo: File | null }, string>();
-
-  // Determina si un nombre de archivo es imagen
   private esImagenNombre(nombre: string): boolean {
     const lower = nombre.toLowerCase();
     return lower.endsWith('.jpg') || lower.endsWith('.jpeg') ||
            lower.endsWith('.png') || lower.endsWith('.gif');
   }
 
-  /**
-   * Devuelve un src para mostrar miniatura si es imagen (ObjectURL),
-   * o el ícono correspondiente si es pdf/word/excel/otro.
-   */
   getThumbnailLocal(doc: { tipo: string; archivo: File | null }): string {
     const nombre = doc.archivo?.name?.toLowerCase() || '';
 
     if (!nombre) return 'assets/icons/file.png';
 
-    // Si es imagen, generamos/obtenemos un ObjectURL para vista previa
     if (this.esImagenNombre(nombre) && doc.archivo) {
       const existente = this.previewUrls.get(doc);
       if (existente) return existente;
@@ -178,14 +163,12 @@ export class FormularioImagenes implements OnInit {
       return url;
     }
 
-    // Íconos por extensión (igual que en tu componente de imágenes)
     if (nombre.endsWith('.pdf')) return 'assets/icons/pdf.png';
     if (nombre.endsWith('.doc') || nombre.endsWith('.docx')) return 'assets/icons/word.png';
     if (nombre.endsWith('.xls') || nombre.endsWith('.xlsx')) return 'assets/icons/excel.png';
     return 'assets/icons/file.png';
   }
 
-  // Revoca el ObjectURL si existiera (para evitar pérdidas de memoria)
   private revokePreviewURL(doc: { tipo: string; archivo: File | null }): void {
     const existente = this.previewUrls.get(doc);
     if (existente) {

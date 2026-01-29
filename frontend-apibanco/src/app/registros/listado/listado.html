@@ -6,30 +6,26 @@
     </h2>
     <div class="flex items-center gap-3">
       <!-- 🔎 Barra de búsqueda -->
-      <input type="text"
-             [(ngModel)]="busqueda"
-             placeholder="🔍 Buscar..."
-             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
+      <input type="text" [(ngModel)]="busqueda" placeholder="🔍 Buscar..."
+        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
 
-      <button (click)="abrirModal()" 
-                class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+      <button (click)="abrirModal()" class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                       shadow-md hover:shadow-glow transform transition-all duration-300
                       hover:scale-[1.05] active:scale-[0.95]
                       focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
                       disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                      flex items-center gap-2"
-                *ngIf="rol === 'SUPERADMIN'|| rol === 'SUPERVISOR' || rol === 'USER'">
+                      flex items-center gap-2" *ngIf="rol === 'SUPERADMIN'|| rol === 'SUPERVISOR' || rol === 'USER'">
 
-          <!-- Icono PNG -->
-          <img src="assets/icons/agregar.png" alt="Nuevo" class="w-5 h-5" />
+        <!-- Icono PNG -->
+        <img src="assets/icons/agregar.png" alt="Nuevo" class="w-5 h-5" />
 
-          Nuevo registro
-        </button>
+        Nuevo registro
+      </button>
 
     </div>
   </div>
 
-  <!-- Contenedor con scroll interno SOLO para la tabla --> 
+  <!-- Contenedor con scroll interno SOLO para la tabla -->
   <div class="overflow-x-auto overflow-y-auto max-h-160 rounded-xl shadow-md">
     <table class="table-auto w-full text-sm border-collapse">
       <thead>
@@ -46,14 +42,15 @@
       <tbody class="divide-y divide-gray-200">
         <!-- 🔎 Usamos registrosFiltrados -->
         <tr *ngFor="let registro of registrosFiltrados"
-            class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
+          class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
           <td class="px-4 py-2 font-medium text-[#046CAC]">{{ registro.numeroSolicitud }}</td>
           <td class="px-4 py-2">{{ registro.creador }}</td>
-          <td class="px-4 py-2">{{ registro.fechaCreacion | date:'short' }}</td>
+          <td class="px-4 py-2">{{ registro.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
           <td class="px-4 py-2 text-center">
             <a [routerLink]="['/dashboard/visualizar', registro.numeroSolicitud]"
-               class="inline-flex items-center text-blue-600 hover:text-blue-800 transition">
-              <img src="assets/icons/imagen.png" alt="ver registro" class="w-6 h-6 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
+              class="inline-flex items-center text-blue-600 hover:text-blue-800 transition">
+              <img src="assets/icons/imagen.png" alt="ver registro"
+                class="w-6 h-6 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
             </a>
           </td>
           <td *ngIf="rol === 'ADMIN' || rol === 'SUPERADMIN'" class="px-4 py-2">
@@ -68,17 +65,14 @@
 </div>
 
 <!-- Modal -->
-<div *ngIf="mostrarModal"
-     class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+<div *ngIf="mostrarModal" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
 
   <div class="bg-white rounded-2xl shadow-2xl w-150 max-h-[90vh] overflow-auto relative">
-    
+
     <!-- Encabezado con gradiente -->
     <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white rounded-t-2xl">
       <!-- Botón cerrar -->
-      <button (click)="cerrarModal()" 
-              aria-label="Cerrar modal registro"
-              class="absolute top-3 right-3 z-50 
+      <button (click)="cerrarModal()" aria-label="Cerrar modal registro" class="absolute top-3 right-3 z-50 
                      bg-gray-200 text-gray-700 hover:bg-gray-300 
                      rounded-full p-2 shadow-md transition">✖</button>
 
@@ -94,11 +88,8 @@
 
     <!-- Contenido -->
     <div class="p-6">
-      <app-formulario-registro 
-        (registroCreado)="onRegistroCreado($event)" 
-        (guardado)="onRegistroGuardado()">
+      <app-formulario-registro (registroCreado)="onRegistroCreado($event)" (guardado)="onRegistroGuardado()">
       </app-formulario-registro>
     </div>
   </div>
 </div>
-
