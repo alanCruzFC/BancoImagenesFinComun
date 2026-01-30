@@ -1,12 +1,11 @@
-<div class="p-6 flex-1 bg-gray-50 flex flex-col shadow-lg border border-gray-200 rounded-2xl overflow-hidden box-border">
+<div
+  class="p-6 flex-1 bg-gray-50 flex flex-col shadow-lg border border-gray-200 rounded-2xl overflow-hidden box-border">
   <div class="flex justify-between items-center mb-4 flex-none">
     <h2 class="text-2xl font-bold text-[#046CAC]">Usuarios registrados</h2>
     <div class="flex items-center gap-3">
-      <input [(ngModel)]="busqueda" type="text" placeholder="🔍 Buscar..."
-             autocomplete="off"
-             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
-      <button (click)="abrirModal2()" *ngIf="puedeSubir()"
-              class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
+      <input [(ngModel)]="busqueda" type="text" placeholder="🔍 Buscar..." autocomplete="off"
+        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#046CAC]" />
+      <button (click)="abrirModal2()" *ngIf="puedeSubir()" class="bg-linear-to-r from-[#046BB4] to-[#4484B4] text-white py-3 px-4 rounded-lg font-semibold
                     shadow-md transform transition-all duration-300
                     hover:scale-[1.05] active:scale-[0.95]
                     focus:outline-none focus:ring-2 focus:ring-[#046BB4] focus:ring-offset-2
@@ -24,14 +23,54 @@
       <table class="table-auto w-full text-sm border-collapse">
         <thead class="sticky top-0 bg-linear-to-r from-[#046BB4]/5 to-[#4484B4]/5 border-b border-gray-200">
           <tr>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Usuario</th>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Nombre</th>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Apellido</th>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Email</th>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Rol</th>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Equipo</th>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Depto</th>
-            <th class="px-2 py-1 text-left font-semibold text-[#046CAC]">Supervisor</th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('username')">
+              Usuario
+              <span *ngIf="columnaOrdenada === 'username'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'username'" class="text-gray-400">↕</span>
+            </th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('firstName')">
+              Nombre
+              <span *ngIf="columnaOrdenada === 'firstName'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'firstName'" class="text-gray-400">↕</span>
+            </th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('lastName')">
+              Apellido
+              <span *ngIf="columnaOrdenada === 'lastName'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'lastName'" class="text-gray-400">↕</span>
+            </th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('email')">
+              Email
+              <span *ngIf="columnaOrdenada === 'email'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'email'" class="text-gray-400">↕</span>
+            </th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('rol')">
+              Rol
+              <span *ngIf="columnaOrdenada === 'rol'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'rol'" class="text-gray-400">↕</span>
+            </th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('team')">
+              Equipo
+              <span *ngIf="columnaOrdenada === 'team'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'team'" class="text-gray-400">↕</span>
+            </th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('department')">
+              Depto
+              <span *ngIf="columnaOrdenada === 'department'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'department'" class="text-gray-400">↕</span>
+            </th>
+            <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+              (click)="ordenar('supervisorName')">
+              Supervisor
+              <span *ngIf="columnaOrdenada === 'supervisorName'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+              <span *ngIf="columnaOrdenada !== 'supervisorName'" class="text-gray-400">↕</span>
+            </th>
             <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Activo</th>
             <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Contraseña</th>
             <th *ngIf="puedeSubir()" class="px-2 py-1 text-center font-semibold text-[#046CAC]">Acciones</th>
@@ -39,7 +78,7 @@
         </thead>
         <tbody class="divide-y divide-gray-100">
           <tr *ngFor="let usuario of usuariosFiltrados"
-              class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
+            class="hover:bg-linear-to-r hover:from-[#046BB4]/5 hover:to-transparent transition-all duration-200">
             <td class="px-2 py-1 font-medium text-[#046CAC]">{{ usuario.username }}</td>
             <td class="px-2 py-1">{{ usuario.firstName }}</td>
             <td class="px-2 py-1">{{ usuario.lastName }}</td>
@@ -59,22 +98,22 @@
             </td>
             <td class="px-2 py-1 text-center">
 
-              <button *ngIf="rolActual === 'ADMIN' || rolActual === 'SUPERADMIN'"
-                      (click)="mostrarPassword(usuario)"
-                      class="text-blue-600 hover:underline text-xs">
-                <img src="assets/icons/ver.png" alt="Ver clave" class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
+              <button *ngIf="rolActual === 'ADMIN' || rolActual === 'SUPERADMIN'" (click)="mostrarPassword(usuario)"
+                class="text-blue-600 hover:underline text-xs">
+                <img src="assets/icons/ver.png" alt="Ver clave"
+                  class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
               </button>
             </td>
             <td *ngIf="puedeSubir()" class="px-2 py-1 text-center space-x-2">
-              <button (click)="editarUsuario(usuario)" 
-                      aria-label="Editar usuario {{ usuario.username }}"
-                      class="text-yellow-600 hover:underline text-xs">
-                <img src="assets/icons/lapiz.png" alt="Editar" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/>  
+              <button (click)="editarUsuario(usuario)" aria-label="Editar usuario {{ usuario.username }}"
+                class="text-yellow-600 hover:underline text-xs">
+                <img src="assets/icons/lapiz.png" alt="Editar"
+                  class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
               </button>
-              <button (click)="pedirConfirmacionEliminarUsuario(usuario.id)" 
-                      aria-label="Eliminar usuario {{ usuario.username }}" 
-                      class="text-red-600 hover:underline text-xs">
-                <img src="assets/icons/borrar.png" alt="Eliminar" class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md"/> 
+              <button (click)="pedirConfirmacionEliminarUsuario(usuario.id)"
+                aria-label="Eliminar usuario {{ usuario.username }}" class="text-red-600 hover:underline text-xs">
+                <img src="assets/icons/borrar.png" alt="Eliminar"
+                  class="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:brightness-110 hover:drop-shadow-md" />
               </button>
             </td>
 
@@ -85,13 +124,11 @@
   </div>
 
   <!-- Modal contraseña -->
-  <div *ngIf="modalVisible"
-       class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+  <div *ngIf="modalVisible" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl w-105 relative overflow-hidden animate-scale-in">
       <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white relative">
-        <button (click)="cerrarModal()" 
-                aria-label="Cerrar modal contraseña"
-                class="absolute top-4 right-4 text-white/80 hover:text-white transition">
+        <button (click)="cerrarModal()" aria-label="Cerrar modal contraseña"
+          class="absolute top-4 right-4 text-white/80 hover:text-white transition">
           ✖
         </button>
         <h3 class="text-xl font-bold tracking-wide">🔑 Contraseña</h3>
@@ -104,7 +141,7 @@
           </p>
         </div>
         <button (click)="copiarPassword()"
-                class="bg-linear-to-r from-[#F2A408] to-[#E45D96] text-white font-semibold px-4 py-2 rounded-lg w-full shadow hover:opacity-90 transition">
+          class="bg-linear-to-r from-[#F2A408] to-[#E45D96] text-white font-semibold px-4 py-2 rounded-lg w-full shadow hover:opacity-90 transition">
           📋 Copiar contraseña
         </button>
       </div>
@@ -112,13 +149,11 @@
   </div>
 
   <!-- Modal crear/editar usuario -->
-  <div *ngIf="modalVisible2"
-       class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+  <div *ngIf="modalVisible2" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-250 max-h-[80vh] relative overflow-auto">
       <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white">
-        <button (click)="cerrarModal2()" 
-                aria-label="Cerrar modal usuario"
-                class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
+        <button (click)="cerrarModal2()" aria-label="Cerrar modal usuario"
+          class="absolute top-3 right-3 z-50 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full p-2 shadow-md transition">✖</button>
         <h3 class="text-lg font-bold">
           {{ usuarioSeleccionado ? 'Editar usuario' : 'Crear nuevo usuario' }}
         </h3>
@@ -127,9 +162,7 @@
         </p>
       </div>
       <div class="p-6">
-        <app-formulario-usuario
-          [usuario]="usuarioSeleccionado"
-          (creado)="cerrarModal2(); ngOnInit()">
+        <app-formulario-usuario [usuario]="usuarioSeleccionado" (creado)="cerrarModal2(); ngOnInit()">
         </app-formulario-usuario>
       </div>
     </div>
@@ -138,12 +171,11 @@
 
 <!-- Modal de confirmación para eliminar usuario -->
 <div *ngIf="showConfirmDeleteUser" class="fixed inset-0 z-50 flex items-center justify-center">
-<div class="absolute inset-0 bg-black/50" (click)="cancelarEliminarUsuario()" (keydown.escape)="cancelarEliminarUsuario()" aria-hidden="true"></div>
+  <div class="absolute inset-0 bg-black/50" (click)="cancelarEliminarUsuario()"
+    (keydown.escape)="cancelarEliminarUsuario()" aria-hidden="true"></div>
 
-  <div
-    class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6 animate-[toastSlideDown_200ms_ease-out]"
-    role="dialog"
-    aria-modal="true">
+  <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6 animate-[toastSlideDown_200ms_ease-out]"
+    role="dialog" aria-modal="true">
     <h2 id="confirm-title-user" class="text-lg font-semibold mb-2">
       ¿Eliminar usuario?
     </h2>
@@ -151,27 +183,17 @@
       Esta acción desactivará al usuario seleccionado y no se puede deshacer.
     </p>
     <div class="flex justify-end gap-3">
-      <button
-        type="button"
-        class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
-        (click)="cancelarEliminarUsuario()"
-      >
+      <button type="button" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
+        (click)="cancelarEliminarUsuario()">
         Cancelar
       </button>
-      <button
-        type="button"
-        class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
-        (click)="confirmarEliminarUsuario()"
-      >
+      <button type="button" class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
+        (click)="confirmarEliminarUsuario()">
         Eliminar
       </button>
     </div>
-    <button
-      type="button"
-      class="absolute top-3 right-3 rounded-full p-1 text-gray-500 hover:bg-gray-100"
-      (click)="cancelarEliminarUsuario()"
-      aria-label="Cerrar"
-    >
+    <button type="button" class="absolute top-3 right-3 rounded-full p-1 text-gray-500 hover:bg-gray-100"
+      (click)="cancelarEliminarUsuario()" aria-label="Cerrar">
       ✖
     </button>
   </div>

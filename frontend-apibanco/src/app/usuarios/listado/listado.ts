@@ -103,15 +103,44 @@ export class ListadoComponent implements OnInit {
     });
   }
 
+  columnaOrdenada: string = '';
+  ordenAscendente: boolean = true;
+
   get usuariosFiltrados(): Usuario[] {
     const term = this.busqueda.toLowerCase();
-    return this.usuarios.filter(usuario =>
+    let filtrados = this.usuarios.filter(usuario =>
       usuario.username?.toLowerCase().includes(term) ||
       usuario.firstName?.toLowerCase().includes(term) ||
       usuario.lastName?.toLowerCase().includes(term) ||
       usuario.email?.toLowerCase().includes(term) ||
       usuario.department?.toLowerCase().includes(term)
     );
+
+    if (this.columnaOrdenada) {
+      filtrados.sort((a, b) => {
+        const valorA = a[this.columnaOrdenada as keyof Usuario] ?? '';
+        const valorB = b[this.columnaOrdenada as keyof Usuario] ?? '';
+
+        if (valorA < valorB) {
+          return this.ordenAscendente ? -1 : 1;
+        }
+        if (valorA > valorB) {
+          return this.ordenAscendente ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filtrados;
+  }
+
+  ordenar(columna: string): void {
+    if (this.columnaOrdenada === columna) {
+      this.ordenAscendente = !this.ordenAscendente;
+    } else {
+      this.columnaOrdenada = columna;
+      this.ordenAscendente = true;
+    }
   }
 
   getRolColor(rol: string): string {
@@ -148,3 +177,4 @@ export class ListadoComponent implements OnInit {
   }
 
 }
+

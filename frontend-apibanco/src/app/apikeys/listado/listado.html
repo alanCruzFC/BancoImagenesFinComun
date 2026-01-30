@@ -28,14 +28,24 @@
     <table class="table-auto w-full text-sm">
       <thead>
         <tr class="bg-linear-to-r from-[#046BB4]/10 to-[#4484B4]/10">
-          <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Consumidor</th>
+          <th class="px-2 py-2 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+            (click)="ordenar('consumidor')">
+            Consumidor
+            <span *ngIf="columnaOrdenada === 'consumidor'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+            <span *ngIf="columnaOrdenada !== 'consumidor'" class="text-gray-400">↕</span>
+          </th>
           <th class="px-2 py-2 text-left font-semibold text-[#046CAC]">Clave</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Activo</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Lectura</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Escritura</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Actualización</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Eliminación</th>
-          <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Fecha creación</th>
+          <th class="px-2 py-2 text-center font-semibold text-[#046CAC] cursor-pointer select-none"
+            (click)="ordenar('fechaCreacion')">
+            Fecha creación
+            <span *ngIf="columnaOrdenada === 'fechaCreacion'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+            <span *ngIf="columnaOrdenada !== 'fechaCreacion'" class="text-gray-400">↕</span>
+          </th>
           <th *ngIf="puedeSubir()" class="px-2 py-2 text-center font-semibold text-[#046CAC]">Acciones</th>
         </tr>
       </thead>

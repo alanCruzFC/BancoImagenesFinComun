@@ -52,14 +52,45 @@ export class ListadoRegComponent implements OnInit {
 
   onRegistroGuardado(): void {
     this.cargarRegistros();
-    this.cerrarModal(); 
+    this.cerrarModal();
   }
-  
+
+  columnaOrdenada: string = '';
+  ordenAscendente: boolean = true;
+
   get registrosFiltrados(): RegistroDTO[] {
-    if (!this.busqueda) return this.registros;
-    const filtro = this.busqueda.trim().toLowerCase();
-    return this.registros.filter(r =>
-      r.numeroSolicitud.toString().toLowerCase().includes(filtro)
-    );
+    let filtrados = this.registros;
+    if (this.busqueda) {
+      const filtro = this.busqueda.trim().toLowerCase();
+      filtrados = this.registros.filter(r =>
+        r.numeroSolicitud.toString().toLowerCase().includes(filtro) ||
+        r.creador.toLowerCase().includes(filtro)
+      );
+    }
+
+    if (this.columnaOrdenada) {
+      filtrados.sort((a, b) => {
+        const valorA = a[this.columnaOrdenada as keyof RegistroDTO] ?? '';
+        const valorB = b[this.columnaOrdenada as keyof RegistroDTO] ?? '';
+
+        if (valorA < valorB) {
+          return this.ordenAscendente ? -1 : 1;
+        }
+        if (valorA > valorB) {
+          return this.ordenAscendente ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return filtrados;
+  }
+
+  ordenar(columna: string): void {
+    if (this.columnaOrdenada === columna) {
+      this.ordenAscendente = !this.ordenAscendente;
+    } else {
+      this.columnaOrdenada = columna;
+      this.ordenAscendente = true;
+    }
   }
 }

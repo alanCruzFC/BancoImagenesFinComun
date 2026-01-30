@@ -27,7 +27,7 @@ export interface ApiKey {
 })
 export class ListadoApiComponent implements OnInit {
   apikeys: ApiKey[] = [];
-  apikeysFiltradas: ApiKey[] = [];
+  // apikeysFiltradas: ApiKey[] = [];
   modalVisibleApikey = false;
   searchTerm = '';
 
@@ -44,7 +44,7 @@ export class ListadoApiComponent implements OnInit {
     private readonly http: HttpClient,
     private readonly authService: AuthService,
     private readonly toast: ToastService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarApiKeys();
@@ -63,9 +63,9 @@ export class ListadoApiComponent implements OnInit {
           .filter(item => item.activo);
 
         this.apikeys.forEach(key => this.claveVisible[key.id] = false);
-        this.apikeysFiltradas = [...this.apikeys];
+        // this.apikeysFiltradas = [...this.apikeys]; // Ya es un getter
       },
-      error: (err) => this.toast.error('❌ Error al cargar las API Keys', 'Error')
+      error: (err: any) => this.toast.error('❌ Error al cargar las API Keys', 'Error')
     });
   }
 
@@ -79,13 +79,45 @@ export class ListadoApiComponent implements OnInit {
     this.apikeySeleccionada = null;
   }
 
-  filtrarApiKeys(): void {
+  columnaOrdenada: string = '';
+  ordenAscendente: boolean = true;
+
+  get apikeysFiltradas(): ApiKey[] {
     const term = this.searchTerm.trim().toLowerCase();
-    this.apikeysFiltradas = this.apikeys.filter(key =>
+    let filtrados = this.apikeys.filter(key =>
       key.consumidor.toLowerCase().includes(term) ||
       key.clave.toLowerCase().includes(term) ||
       key.id.toString().includes(term)
     );
+
+    if (this.columnaOrdenada) {
+      filtrados.sort((a, b) => {
+        const valorA = a[this.columnaOrdenada as keyof ApiKey] ?? '';
+        const valorB = b[this.columnaOrdenada as keyof ApiKey] ?? '';
+
+        if (valorA < valorB) {
+          return this.ordenAscendente ? -1 : 1;
+        }
+        if (valorA > valorB) {
+          return this.ordenAscendente ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return filtrados;
+  }
+
+  ordenar(columna: string): void {
+    if (this.columnaOrdenada === columna) {
+      this.ordenAscendente = !this.ordenAscendente;
+    } else {
+      this.columnaOrdenada = columna;
+      this.ordenAscendente = true;
+    }
+  }
+
+  filtrarApiKeys(): void {
+    // Ya se maneja en el getter apikeysFiltradas
   }
 
   toggleClave(id: number): void {
@@ -115,29 +147,26 @@ export class ListadoApiComponent implements OnInit {
         this.toast.error('❌ Error al copiar la clave', 'Error');
       });
   }
-  
 
-
-  /** Abre el modal y guarda el id a borrar */
   pedirConfirmacionBorrar(id: number): void {
     this.idPendienteBorrar = id;
     this.showConfirmDelete = true;
   }
 
-  /** Cierra el modal sin borrar */
   cancelarBorrado(): void {
     this.showConfirmDelete = false;
     this.idPendienteBorrar = null;
   }
 
-  /** Confirma y ejecuta tu lógica existente de borrado */
   confirmarBorrado(): void {
     if (this.idPendienteBorrar != null) {
-      this.borrarApiKey(this.idPendienteBorrar); // ✅ usa tu lógica actual
+      this.borrarApiKey(this.idPendienteBorrar);
     }
     this.showConfirmDelete = false;
     this.idPendienteBorrar = null;
   }
+
+
 
 
 }

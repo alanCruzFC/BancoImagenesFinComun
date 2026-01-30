@@ -30,9 +30,24 @@
     <table class="table-auto w-full text-sm border-collapse">
       <thead>
         <tr class="bg-linear-to-r from-[#046BB4]/10 to-[#4484B4]/10">
-          <th class="px-4 py-3 text-left font-semibold text-[#046CAC]">Solicitud</th>
-          <th class="px-4 py-3 text-left font-semibold text-[#046CAC]">Creador</th>
-          <th class="px-4 py-3 text-left font-semibold text-[#046CAC]">Fecha</th>
+          <th class="px-4 py-3 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+            (click)="ordenar('numeroSolicitud')">
+            Solicitud
+            <span *ngIf="columnaOrdenada === 'numeroSolicitud'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+            <span *ngIf="columnaOrdenada !== 'numeroSolicitud'" class="text-gray-400">↕</span>
+          </th>
+          <th class="px-4 py-3 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+            (click)="ordenar('creador')">
+            Creador
+            <span *ngIf="columnaOrdenada === 'creador'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+            <span *ngIf="columnaOrdenada !== 'creador'" class="text-gray-400">↕</span>
+          </th>
+          <th class="px-4 py-3 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
+            (click)="ordenar('fechaCreacion')">
+            Fecha
+            <span *ngIf="columnaOrdenada === 'fechaCreacion'">{{ ordenAscendente ? '▲' : '▼' }}</span>
+            <span *ngIf="columnaOrdenada !== 'fechaCreacion'" class="text-gray-400">↕</span>
+          </th>
           <th class="px-4 py-3 text-center font-semibold text-[#046CAC]">Acciones</th>
           <th *ngIf="rol === 'ADMIN' || rol === 'SUPERADMIN'" class="px-4 py-3 text-left font-semibold text-[#046CAC]">
             Correos autorizados
