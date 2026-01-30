@@ -2,59 +2,54 @@ package com.fc.apibanco.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
 @Entity
-public class Usuario{
+public class Usuario {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String passwordHash;
-    private String rol;
-    private boolean activo;
+	private String username;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private String passwordHash;
+	private String rol;
+	private boolean activo;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private PasswordEncriptada passwordEncriptada;
-    
-    private String team;   
-    private String department;
+	private String team;
+	private String department;
 
-    @ManyToOne
-    @JoinColumn(name = "supervisor_id")
-    private Usuario supervisor;
+	@ManyToOne
+	@JoinColumn(name = "supervisor_id")
+	private Usuario supervisor;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private LocalDateTime deletedAt;
 
+	@PrePersist
+	public void prePersist() {
+		this.createdAt = LocalDateTime.now();
+	}
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
+	@PreUpdate
+	public void preUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
+	// ---------------------------------------------------------------------------------------------------------------------------------
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-    //---------------------------------------------------------------------------------------------------------------------------------
-    
-    //----------------GETTERS AND SETTERS----------------------------------------------------------------------------------------------
+	// ----------------GETTERS AND
+	// SETTERS----------------------------------------------------------------------------------------------
 
 	public Long getId() {
 		return id;
@@ -102,14 +97,6 @@ public class Usuario{
 
 	public void setActivo(boolean activo) {
 		this.activo = activo;
-	}
-
-	public PasswordEncriptada getPasswordEncriptada() {
-		return passwordEncriptada;
-	}
-
-	public void setPasswordEncriptada(PasswordEncriptada passwordEncriptada) {
-		this.passwordEncriptada = passwordEncriptada;
 	}
 
 	public String getFirstName() {
@@ -175,11 +162,5 @@ public class Usuario{
 	public void setDeletedAt(LocalDateTime deletedAt) {
 		this.deletedAt = deletedAt;
 	}
-    
-    
-    
+
 }
-
-
-    
-   

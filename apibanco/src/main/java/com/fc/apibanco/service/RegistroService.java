@@ -63,7 +63,6 @@ public class RegistroService {
             creador.setRol(Constantes.USER);
             creador.setActivo(true);
             creador.setPasswordHash(null);
-            creador.setPasswordEncriptada(null);
             creador = usuarioRepository.save(creador);
         }
 

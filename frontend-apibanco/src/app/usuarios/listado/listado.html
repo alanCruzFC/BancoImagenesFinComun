@@ -72,7 +72,7 @@
               <span *ngIf="columnaOrdenada !== 'supervisorName'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Activo</th>
-            <th class="px-2 py-1 text-center font-semibold text-[#046CAC]">Contraseña</th>
+
             <th *ngIf="puedeSubir()" class="px-2 py-1 text-center font-semibold text-[#046CAC]">Acciones</th>
           </tr>
         </thead>
@@ -96,14 +96,6 @@
                 {{ usuario.activo ? '✔️' : '❌' }}
               </span>
             </td>
-            <td class="px-2 py-1 text-center">
-
-              <button *ngIf="rolActual === 'ADMIN' || rolActual === 'SUPERADMIN'" (click)="mostrarPassword(usuario)"
-                class="text-blue-600 hover:underline text-xs">
-                <img src="assets/icons/ver.png" alt="Ver clave"
-                  class="w-5 h-5 transition duration-200 hover:scale-110 hover:brightness-110" />
-              </button>
-            </td>
             <td *ngIf="puedeSubir()" class="px-2 py-1 text-center space-x-2">
               <button (click)="editarUsuario(usuario)" aria-label="Editar usuario {{ usuario.username }}"
                 class="text-yellow-600 hover:underline text-xs">
@@ -123,30 +115,6 @@
     </div>
   </div>
 
-  <!-- Modal contraseña -->
-  <div *ngIf="modalVisible" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-2xl w-105 relative overflow-hidden animate-scale-in">
-      <div class="bg-linear-to-r from-[#046BB4] to-[#4484B4] p-6 text-white relative">
-        <button (click)="cerrarModal()" aria-label="Cerrar modal contraseña"
-          class="absolute top-4 right-4 text-white/80 hover:text-white transition">
-          ✖
-        </button>
-        <h3 class="text-xl font-bold tracking-wide">🔑 Contraseña</h3>
-        <p class="text-white/80 text-sm mt-1">{{ usuarioSeleccionado?.email }}</p>
-      </div>
-      <div class="p-6 flex flex-col items-center">
-        <div class="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full text-center shadow-inner">
-          <p class="text-gray-900 text-2xl font-mono tracking-wider select-all">
-            {{ usuarioSeleccionado?.passwordDesencriptada }}
-          </p>
-        </div>
-        <button (click)="copiarPassword()"
-          class="bg-linear-to-r from-[#F2A408] to-[#E45D96] text-white font-semibold px-4 py-2 rounded-lg w-full shadow hover:opacity-90 transition">
-          📋 Copiar contraseña
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Modal crear/editar usuario -->
   <div *ngIf="modalVisible2" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">

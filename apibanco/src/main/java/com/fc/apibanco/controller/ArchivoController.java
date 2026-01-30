@@ -34,7 +34,6 @@ import com.fc.apibanco.dto.TipoDocumentoStatusDTO;
 import com.fc.apibanco.dto.UsuarioDTO;
 import com.fc.apibanco.model.CorreoAutorizado;
 import com.fc.apibanco.model.Metadata;
-import com.fc.apibanco.model.PasswordEncriptada;
 import com.fc.apibanco.model.Registro;
 import com.fc.apibanco.model.Usuario;
 import com.fc.apibanco.repository.CorreoAutorizadoRepository;
@@ -42,7 +41,6 @@ import com.fc.apibanco.repository.MetadataRepository;
 import com.fc.apibanco.repository.RegistroRepository;
 import com.fc.apibanco.repository.UsuarioRepository;
 import com.fc.apibanco.service.FileStorageService;
-import com.fc.apibanco.util.AESUtil;
 import com.fc.apibanco.util.Constantes;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -439,34 +437,22 @@ public class ArchivoController {
         List<Usuario> usuarios = usuarioRepository.findAll();
 
         List<UsuarioDTO> respuesta = usuarios.stream()
-                .map(usuario -> {
-                    String desencriptada = null;
-                    PasswordEncriptada pass = usuario.getPasswordEncriptada();
-                    if (pass != null && pass.getHash() != null) {
-                        try {
-                            desencriptada = AESUtil.decrypt(pass.getHash());
-                        } catch (Exception e) {
-                            desencriptada = "[Error al desencriptar]";
-                        }
-                    }
-                    return new UsuarioDTO(
-                            usuario.getId(),
-                            usuario.getUsername(),
-                            usuario.getFirstName(),
-                            usuario.getLastName(),
-                            usuario.getEmail(),
-                            usuario.getRol(),
-                            usuario.isActivo(),
-                            usuario.getTeam(),
-                            usuario.getDepartment(),
-                            usuario.getSupervisor() != null ? usuario.getSupervisor().getId() : null,
-                            usuario.getSupervisor() != null
-                                    ? usuario.getSupervisor().getFirstName() + " "
-                                            + usuario.getSupervisor().getLastName()
-                                    : null,
-                            desencriptada // ✅ ahora sí se devuelve la contraseña desencriptada
-                    );
-                })
+                .map(usuario -> new UsuarioDTO(
+                        usuario.getId(),
+                        usuario.getUsername(),
+                        usuario.getFirstName(),
+                        usuario.getLastName(),
+                        usuario.getEmail(),
+                        usuario.getRol(),
+                        usuario.isActivo(),
+                        usuario.getTeam(),
+                        usuario.getDepartment(),
+                        usuario.getSupervisor() != null ? usuario.getSupervisor().getId() : null,
+                        usuario.getSupervisor() != null
+                                ? usuario.getSupervisor().getFirstName() + " " + usuario.getSupervisor().getLastName()
+                                : null,
+                        null // Ya no se devuelve la contraseña
+                ))
                 .toList();
         return ResponseEntity.ok(respuesta);
     }

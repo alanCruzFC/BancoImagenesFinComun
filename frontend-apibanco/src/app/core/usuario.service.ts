@@ -14,7 +14,6 @@ export interface Usuario {
   department: string;
   supervisorId?: number;
   supervisorName?: string;
-  passwordDesencriptada?: string; 
 }
 
 @Injectable({
@@ -23,7 +22,7 @@ export interface Usuario {
 export class UsuarioService {
   private readonly apiUrl = 'http://localhost:8080/api/usuarios';
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   obtenerCorreos(filtro: string = ''): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/correos?filtro=${filtro}`);

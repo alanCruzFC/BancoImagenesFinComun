@@ -8,10 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.fc.apibanco.model.PasswordEncriptada;
 import com.fc.apibanco.model.Usuario;
 import com.fc.apibanco.repository.UsuarioRepository;
-import com.fc.apibanco.util.AESUtil;
 
 @SpringBootApplication
 public class ApibancoApplication {
@@ -39,12 +37,6 @@ public class ApibancoApplication {
                 }
 
                 superAdmin.setPasswordHash(passwordEncoder.encode(initPassword));
-
-                PasswordEncriptada pass = new PasswordEncriptada();
-                pass.setHash(AESUtil.encrypt(initPassword));
-                pass.setUsuario(superAdmin);
-
-                superAdmin.setPasswordEncriptada(pass);
 
                 usuarioRepository.save(superAdmin);
 

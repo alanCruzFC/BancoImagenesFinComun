@@ -6,23 +6,15 @@
       <li *ngFor="let error of validationErrors">{{ error }}</li>
     </ul>
   </div>
-  
+
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
     <!-- Email -->
     <div class="col-span-2">
       <label for="email" class="font-semibold text-[#046CAC]">Email*:</label>
-      <input id="email"
-          [(ngModel)]="formData.email"
-          name="email"
-          type="email"
-          placeholder="Correo electrónico"
-          autocomplete="off"
-          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
-                  disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-          [disabled]="!!formData.id"
-          required
-          [class.border-red-500]="hasError('Email')" />
+      <input id="email" [(ngModel)]="formData.email" name="email" type="email" placeholder="Correo electrónico"
+        autocomplete="off" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed" [disabled]="!!formData.id"
+        required [class.border-red-500]="hasError('Email')" />
       <p *ngIf="hasError('Email')" class="text-red-500 text-sm mt-1">
         El campo Email es obligatorio o el formato es inválido.
       </p>
@@ -31,16 +23,9 @@
     <!-- Nombre -->
     <div>
       <label for="nombre" class="font-semibold text-[#046CAC]">Nombre*:</label>
-      <input id="nombre"
-          [(ngModel)]="formData.firstName"
-          name="firstName"
-          placeholder="nombre"
-          autocomplete="off"
-          (input)="formData.firstName = formData.firstName.toUpperCase()"
-          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
-                  placeholder:lowercase uppercase" 
-          required
-          [class.border-red-500]="hasError('Nombre')" />
+      <input id="nombre" [(ngModel)]="formData.firstName" name="firstName" placeholder="nombre" autocomplete="off"
+        (input)="formData.firstName = formData.firstName.toUpperCase()" class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  placeholder:lowercase uppercase" required [class.border-red-500]="hasError('Nombre')" />
       <p *ngIf="hasError('Nombre')" class="text-red-500 text-sm mt-1">
         El campo Nombre es obligatorio.
       </p>
@@ -49,17 +34,10 @@
     <!-- Apellido -->
     <div>
       <label for="apellido" class="font-semibold text-[#046CAC]">Apellido*:</label>
-      <input id="apellido"
-       [(ngModel)]="formData.lastName"
-       name="lastName"
-       placeholder="apellido"
-       autocomplete="off"
-       (input)="formData.lastName = formData.lastName.toUpperCase()"
-       class="w-full border border-gray-300 px-4 py-2 rounded-lg 
-              placeholder:lowercase uppercase"
-       required
-       [class.border-red-500]="hasError('Apellido')" />
-       <p *ngIf="hasError('Apellido')" class="text-red-500 text-sm mt-1">
+      <input id="apellido" [(ngModel)]="formData.lastName" name="lastName" placeholder="apellido" autocomplete="off"
+        (input)="formData.lastName = formData.lastName.toUpperCase()" class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+              placeholder:lowercase uppercase" required [class.border-red-500]="hasError('Apellido')" />
+      <p *ngIf="hasError('Apellido')" class="text-red-500 text-sm mt-1">
         El campo Apellido es obligatorio.
       </p>
     </div>
@@ -67,17 +45,10 @@
     <!-- Usuario -->
     <div>
       <label for="username" class="font-semibold text-[#046CAC]">Usuario*:</label>
-      <input id="username"
-       [(ngModel)]="formData.username"
-       name="username"
-       placeholder="usuario"
-       autocomplete="off"
-       (input)="formData.username = formData.username"
-       class="w-full border border-gray-300 px-4 py-2 rounded-lg 
-              placeholder:lowercase"
-       required
-       [class.border-red-500]="hasError('Usuario')" />
-       <p *ngIf="hasError('Usuario')" class="text-red-500 text-sm mt-1"> 
+      <input id="username" [(ngModel)]="formData.username" name="username" placeholder="usuario" autocomplete="off"
+        (input)="formData.username = formData.username" class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+              placeholder:lowercase" required [class.border-red-500]="hasError('Usuario')" />
+      <p *ngIf="hasError('Usuario')" class="text-red-500 text-sm mt-1">
         El campo Usuario es obligatorio.
       </p>
     </div>
@@ -85,9 +56,8 @@
     <!-- Rol -->
     <div>
       <label for="rol" class="font-semibold text-[#046CAC]">Rol*:</label>
-      <select id="rol" [(ngModel)]="formData.rol" name="rol"
-              class="w-full border border-gray-300 px-4 py-2 rounded-lg" required
-              [class.border-red-500]="hasError('Rol')">
+      <select id="rol" [(ngModel)]="formData.rol" name="rol" class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+        required [class.border-red-500]="hasError('Rol')">
         <option value="" disabled selected>Selecciona un rol</option>
         <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
       </select>
@@ -101,23 +71,17 @@
       <label for="team" class="font-semibold text-[#046CAC]">Equipo*:</label>
       <div *ngIf="!usarInputTeam" class="flex space-x-2">
         <select id="team" [(ngModel)]="formData.team" name="team"
-                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
-                [class.border-red-500]="hasError('Equipo')">
+          class="flex-1 border border-gray-300 px-4 py-2 rounded-lg" [class.border-red-500]="hasError('Equipo')">
           <option value="" disabled selected>Selecciona un equipo</option>
           <option *ngFor="let t of teams" [value]="t">{{ t }}</option>
         </select>
         <button type="button" (click)="cambiarAInputTeam()"
-                class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
+          class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
       </div>
       <div *ngIf="usarInputTeam">
-        <input [(ngModel)]="formData.team"
-          name="team"
-          placeholder="nuevo equipo"
-          autocomplete="off"
-          (input)="formData.team = formData.team ? formData.team.toUpperCase() : ''"
-          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
-                  placeholder:lowercase uppercase"
-          [class.border-red-500]="hasError('Equipo')" />
+        <input [(ngModel)]="formData.team" name="team" placeholder="nuevo equipo" autocomplete="off"
+          (input)="formData.team = formData.team ? formData.team.toUpperCase() : ''" class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  placeholder:lowercase uppercase" [class.border-red-500]="hasError('Equipo')" />
       </div>
       <p *ngIf="hasError('Equipo')" class="text-red-500 text-sm mt-1">
         El campo Equipo es obligatorio.
@@ -129,23 +93,17 @@
       <label for="department" class="font-semibold text-[#046CAC]">Departamento*:</label>
       <div *ngIf="!usarInputDepartment" class="flex space-x-2">
         <select id="department" [(ngModel)]="formData.department" name="department"
-                class="flex-1 border border-gray-300 px-4 py-2 rounded-lg"
-                [class.border-red-500]="hasError('Departamento')">
+          class="flex-1 border border-gray-300 px-4 py-2 rounded-lg" [class.border-red-500]="hasError('Departamento')">
           <option value="" disabled selected>Selecciona un departamento</option>
           <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
         </select>
         <button type="button" (click)="cambiarAInputDepartment()"
-                class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
+          class="shrink-0 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700">✏️ Otro</button>
       </div>
       <div *ngIf="usarInputDepartment">
-        <input [(ngModel)]="formData.department"
-          name="department"
-          placeholder="nuevo departamento"
-          autocomplete="off"
-          (input)="formData.department = formData.department ? formData.department.toUpperCase() : ''"
-          class="w-full border border-gray-300 px-4 py-2 rounded-lg 
-                  placeholder:lowercase uppercase"
-          [class.border-red-500]="hasError('Departamento')" />
+        <input [(ngModel)]="formData.department" name="department" placeholder="nuevo departamento" autocomplete="off"
+          (input)="formData.department = formData.department ? formData.department.toUpperCase() : ''" class="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                  placeholder:lowercase uppercase" [class.border-red-500]="hasError('Departamento')" />
       </div>
       <p *ngIf="hasError('Departamento')" class="text-red-500 text-sm mt-1">
         El campo Departamento es obligatorio.
@@ -156,11 +114,10 @@
     <div>
       <label for="supervisorId" class="font-semibold text-[#046CAC]">Supervisor:</label>
       <select id="supervisorId" [(ngModel)]="formData.supervisorId" name="supervisorId"
-              class="w-full border border-gray-300 px-4 py-2 rounded-lg"
-              [class.border-red-500]="hasError('Supervisor') || hasError('Supervisor invalido (no puede ser él mismo)')">
+        class="w-full border border-gray-300 px-4 py-2 rounded-lg"
+        [class.border-red-500]="hasError('Supervisor') || hasError('Supervisor invalido (no puede ser él mismo)')">
         <option [value]="null">-- Selecciona supervisor --</option>
-        <option *ngFor="let s of supervisores" [value]="s.id"
-                [disabled]="formData.id && s.id === formData.id">
+        <option *ngFor="let s of supervisores" [value]="s.id" [disabled]="formData.id && s.id === formData.id">
           {{ s.firstName }} {{ s.lastName }} ({{ s.email }})
         </option>
       </select>
@@ -172,32 +129,35 @@
       </p>
     </div>
 
-    <!-- Activo --> 
-    <div *ngIf="!formData.id" class="flex items-center space-x-2"> 
-      <input type="checkbox" [(ngModel)]="formData.activo" name="activo" /> 
-      <span class="font-semibold text-[#046CAC]">Activo</span> 
+    <!-- Activo -->
+    <div *ngIf="!formData.id" class="flex items-center space-x-2">
+      <input type="checkbox" [(ngModel)]="formData.activo" name="activo" />
+      <span class="font-semibold text-[#046CAC]">Activo</span>
     </div>
-    <!-- Contraseña: visible solo si no existe (crear) o si el usuario no tiene --> 
-    <div class="col-span-2 flex space-x-2 items-end" 
-        *ngIf="usuario == null || !usuario.passwordDesencriptada"> 
-      <div class="flex-1"> 
-        <label for="password" class="font-semibold text-[#046CAC]">Contraseña*:</label> 
-        <input id="password" [(ngModel)]="formData.password" name="password" 
-                placeholder="Contraseña generada" class="w-full border border-gray-300 px-4 py-2 rounded-lg" readonly required 
-                [class.border-red-500]="hasError('Contraseña')" /> 
-        <p *ngIf="hasError('Contraseña')" class="text-red-500 text-sm mt-1"> 
-          Debes generar una contraseña. 
-        </p> 
-      </div> 
-      <button type="button" (click)="generarPassword()" class="shrink-0 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"> 
-        🔑 Generar 
-      </button> 
-    </div> 
-  </div> 
-    <!-- Botón submit --> 
-    <div class="pt-6"> 
-      <button type="submit" class="bg-linear-to-r from-[#046BB4] to-[#4484B4] hover:from-[#046CAC] hover:to-[#046BB4] text-white px-6 py-3 rounded-xl shadow-lg w-full transition-all duration-300 transform hover:scale-[1.02]"> 
-        {{ usuario ? '💾 Guardar cambios' : '💾 Crear usuario' }} 
-      </button> 
-    </div> 
+    <!-- Contraseña: se puede generar siempre, pero al editar es opcional -->
+    <div class="col-span-2 flex space-x-2 items-end">
+      <div class="flex-1">
+        <label for="password" class="font-semibold text-[#046CAC]">
+          {{ formData.id ? 'Nueva Contraseña (opcional):' : 'Contraseña*:' }}
+        </label>
+        <input id="password" [(ngModel)]="formData.password" name="password" placeholder="Contraseña generada"
+          class="w-full border border-gray-300 px-4 py-2 rounded-lg" readonly [required]="!formData.id"
+          [class.border-red-500]="hasError('Contraseña')" />
+        <p *ngIf="hasError('Contraseña')" class="text-red-500 text-sm mt-1">
+          Debes generar una contraseña.
+        </p>
+      </div>
+      <button type="button" (click)="generarPassword()"
+        class="shrink-0 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+        🔑 Generar
+      </button>
+    </div>
+  </div>
+  <!-- Botón submit -->
+  <div class="pt-6">
+    <button type="submit"
+      class="bg-linear-to-r from-[#046BB4] to-[#4484B4] hover:from-[#046CAC] hover:to-[#046BB4] text-white px-6 py-3 rounded-xl shadow-lg w-full transition-all duration-300 transform hover:scale-[1.02]">
+      {{ usuario ? '💾 Guardar cambios' : '💾 Crear usuario' }}
+    </button>
+  </div>
 </form>

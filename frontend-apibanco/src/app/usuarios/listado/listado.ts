@@ -14,7 +14,7 @@ import { ToastService } from '../../shared/toast/toast.service';
 })
 export class ListadoComponent implements OnInit {
   usuarios: Usuario[] = [];
-  modalVisible: boolean = false;
+
   modalVisible2: boolean = false;
   usuarioSeleccionado: Usuario | null = null;
   busqueda: string = '';
@@ -53,16 +53,6 @@ export class ListadoComponent implements OnInit {
   }
 
 
-  mostrarPassword(usuario: Usuario): void {
-    if (this.rolActual === 'ADMIN' || this.rolActual === 'SUPERADMIN') {
-      this.usuarioSeleccionado = usuario;
-      this.modalVisible = true;
-      setTimeout(() => this.cerrarModal(), 10000);
-    } else {
-      this.toastService.warning('No tienes permisos para ver contraseñas');
-    }
-  }
-
   editarUsuario(usuario: Usuario): void {
     this.usuarioSeleccionado = usuario;
     this.abrirModal2();
@@ -73,7 +63,6 @@ export class ListadoComponent implements OnInit {
   }
 
   cerrarModal(): void {
-    this.modalVisible = false;
     this.usuarioSeleccionado = null;
   }
 
@@ -82,16 +71,6 @@ export class ListadoComponent implements OnInit {
     this.usuarioSeleccionado = null;
   }
 
-  copiarPassword(): void {
-    if (this.usuarioSeleccionado?.passwordDesencriptada) {
-      navigator.clipboard.writeText(this.usuarioSeleccionado.passwordDesencriptada)
-        .then(() => {
-          this.toastService.success('Contraseña copiada al portapapeles');
-          this.cerrarModal();
-        })
-        .catch(() => this.toastService.error('❌ Error al copiar la contraseña'));
-    }
-  }
 
   borrarUsuario(id: number): void {
     this.usuarioService.borrarUsuario(id).subscribe({

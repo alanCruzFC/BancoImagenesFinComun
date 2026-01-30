@@ -24,11 +24,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fc.apibanco.dto.UsuarioDTO;
 import com.fc.apibanco.dto.UsuarioRequest;
-import com.fc.apibanco.model.PasswordEncriptada;
 import com.fc.apibanco.model.Usuario;
 import com.fc.apibanco.repository.UsuarioRepository;
 import com.fc.apibanco.service.UsuarioService;
-import com.fc.apibanco.util.AESUtil;
 import com.fc.apibanco.util.Constantes;
 
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -102,11 +100,6 @@ public class UsuarioController {
 
         usuario.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
-        PasswordEncriptada pass = new PasswordEncriptada();
-        pass.setUsuario(usuario);
-        pass.setHash(AESUtil.encrypt(request.getPassword()));
-        usuario.setPasswordEncriptada(pass);
-
         usuarioRepository.save(usuario);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado/actualizado correctamente");
@@ -137,14 +130,7 @@ public class UsuarioController {
 
                     if (usuarioActualizado.getPassword() != null &&
                             !usuarioActualizado.getPassword().isBlank()) {
-                        String passwordOriginal = usuarioActualizado.getPassword();
-
-                        usuario.setPasswordHash(passwordEncoder.encode(passwordOriginal));
-
-                        PasswordEncriptada pass = new PasswordEncriptada();
-                        pass.setUsuario(usuario);
-                        pass.setHash(AESUtil.encrypt(passwordOriginal));
-                        usuario.setPasswordEncriptada(pass);
+                        usuario.setPasswordHash(passwordEncoder.encode(usuarioActualizado.getPassword()));
                     }
 
                     usuarioRepository.save(usuario);

@@ -23,7 +23,7 @@ interface UsuarioForm {
   department?: string;
   supervisorId?: number | null;
   password?: string;
-  passwordDesencriptada?: string;
+
 }
 
 @Component({
@@ -59,7 +59,7 @@ export class FormularioUsuario implements OnInit {
   usarInputTeam = false;
   usarInputDepartment = false;
 
-  constructor(private readonly http: HttpClient, private readonly toastService: ToastService) {}
+  constructor(private readonly http: HttpClient, private readonly toastService: ToastService) { }
 
   ngOnInit(): void {
     if (this.usuario) {
@@ -90,10 +90,10 @@ export class FormularioUsuario implements OnInit {
 
   generarPassword(): void {
     const length = 16;
-    const lowers = 'abcdefghijkmnopqrstuvwxyz'; 
-    const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';  
-    const digits = '23456789';                 
-    const specials = '!@#$%^&*()-_=+[]{}?';
+    const lowers = 'abcdefghijkmnopqrstuvwxyz';
+    const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const digits = '23456789';
+    const specials = '@#$%&*-_';
     const all = lowers + uppers + digits + specials;
 
     const pick = (set: string) => {
@@ -149,11 +149,13 @@ export class FormularioUsuario implements OnInit {
       { condition: !this.formData.username, message: 'Usuario' },
       { condition: !this.formData.rol, message: 'Rol' },
       { condition: this.formData.rol === 'USER' && !this.formData.supervisorId, message: 'Supervisor' },
-      { condition: this.formData.supervisorId && this.formData.id && this.formData.supervisorId === this.formData.id,
-        message: 'Supervisor invalido (no puede ser él mismo)' },
+      {
+        condition: this.formData.supervisorId && this.formData.id && this.formData.supervisorId === this.formData.id,
+        message: 'Supervisor invalido (no puede ser él mismo)'
+      },
       { condition: !this.formData.team || this.formData.team.trim() === '', message: 'Equipo' },
       { condition: !this.formData.department || this.formData.department.trim() === '', message: 'Departamento' },
-      { condition: !this.usuario?.passwordDesencriptada && !this.formData.password, message: 'Contraseña' }
+      { condition: !this.formData.id && !this.formData.password, message: 'Contraseña' }
     ];
 
     validations.forEach(v => {

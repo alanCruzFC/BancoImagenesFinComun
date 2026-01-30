@@ -21,14 +21,6 @@ CREATE TABLE usuario (
     CONSTRAINT fk_usuario_supervisor FOREIGN KEY (supervisor_id) REFERENCES usuario(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabla de contraseñas encriptadas
-CREATE TABLE password_encriptada (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    encryp VARCHAR(500),
-    usuario_id BIGINT,
-    CONSTRAINT fk_password_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- Tabla de registros
 CREATE TABLE registro (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
