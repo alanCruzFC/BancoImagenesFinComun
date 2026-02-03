@@ -63,7 +63,6 @@ export class ListadoApiComponent implements OnInit {
           .filter(item => item.activo);
 
         this.apikeys.forEach(key => this.claveVisible[key.id] = false);
-        // this.apikeysFiltradas = [...this.apikeys]; // Ya es un getter
       },
       error: (err: any) => this.toast.error('❌ Error al cargar las API Keys', 'Error')
     });
