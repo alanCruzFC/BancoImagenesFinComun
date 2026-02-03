@@ -121,7 +121,7 @@ export class ImagenesRegistro implements OnInit {
 
     let texto = value.replaceAll('_', ' DE ');
 
-    texto = texto.replaceAll(/([a-zA-Z])([0-9]+)/g, '$1 $2');
+    texto = texto.replaceAll(/([a-zA-Z])(\d+)/g, '$1 $2');
 
     texto = texto.replaceAll(/([a-z])([A-Z])/g, '$1 $2');
 
