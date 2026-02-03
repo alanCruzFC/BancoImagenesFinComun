@@ -28,8 +28,11 @@
     <table class="table-auto w-full text-sm">
       <thead>
         <tr class="bg-linear-to-r from-[#046BB4]/10 to-[#4484B4]/10">
+          
           <th class="px-2 py-2 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-            (click)="ordenar('consumidor')">
+            (click)="ordenar('consumidor')"
+            (keydown)="ordenar('consumidor')"
+            tabindex="0">
             Consumidor
             <span *ngIf="columnaOrdenada === 'consumidor'">{{ ordenAscendente ? '▲' : '▼' }}</span>
             <span *ngIf="columnaOrdenada !== 'consumidor'" class="text-gray-400">↕</span>
@@ -41,7 +44,9 @@
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Actualización</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC]">Eliminación</th>
           <th class="px-2 py-2 text-center font-semibold text-[#046CAC] cursor-pointer select-none"
-            (click)="ordenar('fechaCreacion')">
+            (click)="ordenar('fechaCreacion')"
+            (keydown)="ordenar('fechaCreacion')"
+            tabindex="0">
             Fecha creación
             <span *ngIf="columnaOrdenada === 'fechaCreacion'">{{ ordenAscendente ? '▲' : '▼' }}</span>
             <span *ngIf="columnaOrdenada !== 'fechaCreacion'" class="text-gray-400">↕</span>

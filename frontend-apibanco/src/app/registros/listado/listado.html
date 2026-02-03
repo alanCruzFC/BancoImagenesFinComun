@@ -31,19 +31,25 @@
       <thead>
         <tr class="bg-linear-to-r from-[#046BB4]/10 to-[#4484B4]/10">
           <th class="px-4 py-3 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-            (click)="ordenar('numeroSolicitud')">
+            (click)="ordenar('numeroSolicitud')"
+            (keydown)="ordenar('numeroSolicitud')"
+            tabindex="0">
             Solicitud
             <span *ngIf="columnaOrdenada === 'numeroSolicitud'">{{ ordenAscendente ? '▲' : '▼' }}</span>
             <span *ngIf="columnaOrdenada !== 'numeroSolicitud'" class="text-gray-400">↕</span>
           </th>
           <th class="px-4 py-3 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-            (click)="ordenar('creador')">
+            (click)="ordenar('creador')"
+            (keydown)="ordenar('creador')"
+            tabindex="0">
             Creador
             <span *ngIf="columnaOrdenada === 'creador'">{{ ordenAscendente ? '▲' : '▼' }}</span>
             <span *ngIf="columnaOrdenada !== 'creador'" class="text-gray-400">↕</span>
           </th>
           <th class="px-4 py-3 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-            (click)="ordenar('fechaCreacion')">
+            (click)="ordenar('fechaCreacion')"
+            (keydown)="ordenar('fechaCreacion')"
+            tabindex="0">
             Fecha
             <span *ngIf="columnaOrdenada === 'fechaCreacion'">{{ ordenAscendente ? '▲' : '▼' }}</span>
             <span *ngIf="columnaOrdenada !== 'fechaCreacion'" class="text-gray-400">↕</span>

@@ -24,49 +24,65 @@
         <thead class="sticky top-0 bg-linear-to-r from-[#046BB4]/5 to-[#4484B4]/5 border-b border-gray-200">
           <tr>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('username')">
+              (click)="ordenar('username')"
+              (keydown)="ordenar('username')"
+              tabindex="0">
               Usuario
               <span *ngIf="columnaOrdenada === 'username'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'username'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('firstName')">
+              (click)="ordenar('firstName')"
+              (keydown)="ordenar('firstName')"
+              tabindex="0">
               Nombre
               <span *ngIf="columnaOrdenada === 'firstName'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'firstName'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('lastName')">
+              (click)="ordenar('lastName')"
+              (keydown)="ordenar('lastName')"
+              tabindex="0">
               Apellido
               <span *ngIf="columnaOrdenada === 'lastName'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'lastName'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('email')">
+              (click)="ordenar('email')"
+              (keydown)="ordenar('email')"
+              tabindex="0">
               Email
               <span *ngIf="columnaOrdenada === 'email'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'email'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('rol')">
+              (click)="ordenar('rol')"
+              (keydown)="ordenar('rol')"
+              tabindex="0">
               Rol
               <span *ngIf="columnaOrdenada === 'rol'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'rol'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('team')">
+              (click)="ordenar('team')"
+              (keydown)="ordenar('team')"
+              tabindex="0">
               Equipo
               <span *ngIf="columnaOrdenada === 'team'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'team'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('department')">
+              (click)="ordenar('department')"
+              (keydown)="ordenar('department')"
+              tabindex="0">
               Depto
               <span *ngIf="columnaOrdenada === 'department'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'department'" class="text-gray-400">↕</span>
             </th>
             <th class="px-2 py-1 text-left font-semibold text-[#046CAC] cursor-pointer select-none"
-              (click)="ordenar('supervisorName')">
+              (click)="ordenar('supervisorName')"
+              (keydown)="ordenar('supervisorName')"
+              tabindex="0">
               Supervisor
               <span *ngIf="columnaOrdenada === 'supervisorName'">{{ ordenAscendente ? '▲' : '▼' }}</span>
               <span *ngIf="columnaOrdenada !== 'supervisorName'" class="text-gray-400">↕</span>
